@@ -14,7 +14,7 @@ export class AppComponent implements OnInit{
 
   httpError!: HttpErrorResponse;
 
-  constructor(private router: Router, private snackBar: MatSnackBar) {
+  constructor() {
   }
 
   ngOnInit(): void {

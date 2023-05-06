@@ -24,9 +24,23 @@
     flex: 1;
   }
 
-  .toolbar {
-    position: absolute;
-    top: 0;
+  .container{
+    width: 80%;
+    margin: 0 auto; /* Center the DIV horizontally */
+  }
+
+  nav a{
+    color: #fff;
+    text-decoration: none;
+    padding: 7px 25px;
+    display: inline-block;
+  }
+  .container p{
+    line-height: 200px; /* Create scrollbar to test positioning */
+  }
+
+  .header, .footer {
+    position: fixed;
     left: 0;
     right: 0;
     height: 60px;
@@ -37,22 +51,30 @@
     font-weight: 600;
   }
 
-  .toolbar img {
+  .header {
+    top:0;
+  }
+
+  .footer {
+    bottom: 0;
+  }
+
+  .header img {
     margin: 0 16px;
   }
 
-  .toolbar #twitter-logo {
+  .header #twitter-logo {
     height: 40px;
     margin: 0 8px;
   }
 
-  .toolbar #youtube-logo {
+  .header #youtube-logo {
     height: 40px;
     margin: 0 16px;
   }
 
-  .toolbar #twitter-logo:hover,
-  .toolbar #youtube-logo:hover {
+  .header #twitter-logo:hover,
+  .header #youtube-logo:hover {
     opacity: 0.8;
   }
 
