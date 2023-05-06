@@ -5,7 +5,7 @@ const userSchema = new Schema(
     name: { type: String, required: true }, //Nome completo (nome e cognome)
     username: { type: String, required: true, unique: true }, // Username dell'utente
     mail: { type: String, required: true, unique: true }, // Mail dell'utente
-    serviceId: { type: String }, //Id del servizio di login usato (E.s.: Google)
+    serviceId: { type: Number }, //Id del servizio di login usato (E.s.: Google)
     password: { type: String },
     profilePicture: { type: String }, // Immagine profilo
     dailyCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
