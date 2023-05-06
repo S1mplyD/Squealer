@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import session from "express-session";
 import mongoose from "mongoose";
 import passport = require("passport");
+import path from "path";
 
 config();
 
