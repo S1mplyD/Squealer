@@ -55,11 +55,11 @@ router.route("/channels").get(async (req, res) => {
 router.route("/timer").post(async (req, res) => {
   try {
     const time: any = req.query.time;
+    const squeal: any = req.body;
     const interval: any = setInterval(async () => {
-      await postSqueal(req.body).then(async (squeal) => {
-        await setSquealTimer(time, interval, squeal!.id);
-      });
+      postSqueal(squeal);
     }, time);
+    await setSquealTimer(time, interval, req.query.id);
   } catch (error) {
     console.log(error);
   }
