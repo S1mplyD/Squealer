@@ -9,11 +9,12 @@ const squealSchema = new Schema(
     positiveReactions: { type: Number },
     negativeReactions: { type: Number },
     category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso)
-    channels: { type: String }, //Canali a cui è stato aggiunto dalla redazione
+    channels: { type: [String] }, //Canali a cui è stato aggiunto dalla redazione
     //Non visualizzabili
     criticalMass: { type: Number }, //Massa critica (0,25 x visual)
     visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
     time: { type: Number }, //tempo per i messaggi automatici (in ms)
+    intervalId: { type: Number }, // id dell'intervallo
   },
   { collection: "squealData" }
 );
