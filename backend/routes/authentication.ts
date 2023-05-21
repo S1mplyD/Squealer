@@ -5,11 +5,17 @@ import { userModel } from "../database/models/users.model";
 import {
   createDefaultUser,
   createUserUsingGoogle,
+  updatePassword,
+  updateResetToken,
 } from "../database/querys/users";
 import express from "express";
 import bcrypt from "bcryptjs";
+import { sendMail } from "../util/mail";
+import { config } from "dotenv";
+import { generate } from "randomstring";
+config();
 
-const router = express.Router();
+export const router = express.Router();
 
 /**
  * Autenticazione tramite google
@@ -119,7 +125,7 @@ passport.deserializeUser((id, done) => {
   });
 });
 
-passport.serializeUser((user, cb) => {
+passport.serializeUser((user: any, cb) => {
   process.nextTick(() => {
     return cb(null, user.id);
   });
@@ -140,3 +146,33 @@ router.get("/logout", (req, res, next) => {
     console.log(error);
   }
 });
+
+router
+  .route("/forgotPassword")
+  /**
+   * Genero un token e lo invio per mail all'utente
+   */
+  .get(async (req, res) => {
+    const mail: any = req.query.mail;
+    const token: string = generate();
+    console.log(token);
+
+    await sendMail(token, mail).then(async () => {
+      await updateResetToken(mail, token).finally(() => {
+        res.sendStatus(200);
+      });
+    });
+  })
+  /**
+   * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
+   */
+  .post(async (req, res) => {
+    const token: any = req.body.token;
+    const mail: any = req.query.mail;
+    const user: any = await userModel.findOne({ mail: mail });
+
+    const password: any = req.query.password;
+    if (token === user.resetToken) {
+      await updatePassword(mail, password);
+    }
+  });

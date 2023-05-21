@@ -91,3 +91,32 @@ export async function deleteAccount(mail: string, password: string) {
     return error;
   }
 }
+
+/**
+ * aggiorna il reset token al valore del token generato dal server
+ * @param mail mail dell'utente
+ * @param token token di conferma
+ */
+export async function updateResetToken(mail: string, token: string) {
+  try {
+    await userModel.updateOne({ mail: mail }, { resetToken: token });
+  } catch (error) {
+    return error;
+  }
+}
+
+/**
+ * aggiorna la password di un utente e resetta il token
+ * @param mail mail dell'utente
+ * @param password nuova password dell'utente
+ */
+export async function updatePassword(mail: string, password: string) {
+  try {
+    userModel.findOneAndUpdate(
+      { mail: mail },
+      { password: password, resetToken: "" }
+    );
+  } catch (error) {
+    return error;
+  }
+}

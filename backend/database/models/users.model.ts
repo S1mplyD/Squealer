@@ -14,6 +14,7 @@ const userSchema = new Schema(
     plan: { type: String, default: "base" }, //Tipo di account (base, [verificato], professional, journalist, moderatore)
     SMM: { type: String }, // SMM dell´account, modificabile solo se l'account è professional
     managedAccounts: { type: [String] }, //Account gestiti da un SMM, modificabile se il plan è pro
+    resetToken: { type: String, default: "" },
   },
   { collection: "userData" }
 );

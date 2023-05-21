@@ -10,14 +10,13 @@ var transporter = nodemailer.createTransport({
   },
 });
 
-var mailOptions = {
-  from: "squealer@noreply.com",
-  to: "mail",
-  subject: "Sending Email using Node.js",
-  text: "That was easy!",
-};
-
-export function sendMail() {
+export async function sendMail(token: string, mail: string) {
+  let mailOptions = {
+    from: "squealer@noreply.com",
+    to: mail,
+    subject: "Password reset",
+    html: `<h1>Reset passoword</h1><br><p>Your password reset token is ${token}</p>`,
+  };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
