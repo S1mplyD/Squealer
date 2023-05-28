@@ -1,22 +1,58 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { filter } from 'rxjs/operators';
-import { NavigationEnd, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MediaMatcher } from '@angular/cdk/layout';
+import { NavItem } from './nav-item';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnDestroy{
+
   title = 'Squealer Front Office';
-
+  showFiller = false;
   httpError!: HttpErrorResponse;
+  mobileQuery: MediaQueryList;
 
-  constructor() {
+  menu: NavItem [] = [
+    {
+      displayName: 'Home',
+      iconName: 'desktop_windows',
+      route: 'home',
+    },
+    {
+      displayName: 'My Account',
+      iconName: 'account_circle',
+      children: [
+          {
+            displayName: 'Infos',
+            iconName: 'search',
+            route: '/infos'
+          },
+          {
+            displayName: 'Settings',
+            iconName: 'settings',
+            route: '/settings'
+          },
+          {
+            displayName: 'Notifications',
+            iconName: 'notifications',
+            route: '/notifications'
+          },
+        ]
+      }
+  ];
+
+  private _mobileQueryListener: () => void;
+
+  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
+    this.mobileQuery = media.matchMedia('(max-width: 600px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery.addListener(this._mobileQueryListener);
   }
 
-  ngOnInit(): void {
+ngOnDestroy(): void {
+    this.mobileQuery.removeListener(this._mobileQueryListener);
   }
 }
