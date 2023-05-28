@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import passport = require("passport");
 import path from "path";
 import { router } from "./backend/routes/authentication";
+import { startAllTimer } from "./backend/util/timers";
 
 config();
 
@@ -32,7 +33,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api", router);
 mongoose.set("strictQuery", false);
-mongoose.connect(uri);
+mongoose.connect(uri).then(() => {
+  console.log("connected to mongoose");
+  startAllTimer().then(() => {
+    console.log("All timer started");
+  });
+});
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`);
