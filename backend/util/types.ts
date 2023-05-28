@@ -30,15 +30,3 @@ export type TimedSqueal = {
   count: number | undefined;
   _id: string;
 };
-
-// nuovo tipo per gli errori
-export type Errors = {
-  message: string;
-  code: Error;
-};
-
-// enum per il codice degli errori
-export enum Error {
-  cannot_create = 1,
-  non_existent = 2,
-}

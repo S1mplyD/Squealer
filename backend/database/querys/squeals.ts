@@ -1,14 +1,23 @@
 import { squealModel } from "../models/squeals.model";
 import { Squeal, TimedSqueal } from "../../util/types";
 import { timedSquealModel } from "../models/timedSqueals.model";
+import { channelsModel } from "../models/channels.model";
+import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
 
 /**
- * funzione che ritorna tutti gli squeals
+ * funzione che ritorna tutti gli squeals non temporizzati
  * @returns tutti gli squeals
  */
 export async function getAllSqueals() {
   try {
-    return await squealModel.find();
+    await squealModel.find().then((squeals) => {
+      if (!squeals)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else return squeals;
+    });
   } catch (error) {
     console.log(error);
   }
@@ -16,11 +25,18 @@ export async function getAllSqueals() {
 
 /**
  * funzione che ritorna tutti gli squeal temporizzati
- * @returns squeal con un timer
+ * @returns squeals temporizzati
  */
 export async function getAllTimers() {
   try {
-    return await timedSquealModel.find().where("time").gte(1);
+    await timedSquealModel.find().then((timedSqueals) => {
+      if (!timedSqueals)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else return timedSqueals;
+    });
   } catch (error) {
     console.log(error);
   }
@@ -42,7 +58,9 @@ export async function getSquealsByRecipients(recipients: string[]) {
     for (let i of timedSqueals) {
       squealArray.push(i);
     }
-    return squealArray;
+    if (squealArray.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squealArray;
   } catch (error) {
     console.log(error);
   }
@@ -64,7 +82,9 @@ export async function getSquealsByChannel(channels: string[]) {
     for (let i of timedSqueals) {
       squealArray.push(i);
     }
-    return squealArray;
+    if (squealArray.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squealArray;
   } catch (error) {
     console.log(error);
   }
@@ -75,9 +95,13 @@ export async function getSquealsByChannel(channels: string[]) {
  * @param squeal oggetto contenente i parametri dello squeal
  * @returns eventuali errori
  */
+// TODO aggiungere squeals ai channel
 export async function postSqueal(squeal: Squeal) {
   try {
-    return await squealModel.create(squeal);
+    await squealModel.create(squeal).then((newSqueal) => {
+      for (let i of newSqueal.channels) {
+      }
+    });
   } catch (error) {
     console.log(error);
   }
@@ -89,9 +113,31 @@ export async function postSqueal(squeal: Squeal) {
  */
 export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
   try {
-    await squealModel.findByIdAndUpdate(squeal._id, {
-      intervalId: intervalId,
-    });
+    await timedSquealModel
+      .findByIdAndUpdate(
+        squeal._id,
+        {
+          intervalId: intervalId,
+        },
+        { returnDocument: "after" }
+      )
+      .then((newDocument) => {
+        if (!newDocument)
+          return new Error(
+            ErrorDescriptions.non_existent,
+            ErrorCodes.non_existent
+          );
+        else {
+          if (intervalId === newDocument.intervalId) {
+            return new Error(ErrorDescriptions.success, ErrorCodes.success);
+          } else {
+            return new Error(
+              ErrorDescriptions.cannot_update,
+              ErrorCodes.cannot_update
+            );
+          }
+        }
+      });
   } catch (error) {
     console.log(error);
   }
@@ -103,7 +149,14 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
  */
 export async function postTimedSqueal(squeal: TimedSqueal) {
   try {
-    await timedSquealModel.create(squeal);
+    await timedSquealModel.create(squeal).then((newSqueal) => {
+      if (!newSqueal)
+        return new Error(
+          ErrorDescriptions.cannot_create,
+          ErrorCodes.cannot_create
+        );
+      else return new Error(ErrorDescriptions.success, ErrorCodes.success);
+    });
   } catch (error) {
     console.log(error);
   }
@@ -116,7 +169,9 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
  */
 export async function deleteSqueal(id: string) {
   try {
-    await squealModel.findByIdAndDelete(id);
+    await squealModel.findByIdAndDelete(id, { returnDocument: "after" }).then(document =>{
+      if()
+    });
   } catch (error) {
     console.log(error);
   }
