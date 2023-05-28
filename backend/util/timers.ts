@@ -1,8 +1,9 @@
 import {
   getAllTimers,
   postTimedSqueal,
-  setSquealTimer,
+  setSquealInterval,
 } from "../database/querys/squeals";
+import { TimedSqueal } from "./types";
 
 /**
  * funzione che attiva tutti i timer (da usare all'avvio del server)
@@ -10,7 +11,7 @@ import {
 export async function startAllTimer() {
   const squeals: any = await getAllTimers();
   for (let i of squeals) {
-    await startTimer(i, i.time as number, i.id as string);
+    await startTimer(i as TimedSqueal);
   }
 }
 
@@ -20,11 +21,11 @@ export async function startAllTimer() {
  * @param time il tempo necessario per postare uno squeal
  * @param id id dello squeal
  */
-export async function startTimer(squeal: any, time: number, id: string) {
+export async function startTimer(squeal: TimedSqueal) {
   const interval: any = setInterval(async () => {
     await postTimedSqueal(squeal);
-  }, time);
-  await setSquealTimer(time, interval, id);
+  }, squeal.time);
+  await setSquealInterval(squeal, interval);
 }
 
 /**
