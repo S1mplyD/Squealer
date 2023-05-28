@@ -1,4 +1,6 @@
 import { squealModel } from "../models/squeals.model";
+import { Squeal, TimedSqueal } from "../../util/types";
+import { timedSquealModel } from "../models/timedSqueals.model";
 
 /**
  * funzione che ritorna tutti gli squeals
@@ -13,13 +15,34 @@ export async function getAllSqueals() {
 }
 
 /**
+ * funzione che ritorna tutti gli squeal temporizzati
+ * @returns squeal con un timer
+ */
+export async function getAllTimers() {
+  try {
+    return await timedSquealModel.find().where("time").gte(1);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
  * funzione che ritorna tutti gli squeal appartenenti a certi destinatari
  * @param recipients destinatari da ricercare
  * @returns squeals appartenenti ai destinatari scelti
  */
 export async function getSquealsByRecipients(recipients: string[]) {
   try {
-    return await squealModel.find({ recipients: { $in: recipients } });
+    const squeals: any = await squealModel.find().in(recipients);
+    const timedSqueals: any = await timedSquealModel.find().in(recipients);
+    let squealArray: any[] = [];
+    for (let i of squeals) {
+      squealArray.push(i);
+    }
+    for (let i of timedSqueals) {
+      squealArray.push(i);
+    }
+    return squealArray;
   } catch (error) {
     console.log(error);
   }
@@ -32,7 +55,16 @@ export async function getSquealsByRecipients(recipients: string[]) {
  */
 export async function getSquealsByChannel(channels: string[]) {
   try {
-    return await squealModel.find({ channels: { $in: channels } });
+    const squeals: any = await squealModel.find().in(channels);
+    const timedSqueals: any = await timedSquealModel.find().in(channels);
+    let squealArray: any[] = [];
+    for (let i of squeals) {
+      squealArray.push(i);
+    }
+    for (let i of timedSqueals) {
+      squealArray.push(i);
+    }
+    return squealArray;
   } catch (error) {
     console.log(error);
   }
@@ -43,33 +75,21 @@ export async function getSquealsByChannel(channels: string[]) {
  * @param squeal oggetto contenente i parametri dello squeal
  * @returns eventuali errori
  */
-export async function postSqueal(squeal: any) {
+export async function postSqueal(squeal: Squeal) {
   try {
-    return await squealModel.create({
-      body: squeal.body,
-      recipients: squeal.recipients,
-      date: new Date(),
-      category: squeal.category,
-    });
+    return await squealModel.create(squeal);
   } catch (error) {
     console.log(error);
   }
 }
 
 /**
- * imposta un timer per un post
- * @param time tempo tra un post e l'altro
+ * inserisce l'id dell'interval al timedSqueal
  * @param intervalId id dell'intervallo
- * @param id id del post
  */
-export async function setSquealTimer(
-  time: number,
-  intervalId: number,
-  id: string
-) {
+export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
   try {
-    await squealModel.findByIdAndUpdate(id, {
-      time: time,
+    await squealModel.findByIdAndUpdate(squeal._id, {
       intervalId: intervalId,
     });
   } catch (error) {
@@ -77,14 +97,34 @@ export async function setSquealTimer(
   }
 }
 
+export async function postTimedSqueal(squeal: TimedSqueal) {
+  try {
+    await timedSquealModel.create(squeal);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 /**
  * funzione che cancella uno squeal
- * @param id id dell squeal
+ * @param id id dello squeal
  * @returns errori eventuali
  */
-export async function deleteSqueal(id: any) {
+export async function deleteSqueal(id: string) {
   try {
     await squealModel.findByIdAndDelete(id);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * funzione che cancella uno squeal temporizzato
+ * @param id id dello squeal temporizzato
+ */
+export async function deleteTimedSqueal(id: string) {
+  try {
+    await timedSquealModel.findByIdAndDelete(id);
   } catch (error) {
     console.log(error);
   }
