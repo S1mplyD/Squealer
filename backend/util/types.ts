@@ -10,6 +10,7 @@ export type Squeal = {
   //Non visualizzabili
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
+  _id: string;
 };
 
 // nuovo tipo per squeal temporizzati
@@ -27,4 +28,5 @@ export type TimedSqueal = {
   time: number | undefined; //tempo per i messaggi automatici (in ms)
   intervalId: number | undefined; // id dell'intervallo
   count: number | undefined;
+  _id: string;
 };
