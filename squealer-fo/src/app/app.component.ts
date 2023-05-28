@@ -20,6 +20,18 @@ export class AppComponent implements OnDestroy{
       displayName: 'Home',
       iconName: 'desktop_windows',
       route: 'home',
+      children: [
+        {
+          displayName: 'Browse Squeals',
+          iconName: 'whatshot',
+          route: '/browse'
+        },
+        {
+          displayName: 'Write a new Squeal',
+          iconName: 'share',
+          route: '/new'
+        }
+      ]
     },
     {
       displayName: 'My Account',
@@ -39,6 +51,11 @@ export class AppComponent implements OnDestroy{
             displayName: 'Notifications',
             iconName: 'notifications',
             route: '/notifications'
+          },
+          {
+            displayName: 'Followed Accounts',
+            iconName: 'people',
+            route: '/following'
           },
         ]
       }

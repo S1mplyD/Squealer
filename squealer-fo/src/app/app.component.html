@@ -7,23 +7,23 @@
   </mat-toolbar>
   <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
     <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
-    [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
-      <mat-nav-list>
+    [fixedInViewport]="mobileQuery.matches" fixedTopGap="56" class="navBar">
+      <mat-nav-list >
         <span *ngFor="let item of menu">
-          <span *ngIf="item.children && item.children.length > 0">
+          <span  *ngIf="item.children && item.children.length > 0">
             <mat-accordion>
-              <mat-expansion-panel>
+              <mat-expansion-panel class="navBar">
                 <mat-expansion-panel-header>
-                  <mat-panel-title>
+                  <mat-panel-title class="navBar">
                     <div fxLayout="row" fxLayoutAlign="space-between center" >
                       <mat-icon>{{item.iconName}}</mat-icon>
                       {{item.displayName}}
                     </div>
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <span *ngFor="let child of item.children">
-                  <mat-list-item routerLink="[child.route]">
-                    <div fxLayout="row" fxLayoutAlign="space-between center" >
+                <span class="navBar" *ngFor="let child of item.children">
+                  <mat-list-item routerLink="[child.route]" class="navBar">
+                    <div class="navBar" fxLayout="row" fxLayoutAlign="space-between center" >
                       <mat-icon>{{child.iconName}}</mat-icon>
                       {{child.displayName}}
                     </div>
@@ -33,7 +33,7 @@
             </mat-accordion>
           </span>
           <span *ngIf="!item.children || item.children.length === 0">
-            <mat-list-item routerLink="[item.route]">
+            <mat-list-item routerLink="[item.route]" class="navBar">
               <div fxLayout="row" fxLayoutAlign="space-between center">
                 <mat-icon>{{item.iconName}}</mat-icon>
                 {{item.displayName}}

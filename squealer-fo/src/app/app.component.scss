@@ -28,8 +28,8 @@
   }
 
   .example-sidenav-container {
-    /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
-       causes `<mat-sidenav-content>` to act as our scrolling element for desktop layouts. */
+    background-color: #333;
+    color:white;
     flex: 1;
   }
 
@@ -39,7 +39,10 @@
     flex: 1 0 auto;
   }
 
-  table {
-    width: 100%;
+  .navBar {
+    background-color: #0c0c0c;
+    color:white;
+    flex: 1;
   }
+
 
