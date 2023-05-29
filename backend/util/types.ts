@@ -30,3 +30,21 @@ export type TimedSqueal = {
   count: number | undefined;
   _id: string;
 };
+
+// nuovo tipo utente
+export type User = {
+  _id: string; // mongodb id
+  name: string; //Nome completo (nome e cognome)
+  username: string; // Username dell'utente
+  mail: string; // Mail dell'utente
+  serviceId: number | undefined; //Id del servizio di login usato (E.s.: Google)
+  password: string | undefined;
+  profilePicture: string | undefined; // Immagine profilo
+  dailyCharacters: number; //Caratteri giornalieri
+  weeklyCharacters: number; //Caratteri settimanali
+  monthlyCharacters: number; //Caratteri mensili
+  plan: string; //Tipo di account (base, [verificato], professional, journalist, moderatore)
+  SMM: string | undefined; // SMM dell´account, modificabile solo se l'account è professional
+  managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro
+  resetToken: string;
+};
