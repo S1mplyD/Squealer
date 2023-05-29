@@ -3,6 +3,7 @@ import { Squeal, TimedSqueal } from "../../util/types";
 import { timedSquealModel } from "../models/timedSqueals.model";
 import { channelsModel } from "../models/channels.model";
 import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
+import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
@@ -129,7 +130,7 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
           );
         else {
           if (intervalId === newDocument.intervalId) {
-            return new Error(ErrorDescriptions.success, ErrorCodes.success);
+            return new Success(SuccessDescription.updated, SuccessCode.updated);
           } else {
             return new Error(
               ErrorDescriptions.cannot_update,
@@ -155,7 +156,7 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
           ErrorDescriptions.cannot_create,
           ErrorCodes.cannot_create
         );
-      else return new Error(ErrorDescriptions.success, ErrorCodes.success);
+      else return new Success(SuccessDescription.created, SuccessCode.created);
     });
   } catch (error) {
     console.log(error);
@@ -169,8 +170,9 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
  */
 export async function deleteSqueal(id: string) {
   try {
-    await squealModel.findByIdAndDelete(id, { returnDocument: "after" }).then(document =>{
-      if()
+    await squealModel.findByIdAndDelete(id).then((document) => {
+      // TODO testare il valore di ritorno e fare error handling
+      console.log(document);
     });
   } catch (error) {
     console.log(error);
@@ -183,7 +185,12 @@ export async function deleteSqueal(id: string) {
  */
 export async function deleteTimedSqueal(id: string) {
   try {
-    await timedSquealModel.findByIdAndDelete(id);
+    await timedSquealModel
+      .findByIdAndDelete(id, { returnDocument: "after" })
+      .then((doc) => {
+        // TODO testare il valore di ritorno e fare error handling
+        console.log(doc);
+      });
   } catch (error) {
     console.log(error);
   }

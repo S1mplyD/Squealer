@@ -1,3 +1,6 @@
+import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
+import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import { User } from "../../util/types";
 import { userModel } from "../models/users.model";
 
 /**
@@ -5,10 +8,16 @@ import { userModel } from "../models/users.model";
  */
 export async function getAllUsers() {
   try {
-    const users = await userModel.find();
-    return users;
+    await userModel.find().then((users) => {
+      if (!users)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else return users;
+    });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -26,14 +35,24 @@ export async function createDefaultUser(
   password: string
 ) {
   try {
-    await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      password: password,
-    });
+    await userModel
+      .create({
+        name: name,
+        username: username,
+        mail: mail,
+        password: password,
+      })
+      .then((doc) => {
+        if (!doc)
+          return new Error(
+            ErrorDescriptions.cannot_create,
+            ErrorCodes.cannot_create
+          );
+        else
+          return new Success(SuccessDescription.created, SuccessCode.created);
+      });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -53,15 +72,25 @@ export async function createUserUsingGoogle(
   profilePicture: string
 ) {
   try {
-    await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      serviceId: serviceId,
-      profilePicture: profilePicture,
-    });
+    await userModel
+      .create({
+        name: name,
+        username: username,
+        mail: mail,
+        serviceId: serviceId,
+        profilePicture: profilePicture,
+      })
+      .then((doc) => {
+        if (!doc)
+          return new Error(
+            ErrorDescriptions.cannot_create,
+            ErrorCodes.cannot_create
+          );
+        else
+          return new Success(SuccessDescription.created, SuccessCode.created);
+      });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -69,11 +98,24 @@ export async function createUserUsingGoogle(
  * Aggiorna i dettagli di un utente
  * @param user oggetto contenente i dettagli di un utente
  */
-export async function updateUser(user: any) {
+export async function updateUser(user: User) {
   try {
-    await userModel.findByIdAndUpdate(user.id, user);
+    await userModel
+      .findByIdAndUpdate(user._id, user, {
+        returnDocument: "after",
+      })
+      .then((doc) => {
+        if (!doc)
+          return new Error(
+            ErrorDescriptions.non_existent,
+            ErrorCodes.non_existent
+          );
+        else {
+          //TODO utente non modificato e utente modificato
+        }
+      });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -84,11 +126,12 @@ export async function updateUser(user: any) {
  */
 export async function deleteAccount(mail: string, password: string) {
   try {
+    // TODO errori e successi
     await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
     });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -99,9 +142,10 @@ export async function deleteAccount(mail: string, password: string) {
  */
 export async function updateResetToken(mail: string, token: string) {
   try {
+    // TODO errori e successi
     await userModel.updateOne({ mail: mail }, { resetToken: token });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
 
@@ -112,11 +156,29 @@ export async function updateResetToken(mail: string, token: string) {
  */
 export async function updatePassword(mail: string, password: string) {
   try {
-    userModel.findOneAndUpdate(
-      { mail: mail },
-      { password: password, resetToken: "" }
-    );
+    userModel
+      .findOneAndUpdate(
+        { mail: mail },
+        { password: password, resetToken: "" },
+        { returnDocument: "after" }
+      )
+      .then((newDoc) => {
+        if (!newDoc)
+          return new Error(
+            ErrorDescriptions.non_existent,
+            ErrorCodes.non_existent
+          );
+        else {
+          if (newDoc.password !== password)
+            return new Success(SuccessDescription.updated, SuccessCode.updated);
+          else
+            return new Error(
+              ErrorDescriptions.cannot_update,
+              ErrorCodes.cannot_update
+            );
+        }
+      });
   } catch (error) {
-    return error;
+    console.log(error);
   }
 }
