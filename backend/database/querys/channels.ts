@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { channelsModel } from "../models/channels.model";
@@ -25,4 +26,37 @@ export async function createChannel(channelName: string) {
       );
     else return new Success(SuccessDescription.created, SuccessCode.created);
   });
+}
+
+/**
+ * funzione che aggiunge uno squeal ad un canale
+ * @param channelName nome del canale
+ * @param squealId id dello squeal da aggiungere al canale
+ */
+export async function addSquealToChannel(
+  channelName: string,
+  squealId: string
+) {
+  await channelsModel
+    .findOneAndUpdate(
+      { name: channelName },
+      { $push: { squeals: squealId } },
+      { returnDocument: "after" }
+    )
+    .then((updatedDoc) => {
+      if (!updatedDoc)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else {
+        if (updatedDoc.squeals.includes(squealId))
+          return new Success(SuccessDescription.updated, SuccessCode.updated);
+        else
+          return new Error(
+            ErrorDescriptions.cannot_update,
+            ErrorCodes.cannot_update
+          );
+      }
+    });
 }
