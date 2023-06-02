@@ -1,9 +1,10 @@
 import { squealModel } from "../models/squeals.model";
-import { Squeal, TimedSqueal } from "../../util/types";
+import { Squeal, TimedSqueal, Channel } from "../../util/types";
 import { timedSquealModel } from "../models/timedSqueals.model";
 import { channelsModel } from "../models/channels.model";
 import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import { addSquealToChannel, getAllChannels } from "./channels";
 
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
@@ -99,8 +100,16 @@ export async function getSquealsByChannel(channels: string[]) {
 // TODO aggiungere squeals ai channel
 export async function postSqueal(squeal: Squeal) {
   try {
-    await squealModel.create(squeal).then((newSqueal) => {
+    const channels: any = await getAllChannels();
+
+    await squealModel.create(squeal).then(async (newSqueal) => {
       for (let i of newSqueal.channels) {
+        for (let j of channels) {
+          if (i === j.name) {
+            const id: unknown = newSqueal._id;
+            await addSquealToChannel(j.name, id as string);
+          }
+        }
       }
     });
   } catch (error) {
