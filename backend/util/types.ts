@@ -48,3 +48,10 @@ export type User = {
   managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro
   resetToken: string;
 };
+
+// nuovo tipo canali
+export type Channel = {
+  _id: string; // mongodb id
+  name: string; // nome del canale
+  squeals: string[]; // id degli squeals appartenenti al canale
+};
