@@ -40,6 +40,11 @@ router
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
+  /**
+   * DELETE
+   * elimina un canale
+   * TESTATA
+   */
   .delete(async (req, res) => {
     try {
       await deleteChannel(req.query.name as string).then((ret) => {
