@@ -9,6 +9,7 @@ import { addSquealToChannel, getAllChannels } from "./channels";
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
  * @returns tutti gli squeals
+ * TESTATA
  */
 export async function getAllSqueals() {
   try {
@@ -24,6 +25,7 @@ export async function getAllSqueals() {
 /**
  * funzione che ritorna tutti gli squeal temporizzati
  * @returns squeals temporizzati
+ * TESTATA
  */
 export async function getAllTimers() {
   try {
@@ -94,16 +96,35 @@ export async function postSqueal(squeal: Squeal) {
   try {
     const channels: any = await getAllChannels();
 
-    await squealModel.create(squeal).then(async (newSqueal) => {
-      for (let i of newSqueal.channels) {
-        for (let j of channels) {
-          if (i === j.name) {
-            const id: unknown = newSqueal._id;
-            await addSquealToChannel(j.name, id as string);
+    const newSqueal: any = await squealModel.create({
+      body: squeal.body,
+      recipients: squeal.recipients,
+      date: new Date(),
+      category: squeal.category,
+      channels: squeal.channels,
+    });
+
+    if (!newSqueal)
+      return new Error(
+        ErrorDescriptions.cannot_create,
+        ErrorCodes.cannot_create
+      );
+    else {
+      if (newSqueal.channels.length < 1) {
+        return new Success(SuccessDescription.created, SuccessCode.created);
+      } else {
+        for (let i of newSqueal.channels) {
+          for (let j of channels) {
+            if (i === j.name) {
+              const id: unknown = newSqueal._id;
+              const ret: any = await addSquealToChannel(j.name, id as string);
+              return ret;
+            }
           }
         }
+        return new Success(SuccessDescription.created, SuccessCode.created);
       }
-    });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -151,14 +172,13 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
  */
 export async function postTimedSqueal(squeal: TimedSqueal) {
   try {
-    await timedSquealModel.create(squeal).then((newSqueal) => {
-      if (!newSqueal)
-        return new Error(
-          ErrorDescriptions.cannot_create,
-          ErrorCodes.cannot_create
-        );
-      else return new Success(SuccessDescription.created, SuccessCode.created);
-    });
+    const newSqueal: any = await timedSquealModel.create(squeal);
+    if (!newSqueal)
+      return new Error(
+        ErrorDescriptions.cannot_create,
+        ErrorCodes.cannot_create
+      );
+    else return new Success(SuccessDescription.created, SuccessCode.created);
   } catch (error) {
     console.log(error);
   }
@@ -171,10 +191,17 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
  */
 export async function deleteSqueal(id: string) {
   try {
-    await squealModel.findByIdAndDelete(id).then((document) => {
-      // TODO testare il valore di ritorno e fare error handling
-      console.log(document);
-    });
+    const deleted: any = await squealModel.deleteOne(
+      { _id: id },
+      { returnDocument: "after" }
+    );
+    // TODO testare il valore di ritorno e fare error handling
+    if (deleted.deletedCount < 1)
+      return new Error(
+        ErrorDescriptions.cannot_delete,
+        ErrorCodes.cannot_delete
+      );
+    else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error) {
     console.log(error);
   }
@@ -186,12 +213,18 @@ export async function deleteSqueal(id: string) {
  */
 export async function deleteTimedSqueal(id: string) {
   try {
-    await timedSquealModel
-      .findByIdAndDelete(id, { returnDocument: "after" })
-      .then((doc) => {
-        // TODO testare il valore di ritorno e fare error handling
-        console.log(doc);
-      });
+    const deleted: any = await timedSquealModel.deleteOne(
+      { _id: id },
+      {
+        returnDocument: "after",
+      }
+    );
+    if (deleted.deletedCount < 1)
+      return new Error(
+        ErrorDescriptions.cannot_delete,
+        ErrorCodes.cannot_delete
+      );
+    else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error) {
     console.log(error);
   }
