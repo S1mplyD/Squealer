@@ -5,8 +5,9 @@ import session from "express-session";
 import mongoose from "mongoose";
 import passport = require("passport");
 import path from "path";
-import { router } from "./backend/routes/authentication";
+import { router as authRoute } from "./backend/routes/authentication";
 import { startAllTimer } from "./backend/util/timers";
+import { router as channelRoute } from "./backend/routes/channels";
 
 config();
 
@@ -31,13 +32,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api", router);
+app.use("/api/auth", authRoute);
+app.use("/api/channels", channelRoute);
+
 mongoose.set("strictQuery", false);
-mongoose.connect(uri).then(() => {
+mongoose.connect(uri).then(async () => {
   console.log("connected to mongoose");
-  startAllTimer().then(() => {
-    console.log("All timer started");
-  });
+  const ret: any = await startAllTimer();
+  console.log(ret);
 });
 
 app.listen(port, () => {
