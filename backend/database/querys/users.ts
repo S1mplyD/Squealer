@@ -8,14 +8,10 @@ import { userModel } from "../models/users.model";
  */
 export async function getAllUsers() {
   try {
-    await userModel.find().then((users) => {
-      if (!users)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
-      else return users;
-    });
+    const users: any = await userModel.find();
+    if (users.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return users;
   } catch (error) {
     console.log(error);
   }
