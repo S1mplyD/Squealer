@@ -8,7 +8,6 @@ import { channelsModel } from "../models/channels.model";
  */
 export async function getAllChannels() {
   const channels: any = await channelsModel.find();
-  console.log(channels);
   if (channels.length < 1) {
     return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
   } else {
@@ -19,6 +18,7 @@ export async function getAllChannels() {
 /**
  * funzione che crea un canale
  * @param channelName nome del canale da creare
+ * TESTATA
  */
 export async function createChannel(channelName: string) {
   await channelsModel.create({ name: channelName }).then((newChannel) => {
@@ -41,28 +41,25 @@ export async function addSquealToChannel(
   channelName: string,
   squealId: string
 ) {
-  await channelsModel
-    .findOneAndUpdate(
-      { name: channelName },
-      { $push: { squeals: squealId } },
-      { returnDocument: "after" }
-    )
-    .then((updatedDoc) => {
-      if (!updatedDoc)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
-      else {
-        if (updatedDoc.squeals.includes(squealId))
-          return new Success(SuccessDescription.updated, SuccessCode.updated);
-        else
-          return new Error(
-            ErrorDescriptions.cannot_update,
-            ErrorCodes.cannot_update
-          );
-      }
-    });
+  const updatedDoc: any = await channelsModel.findOneAndUpdate(
+    { name: channelName },
+    { $push: { squeals: squealId } },
+    { returnDocument: "after" }
+  );
+
+  console.log(updatedDoc);
+
+  if (!updatedDoc)
+    return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+  else {
+    if (updatedDoc.squeals.includes(squealId))
+      return new Success(SuccessDescription.updated, SuccessCode.updated);
+    else
+      return new Error(
+        ErrorDescriptions.cannot_update,
+        ErrorCodes.cannot_update
+      );
+  }
 }
 
 /**
