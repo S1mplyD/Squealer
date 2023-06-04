@@ -13,10 +13,12 @@ export enum ErrorCodes {
   cannot_create = 1,
   non_existent = 2,
   cannot_update = 3,
+  no_timers = 4,
 }
 
 export enum ErrorDescriptions {
   cannot_create = "Cannot create!",
   non_existent = "Nothing found!",
   cannot_update = "Cannot update!",
+  no_timers = "No timer found!",
 }
