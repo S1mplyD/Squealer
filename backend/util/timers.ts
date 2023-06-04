@@ -3,6 +3,7 @@ import {
   postTimedSqueal,
   setSquealInterval,
 } from "../database/querys/squeals";
+import { ErrorCodes, ErrorDescriptions, Error } from "./errors";
 import { TimedSqueal } from "./types";
 
 /**
@@ -10,9 +11,11 @@ import { TimedSqueal } from "./types";
  */
 export async function startAllTimer() {
   const squeals: any = await getAllTimers();
-  for (let i of squeals) {
-    await startTimer(i as TimedSqueal);
-  }
+  if (!squeals.code) {
+    for (let i of squeals) {
+      await startTimer(i as TimedSqueal);
+    }
+  } else return new Error(ErrorDescriptions.no_timers, ErrorCodes.no_timers);
 }
 
 /**
