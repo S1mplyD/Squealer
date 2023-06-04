@@ -22,6 +22,7 @@ export async function getAllChannels() {
  */
 export async function createChannel(channelName: string) {
   await channelsModel.create({ name: channelName }).then((newChannel) => {
+    console.log(newChannel);
     if (!newChannel)
       return new Error(
         ErrorDescriptions.cannot_create,
@@ -62,4 +63,21 @@ export async function addSquealToChannel(
           );
       }
     });
+}
+
+/**
+ * funzione che elimina un canale
+ * @param name nome del canale
+ * TESTATA
+ */
+export async function deleteChannel(name: string) {
+  const deleted: any = await channelsModel.deleteOne(
+    { name: name },
+    { returnDocument: "after" }
+  );
+  if (deleted.deletedCount == 0) {
+    return new Error(ErrorDescriptions.cannot_delete, ErrorCodes.cannot_delete);
+  } else {
+    return new Success(SuccessDescription.removed, SuccessCode.removed);
+  }
 }
