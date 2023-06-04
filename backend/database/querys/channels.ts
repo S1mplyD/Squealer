@@ -1,18 +1,21 @@
-import { ObjectId } from "mongodb";
 import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { channelsModel } from "../models/channels.model";
 
 /**
  * funzione che ritorna tutti i canali
+ * TESTATA
  */
 export async function getAllChannels() {
-  await channelsModel.find().then((channels) => {
-    if (!channels)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return channels;
-  });
+  const channels: any = await channelsModel.find();
+  console.log(channels);
+  if (channels.length < 1) {
+    return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+  } else {
+    return channels;
+  }
 }
+
 /**
  * funzione che crea un canale
  * @param channelName nome del canale da creare
