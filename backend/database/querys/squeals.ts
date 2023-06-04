@@ -12,14 +12,10 @@ import { addSquealToChannel, getAllChannels } from "./channels";
  */
 export async function getAllSqueals() {
   try {
-    await squealModel.find().then((squeals) => {
-      if (!squeals)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
-      else return squeals;
-    });
+    const squeals: any = await squealModel.find();
+    if (squeals.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squeals;
   } catch (error) {
     console.log(error);
   }
@@ -31,14 +27,10 @@ export async function getAllSqueals() {
  */
 export async function getAllTimers() {
   try {
-    await timedSquealModel.find().then((timedSqueals) => {
-      if (!timedSqueals)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
-      else return timedSqueals;
-    });
+    const timedSqueals: any = await timedSquealModel.find();
+    if (timedSqueals.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return timedSqueals as TimedSqueal;
   } catch (error) {
     console.log(error);
   }
