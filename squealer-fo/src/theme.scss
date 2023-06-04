@@ -1,0 +1,50 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+$theme-squealer: (
+  50 : #333,
+  100 : #8500ad,
+  200 : #8500ad,
+  300 : #8500ad,
+  400 : #8500ad,
+  500 : #8500ad,
+  600 : #8500ad,
+  700 : #8500ad,
+  800 : #8500ad,
+  900 : #8500ad,
+  A100 : #333,
+  A200 : #ffa4a4,
+  A400 : #ff7171,
+  A700 : #ff5858,
+  contrast: (
+      50 : #000000,
+      100 : #000000,
+      200 : #000000,
+      300 : #333,
+      400 : #333,
+      500 : #333,
+      600 : #333,
+      700 : #333,
+      800 : #333,
+      900 : #333,
+      A100 : #000000,
+      A200 : #000000,
+      A400 : #000000,
+      A700 : #000000,
+  )
+);
+
+$my-primary: mat.define-palette($theme-squealer);
+$my-accent: mat.define-palette($theme-squealer, A200, A100, A400);
+
+$my-theme: mat.define-light-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+ ),
+ typography: mat.define-typography-config(
+    $font-family: serif,
+  )
+));
+
+@include mat.all-component-themes($my-theme);
