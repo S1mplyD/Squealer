@@ -2,6 +2,9 @@ import nodemailer from "nodemailer";
 import { config } from "dotenv";
 config();
 
+/**
+ * transporter con i dati del servizio utilizzato per la mail
+ */
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -10,6 +13,11 @@ var transporter = nodemailer.createTransport({
   },
 });
 
+/**
+ * funzione che invia un token randomico per email e permette il reset della password
+ * @param token token random per il reset della password
+ * @param mail mail dell'utente
+ */
 export async function sendMail(token: string, mail: string) {
   let mailOptions = {
     from: "squealer@noreply.com",
