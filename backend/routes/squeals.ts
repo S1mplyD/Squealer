@@ -28,9 +28,11 @@ router
    * POST
    * Pubblica un nuovo squeal
    */
+  // TODO immagine
   .post(async (req, res) => {
     try {
-      await postSqueal(req.body);
+      const ret: any = await postSqueal(req.body);
+      res.send(ret);
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +43,9 @@ router
    */
   .delete(async (req, res) => {
     try {
-      await deleteSqueal(req.query.id as string);
+      await deleteSqueal(req.query.id as string).then((ret) => {
+        res.send(ret);
+      });
     } catch (error) {
       console.log(error);
     }
