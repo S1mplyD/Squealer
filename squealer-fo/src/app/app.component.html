@@ -43,8 +43,22 @@
         </span>
       </mat-nav-list>
     </mat-sidenav>
+    <mat-sidenav-content fxFlex="100" fxLayout="row">
+      <mat-card fxLayout="column" fxFlex class="mainContent">
+        <mat-card-content fxLayout="column" fxFlex>
+          <div class="mainContentBody"
+            [ngStyle]="{'width.px': screenWidth, 'min-width.px': screenWidth, 'max-width.px': screenWidth}">
+            <router-outlet></router-outlet>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-sidenav-content>
   </mat-sidenav-container>
-  <router-outlet></router-outlet>
+  <mat-toolbar fxLayout="row" ngClass-xs="footerToolbarXs footerToolbarTextXs" ngClass="footerToolbar footerToolbarText"
+    color="primary">
+    Squealer &copy; &nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" style="color: white;">Squealer Inc.</a>
+  </mat-toolbar>
+
 
 </div>
 

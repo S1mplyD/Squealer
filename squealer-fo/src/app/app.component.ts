@@ -14,7 +14,7 @@ export class AppComponent implements OnDestroy{
   showFiller = false;
   httpError!: HttpErrorResponse;
   mobileQuery: MediaQueryList;
-
+  screenWidth!: number;
   menu: NavItem [] = [
     {
       displayName: 'Home',
