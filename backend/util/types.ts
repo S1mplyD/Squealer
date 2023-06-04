@@ -2,7 +2,7 @@
 export type Squeal = {
   body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
   recipients: string[]; //Destinatari (individuo, canale o keyword)
-  date: Date; //Data e ora messaggio
+  date: Date; //Data e ora messaggio (creata in automatico)
   positiveReactions: number | undefined;
   negativeReactions: number | undefined;
   category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
