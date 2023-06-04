@@ -8,6 +8,7 @@ import path from "path";
 import { router as authRoute } from "./backend/routes/authentication";
 import { startAllTimer } from "./backend/util/timers";
 import { router as channelRoute } from "./backend/routes/channels";
+import { router as squealsRoute } from "./backend/routes/squeals";
 
 config();
 
@@ -34,6 +35,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoute);
 app.use("/api/channels", channelRoute);
+app.use("/api/squeals", squealsRoute);
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
