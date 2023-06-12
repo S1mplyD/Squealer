@@ -46,9 +46,6 @@ export async function addSquealToChannel(
     { $push: { squeals: squealId } },
     { returnDocument: "after" }
   );
-
-  console.log(updatedDoc);
-
   if (!updatedDoc)
     return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
   else {
