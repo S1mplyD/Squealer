@@ -167,7 +167,7 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
 }
 
 /**
- * funzione che crea uno squeal temporizzato
+ * funzione che crea uno squeal temporizzato (per farlo partire usare la funzione apposita)
  * @param squeal squeal temporizzato
  */
 export async function postTimedSqueal(squeal: TimedSqueal) {
