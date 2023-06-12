@@ -11,6 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/S1mplyD/Squealer.git"
   },
+  "engines": {
+    "node": "17.5.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
