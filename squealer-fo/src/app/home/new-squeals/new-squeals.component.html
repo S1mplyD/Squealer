@@ -1,0 +1,48 @@
+
+<div class="feed-container">
+  <h2>Squealer Feed</h2>
+
+  <div class="login" *ngIf="!isLoggedIn">
+    <button mat-raised-button color="primary" (click)="login()">Login</button>
+    <p *ngIf="!isLoggedIn">Please login to add a post.</p>
+  </div>
+
+  <div  *ngFor="let squeal of squeals">
+    <mat-card id="squeal">
+      <mat-card-header>
+        <div mat-card-avatar><img width="40" src="../assets/1511304664.png" /></div>
+        <mat-card-title class="squealTitle">{{ squeal.username }}</mat-card-title>
+        <br>
+        <mat-card-subtitle class="squealText">{{ formatDate(squeal.timestamp) }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="squealText">{{ squeal.content }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <button mat-fab color="primary" class="add-button" (click)="openPostForm()" *ngIf="isLoggedIn">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <div class="overlay" *ngIf="isPostFormOpen">
+    <div class="post-form">
+      <h3>Add a New Post</h3>
+      <form (ngSubmit)="addPost()" #tweetForm="ngForm">
+        <mat-form-field appearance="fill">
+          <mat-label>Enter Post Content</mat-label>
+          <input matInput name="content" [(ngModel)]="newSqueal.content" required>
+        </mat-form-field>
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit">Add Post</button>
+          <button mat-raised-button color="warn" (click)="closePostForm()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</div>
+
+
+

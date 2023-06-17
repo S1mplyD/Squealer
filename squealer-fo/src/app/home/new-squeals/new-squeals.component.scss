@@ -1,0 +1,64 @@
+#squeal {
+  margin-bottom: 20px;
+  background-color: #3d0050;
+}
+.squealTitle {
+  color: white;
+  font-size: xx-large;
+}
+.squealText {
+  color: white;
+}
+
+form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.feed-container {
+  margin: 0 auto;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post {
+  margin-bottom: 10px;
+}
+
+.new-post {
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.login {
+  margin-top: 20px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+
+.add-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color:rgb(179, 33, 184);
+}
