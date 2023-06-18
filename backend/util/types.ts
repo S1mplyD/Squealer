@@ -13,6 +13,33 @@ export type Squeal = {
   _id: string;
 };
 
+export type SquealGeo = {
+  lat: string;
+  lng: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  criticalMass?: number;
+  visual?: number;
+  _id: string;
+};
+
+export type SquealMedia = {
+  body: string;
+  type: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  criticalMass?: number;
+  visual?: number;
+};
+
 // nuovo tipo per squeal temporizzati
 export type TimedSqueal = {
   body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
