@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Document } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
 interface SquealGeo {
   body: string[];
@@ -28,6 +28,9 @@ const squealGeoSchema = new Schema<SquealGeoDocument>({
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
 });
 
-const squealModel = model<SquealGeoDocument>("squealGeoData", squealGeoSchema);
+const squealGeoModel = model<SquealGeoDocument>(
+  "squealGeoData",
+  squealGeoSchema
+);
 
-export default squealModel;
+export default squealGeoModel;

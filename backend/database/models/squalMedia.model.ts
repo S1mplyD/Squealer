@@ -1,6 +1,21 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const squealMediaSchema = new Schema(
+interface SquealMedia {
+  body: string;
+  type: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  criticalMass?: number;
+  visual?: number;
+}
+
+interface SquealMediaDocument extends SquealMedia, Document {}
+
+const squealMediaSchema = new Schema<SquealMediaDocument>(
   {
     //Visualizzabili
     body: { type: String, required: true }, //Corpo del messaggio (url a immagine o video)
@@ -19,4 +34,9 @@ const squealMediaSchema = new Schema(
   { collection: "squealMediaData" }
 );
 
-export const squealModel = model("squealMediaData", squealMediaSchema);
+const squealMediaModel = model<SquealMediaDocument>(
+  "squealMediaData",
+  squealMediaSchema
+);
+
+export default squealMediaModel;

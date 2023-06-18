@@ -1,11 +1,17 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const channelsSchema = new Schema(
-  {
-    name: { type: String, required: true, unique: true }, //Nome del canale (§canale, §CANALE, #keyword)
-    squeals: { type: [String] }, //id dei messaggi con destinatario il canale
-  },
-  { collection: "channelsData" }
-);
+interface Channel {
+  name: string;
+  squeals?: string;
+}
 
-export const channelsModel = model("channelsData", channelsSchema);
+interface ChannelDocument extends Channel, Document {}
+
+const channelsSchema = new Schema<ChannelDocument>({
+  name: { type: String, required: true, unique: true }, //Nome del canale (§canale, §CANALE, #keyword)
+  squeals: { type: [String] }, //id dei messaggi con destinatario il canale
+});
+
+const channelsModel = model<ChannelDocument>("channelsData", channelsSchema);
+
+export default channelsModel;
