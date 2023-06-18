@@ -3,7 +3,12 @@ import {
   deleteSqueal,
   getAllSqueals,
   getSquealsByRecipients,
-  postSqueal,
+  postTextSqueal,
+  getAllTimers,
+  getMediaSqueals,
+  getTextSqueals,
+  getGeoSqueals,
+  postGeoSqueal,
 } from "../database/querys/squeals";
 import express from "express";
 import { startTimer } from "../util/timers";
@@ -25,19 +30,6 @@ router
     }
   })
   /**
-   * POST
-   * Pubblica un nuovo squeal
-   */
-  // TODO immagine
-  .post(async (req, res) => {
-    try {
-      const ret: any = await postSqueal(req.body);
-      res.send(ret);
-    } catch (error) {
-      console.log(error);
-    }
-  })
-  /**
    * DELETE
    * Elimina uno squeal
    */
@@ -46,6 +38,57 @@ router
       await deleteSqueal(req.query.id as string).then((ret) => {
         res.send(ret);
       });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+router
+  .route("/media")
+  .get(async (req, res) => {
+    try {
+      const squeals: any = await getMediaSqueals();
+      res.send(squeals);
+    } catch (error) {
+      res.send(error);
+    }
+  })
+  //TODO
+  .post(async (req, res) => {});
+
+router
+  .route("/text")
+  .get(async (req, res) => {
+    try {
+      const squeals: any = await getTextSqueals();
+      res.send(squeals);
+    } catch (error) {
+      res.send(error);
+    }
+  })
+  .post(async (req, res) => {
+    try {
+      const ret: any = await postTextSqueal(req.body);
+      res.send(ret);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+router
+  .route("/geo")
+  .get(async (req, res) => {
+    try {
+      const squeals: any = await getGeoSqueals();
+      res.send(squeals);
+    } catch (error) {
+      res.send(error);
+    }
+  })
+  .post(async (req, res) => {
+    try {
+      const ret: any = await postGeoSqueal(req.body);
+      res.send(ret);
     } catch (error) {
       console.log(error);
     }
@@ -83,6 +126,15 @@ router
 
 router
   .route("/timed")
+  .get(async (req, res) => {
+    try {
+      const timedSqueals: any = await getAllTimers();
+      res.send(timedSqueals);
+    } catch (error: any) {
+      console.log({ errorName: error.name, errorDescription: error.message });
+      res.send({ errorName: error.name, errorDescription: error.message });
+    }
+  })
   /**
    * POST
    * aggiunge uno squeal temporizzato
