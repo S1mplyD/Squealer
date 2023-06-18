@@ -1,6 +1,6 @@
 import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
-import { channelsModel } from "../models/channels.model";
+import channelsModel from "../models/channels.model";
 
 /**
  * funzione che ritorna tutti i canali
@@ -21,15 +21,10 @@ export async function getAllChannels() {
  * TESTATA
  */
 export async function createChannel(channelName: string) {
-  await channelsModel.create({ name: channelName }).then((newChannel) => {
-    console.log(newChannel);
-    if (!newChannel)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
-      );
-    else return new Success(SuccessDescription.created, SuccessCode.created);
-  });
+  const newChannel = await channelsModel.create({ name: channelName });
+  if (!newChannel)
+    return new Error(ErrorDescriptions.cannot_create, ErrorCodes.cannot_create);
+  else return new Success(SuccessDescription.created, SuccessCode.created);
 }
 
 /**
