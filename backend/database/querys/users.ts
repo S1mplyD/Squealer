@@ -1,7 +1,7 @@
 import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { User } from "../../util/types";
-import { userModel } from "../models/users.model";
+import userModel from "../models/users.model";
 
 /**
  * Ritorna tutti gli utenti

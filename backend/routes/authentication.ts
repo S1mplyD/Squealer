@@ -1,7 +1,7 @@
 import GoogleStrategy from "passport-google-oauth20";
 import LocalStrategy from "passport-local";
 import passport = require("passport");
-import { userModel } from "../database/models/users.model";
+import userModel from "../database/models/users.model";
 import {
   createDefaultUser,
   createUserUsingGoogle,
@@ -120,7 +120,7 @@ router.post("/register", passport.authenticate("local-signup"), (req, res) => {
 });
 
 passport.deserializeUser((id, done) => {
-  userModel.findById(id).then((user) => {
+  userModel.findById(id).then((user: any) => {
     done(null, user);
   });
 });
