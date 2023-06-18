@@ -1,7 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 
 interface SquealGeo {
-  body: string[];
+  lat: string;
+  lng: string;
   recipients: string[];
   date: Date;
   positiveReactions?: number;
@@ -16,7 +17,8 @@ interface SquealGeoDocument extends SquealGeo, Document {}
 
 const squealGeoSchema = new Schema<SquealGeoDocument>({
   //Visualizzabili
-  body: { type: [String], required: true }, //Corpo del messaggio (coordinate [lat,lng]) / Limitare a 2 elementi l'array
+  lat: { type: String, required: true }, //Corpo del messaggio (coordinate [lat,lng]) / Limitare a 2 elementi l'array
+  lng: { type: String, required: true },
   recipients: { type: [String], required: true }, //Destinatari (individuo, canale o keyword)
   date: { type: Date, required: true }, //Data e ora messaggio
   positiveReactions: { type: Number, default: 0 },
