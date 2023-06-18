@@ -2,10 +2,11 @@
   "name": "squealer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "dist/index.ts",
   "scripts": {
+    "dev": "",
     "api": "nodemon ./index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,8 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "randomstring": "^1.2.3"
+    "randomstring": "^1.2.3",
+    "vite": "^4.3.9"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
