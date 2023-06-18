@@ -1,7 +1,15 @@
-import { squealModel } from "../models/squeals.model";
-import { Squeal, TimedSqueal, Channel } from "../../util/types";
-import { timedSquealModel } from "../models/timedSqueals.model";
-import { channelsModel } from "../models/channels.model";
+import squealModel from "../models/squeals.model";
+import squealGeoModel from "../models/squealGeo.model";
+import squealMediaModel from "../models/squalMedia.model";
+import {
+  Squeal,
+  TimedSqueal,
+  Channel,
+  SquealGeo,
+  SquealMedia,
+} from "../../util/types";
+import timedSquealModel from "../models/timedSqueals.model";
+import channelsModel from "../models/channels.model";
 import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
@@ -13,7 +21,43 @@ import { addSquealToChannel, getAllChannels } from "./channels";
  */
 export async function getAllSqueals() {
   try {
-    const squeals: any = await squealModel.find();
+    const squealsText: any[] = await squealModel.find();
+    const squealsGeo: any[] = await squealGeoModel.find();
+    const squealsMedia: any[] = await squealMediaModel.find();
+    const squeals = squealsText.concat(squealsGeo, squealsMedia);
+    if (squeals.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squeals;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getTextSqueals() {
+  try {
+    const squeals: any[] = await squealModel.find();
+    if (squeals.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squeals;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getMediaSqueals() {
+  try {
+    const squeals: any[] = await squealMediaModel.find();
+    if (squeals.length < 1)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else return squeals;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getGeoSqueals() {
+  try {
+    const squeals: any[] = await squealGeoModel.find();
     if (squeals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return squeals;
@@ -33,8 +77,8 @@ export async function getAllTimers() {
     if (timedSqueals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return timedSqueals as TimedSqueal;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -91,13 +135,90 @@ export async function getSquealsByChannel(channels: string[]) {
  * @param squeal oggetto contenente i parametri dello squeal
  * @returns eventuali errori
  */
-// TODO aggiungere squeals ai channel
-export async function postSqueal(squeal: Squeal) {
+export async function postTextSqueal(squeal: Squeal) {
   try {
     const channels: any = await getAllChannels();
 
     const newSqueal: any = await squealModel.create({
       body: squeal.body,
+      recipients: squeal.recipients,
+      date: new Date(),
+      category: squeal.category,
+      channels: squeal.channels,
+    });
+
+    if (!newSqueal)
+      return new Error(
+        ErrorDescriptions.cannot_create,
+        ErrorCodes.cannot_create
+      );
+    else {
+      if (newSqueal.channels.length < 1) {
+        return new Success(SuccessDescription.created, SuccessCode.created);
+      } else {
+        for (let i of newSqueal.channels) {
+          for (let j of channels) {
+            if (i === j.name) {
+              const id: unknown = newSqueal._id;
+              const ret: any = await addSquealToChannel(j.name, id as string);
+              return ret;
+            }
+          }
+        }
+        return new Success(SuccessDescription.created, SuccessCode.created);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function postGeoSqueal(squeal: SquealGeo) {
+  try {
+    const channels: any = await getAllChannels();
+
+    const newSqueal: any = await squealGeoModel.create({
+      lat: squeal.lat,
+      lng: squeal.lng,
+      recipients: squeal.recipients,
+      date: new Date(),
+      category: squeal.category,
+      channels: squeal.channels,
+    });
+
+    if (!newSqueal)
+      return new Error(
+        ErrorDescriptions.cannot_create,
+        ErrorCodes.cannot_create
+      );
+    else {
+      if (newSqueal.channels.length < 1) {
+        return new Success(SuccessDescription.created, SuccessCode.created);
+      } else {
+        for (let i of newSqueal.channels) {
+          for (let j of channels) {
+            if (i === j.name) {
+              const id: unknown = newSqueal._id;
+              const ret: any = await addSquealToChannel(j.name, id as string);
+              return ret;
+            }
+          }
+        }
+        return new Success(SuccessDescription.created, SuccessCode.created);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//TODO
+export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
+  try {
+    const channels: any = await getAllChannels();
+
+    const newSqueal: any = await squealMediaModel.create({
+      body: filename,
       recipients: squeal.recipients,
       date: new Date(),
       category: squeal.category,
