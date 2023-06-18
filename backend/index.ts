@@ -5,10 +5,10 @@ import session from "express-session";
 import mongoose from "mongoose";
 import passport = require("passport");
 import path from "path";
-import { router as authRoute } from "./backend/routes/authentication";
-import { startAllTimer } from "./backend/util/timers";
-import { router as channelRoute } from "./backend/routes/channels";
-import { router as squealsRoute } from "./backend/routes/squeals";
+import { router as authRoute } from "./routes/authentication";
+import { startAllTimer } from "./util/timers";
+import { router as channelRoute } from "./routes/channels";
+import { router as squealsRoute } from "./routes/squeals";
 
 config();
 
