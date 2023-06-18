@@ -33,6 +33,7 @@ router
   .post(async (req, res) => {
     try {
       await createChannel(req.query.name as string).then((ret) => {
+        console.log(ret);
         res.send(ret);
       });
     } catch (error: any) {
@@ -52,6 +53,25 @@ router
       });
     } catch (error: any) {
       console.log({ errorName: error.name, errorDescription: error.message });
+      res.send({ errorName: error.name, errorDescription: error.message });
+    }
+  });
+
+router
+  .route("/addSqueal")
+  /**
+   * POST
+   * aggiungi uno squeal ad un canale
+   * TESTATA
+   */
+  .post(async (req, res) => {
+    try {
+      await addSquealToChannel(req.body.channelName!, req.body.squealId!).then(
+        (ret) => {
+          res.send(ret);
+        }
+      );
+    } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   });
