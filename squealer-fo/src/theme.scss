@@ -13,9 +13,9 @@ $theme-squealer: (
   800 : #3d0050,
   900 : #3d0050,
   A100 : #333,
-  A200 : #ffa4a4,
-  A400 : #ff7171,
-  A700 : #ff5858,
+  A200 : #333,
+  A400 : #333,
+  A700 : #333,
   contrast: (
       50 : #000000,
       100 : #000000,
@@ -35,7 +35,7 @@ $theme-squealer: (
 );
 
 $my-primary: mat.define-palette($theme-squealer);
-$my-accent: mat.define-palette($theme-squealer, A200, A100, A400);
+$my-accent: mat.define-palette($theme-squealer, 50);
 
 $my-theme: mat.define-light-theme((
  color: (

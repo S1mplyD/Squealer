@@ -35,7 +35,7 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { id: 0, username: '', content: '', timestamp: new Date() };;
+    this.newSqueal = { id: 0, username: '', content: '', timestamp: new Date() };
   }
 
   login() {
@@ -54,5 +54,6 @@ export class NewSquealsComponent implements OnInit {
 
     this.squeals.unshift(newSqueal); // Add the new post at the beginning of the array
     this.newSqueal.content = ''; // Clear the form field
+    this.isPostFormOpen = false;
   }
 }

@@ -10,28 +10,29 @@
   color: white;
 }
 
-form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.full-width {
+  width: 100%;
+  background: none !important;
+  color: white;
 }
 
 .feed-container {
   margin: 0 auto;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.posts {
+  margin: auto;
+  height:600px;
+  width: 50%;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
+
+.posts::-webkit-scrollbar {
+  display: none;
+}
+
 
 .post {
   margin-bottom: 10px;
@@ -50,15 +51,4 @@ form {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
-}
-
-
-.add-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color:rgb(179, 33, 184);
 }
