@@ -9,6 +9,7 @@ import {
   getTextSqueals,
   getGeoSqueals,
   postGeoSqueal,
+  postMediaSqueal,
 } from "../database/querys/squeals";
 import express from "express";
 import { startTimer } from "../util/timers";
@@ -54,7 +55,17 @@ router
     }
   })
   //TODO
-  .post(async (req, res) => {});
+  .post(async (req, res) => {
+    try {
+      const newSqueal: any = await postMediaSqueal(
+        req.body,
+        req.query.filename as string
+      );
+      res.send(newSqueal);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
 router
   .route("/text")
@@ -148,4 +159,6 @@ router
     } catch (error) {
       console.log(error);
     }
-  });
+  })
+  //TODO
+  .delete();
