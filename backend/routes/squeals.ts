@@ -46,6 +46,10 @@ router
 
 router
   .route("/media")
+  /**
+   * GET
+   * chiamata che ritorna tutti i media squeal
+   */
   .get(async (req, res) => {
     try {
       const squeals: any = await getMediaSqueals();
@@ -69,6 +73,10 @@ router
 
 router
   .route("/text")
+  /**
+   * GET
+   * chiamata che ritorna tutti i text squeals
+   */
   .get(async (req, res) => {
     try {
       const squeals: any = await getTextSqueals();
@@ -77,6 +85,10 @@ router
       res.send(error);
     }
   })
+  /**
+   * POST
+   * chiamata per creare un text squeal
+   */
   .post(async (req, res) => {
     try {
       const ret: any = await postTextSqueal(req.body);
@@ -88,6 +100,10 @@ router
 
 router
   .route("/geo")
+  /**
+   * GET
+   * chiamata che ritorna tutti i geo squeals
+   */
   .get(async (req, res) => {
     try {
       const squeals: any = await getGeoSqueals();
@@ -96,6 +112,10 @@ router
       res.send(error);
     }
   })
+  /**
+   * POST
+   * chiamata per creare un geo squeal
+   */
   .post(async (req, res) => {
     try {
       const ret: any = await postGeoSqueal(req.body);
@@ -137,6 +157,10 @@ router
 
 router
   .route("/timed")
+  /**
+   * GET
+   * chiamata che ritorna tutti gli squeal temporizzati
+   */
   .get(async (req, res) => {
     try {
       const timedSqueals: any = await getAllTimers();
@@ -161,4 +185,4 @@ router
     }
   })
   //TODO
-  .delete();
+  .delete(async (req, res) => {});

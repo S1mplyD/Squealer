@@ -49,6 +49,10 @@ export async function deleteSqueal(id: string) {
   }
 }
 
+/**
+ * funzione che ritorna tutti i media squeals
+ * @returns un array di media squeals o un errore
+ */
 export async function getMediaSqueals() {
   try {
     const squeals: any[] = await squealMediaModel.find();
