@@ -1,0 +1,14 @@
+<h1>Followed Accounts</h1>
+
+<div class="account-list">
+  <div class="account-card" *ngFor="let account of accounts">
+    <mat-card style="background-color: #3d0050;">
+      <mat-card-header>
+        <div mat-card-avatar class="profile-image"><img [src]="account.profileImage" [alt]="" /></div>
+        <mat-card-title style="color: white;"><h3>{{ account.name }}</h3></mat-card-title>
+        <br>
+        <mat-card-subtitle style="color: white;"><p>@{{ account.username }}</p></mat-card-subtitle>
+      </mat-card-header>
+     </mat-card>
+  </div>
+</div>

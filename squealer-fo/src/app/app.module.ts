@@ -16,12 +16,14 @@ import { NewSquealsComponent } from './home/new-squeals/new-squeals.component';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { AccountListComponent } from './followed-accounts/account-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    NewSquealsComponent
+    NewSquealsComponent,
+    AccountListComponent
   ],
   imports: [
     MatTabsModule,
