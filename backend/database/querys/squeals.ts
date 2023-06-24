@@ -1,7 +1,13 @@
 import squealModel from "../models/squeals.model";
 import squealGeoModel from "../models/squealGeo.model";
 import squealMediaModel from "../models/squalMedia.model";
-import { Squeal, TimedSqueal, SquealGeo, SquealMedia } from "../../util/types";
+import {
+  Squeal,
+  TimedSqueal,
+  SquealGeo,
+  SquealMedia,
+  Error as ErrorType,
+} from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
@@ -10,14 +16,19 @@ import { addSquealToChannel, getAllChannels } from "./channels";
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
  * @returns tutti gli squeals
- * TESTATA
  */
 export async function getAllSqueals() {
   try {
-    const squealsText: any[] = await squealModel.find();
-    const squealsGeo: any[] = await squealGeoModel.find();
-    const squealsMedia: any[] = await squealMediaModel.find();
-    const squeals = squealsText.concat(squealsGeo, squealsMedia);
+    const squealsText: Squeal[] = await squealModel.find();
+    const squealsGeo: SquealGeo[] = await squealGeoModel.find();
+    const squealsMedia: SquealMedia[] = await squealMediaModel.find();
+    const timedSqueal: TimedSqueal[] = await timedSquealModel.find();
+    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [
+      ...squealsText,
+      ...squealsGeo,
+      ...squealsMedia,
+      ...timedSqueal,
+    ];
     if (squeals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return squeals;
@@ -37,7 +48,6 @@ export async function deleteSqueal(id: string) {
       { _id: id },
       { returnDocument: "after" }
     );
-    // TODO testare il valore di ritorno e fare error handling
     if (deleted.deletedCount < 1)
       return new Error(
         ErrorDescriptions.cannot_delete,
@@ -212,44 +222,72 @@ export async function postGeoSqueal(squeal: SquealGeo) {
  * @param recipients destinatari da ricercare
  * @returns squeals appartenenti ai destinatari scelti
  */
-export async function getSquealsByRecipients(recipients: string[]) {
+export async function getSquealsByRecipients(recipient: string) {
   try {
-    const squeals: any = await squealModel.find().in(recipients);
-    const timedSqueals: any = await timedSquealModel.find().in(recipients);
-    let squealArray: any[] = [];
-    for (let i of squeals) {
-      squealArray.push(i);
+    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
+      (await getAllSqueals()) as (
+        | Squeal
+        | SquealGeo
+        | SquealMedia
+        | TimedSqueal
+      )[];
+    if (squeals instanceof Error) return Error;
+    else {
+      let squealArray: any[] = [];
+      //Controllo che il destinatario ricercato sia presente in uno squeal
+      for (let i of squeals) {
+        for (let j of i.recipients) {
+          if (j === recipient) {
+            squealArray.push(i);
+          }
+        }
+      }
+      if (squealArray.length < 1)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else return squealArray;
     }
-    for (let i of timedSqueals) {
-      squealArray.push(i);
-    }
-    if (squealArray.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return squealArray;
   } catch (error) {
     console.log(error);
   }
 }
 
 /**
- * funzione che ritorna tutti gli squeal appartenenti a certi canali
- * @param channels canali da ricercare
- * @returns squeals appartenenti ai canali scelti
+ * funzione che ritorna tutti gli squeal appartenenti ad un certo canale
+ * @param channel canale da ricercare
+ * @returns squeals appartenenti al canale scelto
  */
-export async function getSquealsByChannel(channels: string[]) {
+export async function getSquealsByChannel(channel: string) {
   try {
-    const squeals: any = await squealModel.find().in(channels);
-    const timedSqueals: any = await timedSquealModel.find().in(channels);
-    let squealArray: any[] = [];
-    for (let i of squeals) {
-      squealArray.push(i);
+    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
+      (await getAllSqueals()) as (
+        | Squeal
+        | SquealGeo
+        | SquealMedia
+        | TimedSqueal
+      )[];
+    if (squeals instanceof Error) return Error;
+    else {
+      let squealArray: any[] = [];
+      //Controllo che il destinatario ricercato sia presente in uno squeal
+      for (let i of squeals) {
+        if (i.channels) {
+          for (let j of i.channels) {
+            if (j === channel) {
+              squealArray.push(i);
+            }
+          }
+        }
+      }
+      if (squealArray.length < 1)
+        return new Error(
+          ErrorDescriptions.non_existent,
+          ErrorCodes.non_existent
+        );
+      else return squealArray;
     }
-    for (let i of timedSqueals) {
-      squealArray.push(i);
-    }
-    if (squealArray.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return squealArray;
   } catch (error) {
     console.log(error);
   }
@@ -262,10 +300,10 @@ export async function getSquealsByChannel(channels: string[]) {
  */
 export async function getAllTimers() {
   try {
-    const timedSqueals: any = await timedSquealModel.find();
+    const timedSqueals: TimedSqueal[] = await timedSquealModel.find();
     if (timedSqueals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return timedSqueals as TimedSqueal;
+    else return timedSqueals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
