@@ -1,3 +1,5 @@
+import { ErrorCodes, ErrorDescriptions } from "./errors";
+
 // nuovo tipo Squeal
 export type Squeal = {
   body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
@@ -81,4 +83,9 @@ export type Channel = {
   _id: string; // mongodb id
   name: string; // nome del canale
   squeals: string[]; // id degli squeals appartenenti al canale
+};
+
+export type Error = {
+  message: ErrorDescriptions;
+  code: ErrorCodes;
 };
