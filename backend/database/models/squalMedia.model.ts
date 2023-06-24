@@ -19,7 +19,6 @@ const squealMediaSchema = new Schema<SquealMediaDocument>(
   {
     //Visualizzabili
     body: { type: String, required: true }, //Corpo del messaggio (url a immagine o video)
-    // TODO funzione per distinguere tra immagine e video
     type: { type: String, required: true }, // Tipo del file (immagine/video)
     recipients: { type: [String], required: true }, //Destinatari (individuo, canale o keyword)
     date: { type: Date, required: true }, //Data e ora messaggio
