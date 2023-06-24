@@ -8,6 +8,9 @@ console.log(publicUploadPath);
 
 export const router = express.Router();
 
+/**
+ * Salva un file su disco con un nome casuale
+ */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, publicUploadPath);
@@ -27,6 +30,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+/**
+ * POST
+ * carica un media sul server e manda in response il nome del file caricato
+ */
 router.route("/media").post(upload.single("file"), (req, res) => {
   res.send(req.file?.filename);
 });
