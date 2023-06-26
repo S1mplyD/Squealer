@@ -2,7 +2,7 @@ import {
   getAllTimers,
   postTimedSqueal,
   setSquealInterval,
-} from "../database/querys/squeals";
+} from "../database/querys/timedSqueal";
 import { ErrorCodes, ErrorDescriptions, Error } from "./errors";
 import { TimedSqueal } from "./types";
 
@@ -35,6 +35,6 @@ export async function startTimer(squeal: TimedSqueal) {
  * funzione che ferma un post automatico
  * @param squeal squeal automatico da fermare
  */
-export async function stopTimer(squeal: any) {
+export async function stopTimer(squeal: TimedSqueal) {
   clearInterval(squeal.intervalId);
 }
