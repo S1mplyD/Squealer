@@ -15,11 +15,29 @@
                 <mat-icon>home</mat-icon>&nbsp;Homepage
               </button>
             </mat-list-item>
-            <mat-list-item>
-              <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']" (click)="menu.toggle()" style="color: white;">
-                <mat-icon>group</mat-icon>&nbsp;Followed Accounts
-              </button>
-            </mat-list-item>
+            <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" class="navBar"
+            style="width:100%;box-shadow: none;">
+              <mat-expansion-panel-header>Socials</mat-expansion-panel-header>
+              <mat-accordion>
+                <mat-list>
+                  <mat-list-item>
+                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']" (click)="menu.toggle()" style="color: white;">
+                      <mat-icon>group</mat-icon>&nbsp;Followed Accounts
+                    </button>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
+                      <mat-icon>public</mat-icon>&nbsp;Explore Squeals
+                    </button>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
+                      <mat-icon>whatshot</mat-icon>&nbsp;What's the best Post?
+                    </button>
+                  </mat-list-item>
+                </mat-list>
+              </mat-accordion>
+            </mat-expansion-panel>
           </mat-list>
         </mat-accordion>
       </mat-sidenav>

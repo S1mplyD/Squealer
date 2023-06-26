@@ -12,9 +12,9 @@
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p>Followers: {{ account.followerCount }}</p>
-      <p>Following: {{ account.followingCount }}</p>
-      <p>Joined: {{ formatDate(account.createdAt) }}</p>
+      <p><mat-icon>people_outline</mat-icon>&nbsp; Followers: {{ account.followerCount }}</p>
+      <p><mat-icon>people</mat-icon>&nbsp; Following: {{ account.followingCount }}</p>
+      <p><mat-icon>cake</mat-icon>&nbsp; Joined: {{ formatDate(account.createdAt) }}</p>
     </mat-card-content>
    </mat-card>
 
