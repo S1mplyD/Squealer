@@ -17,13 +17,15 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { AccountListComponent } from './followed-accounts/account-list.component';
+import { UserPageComponent } from './user-page/user-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     NewSquealsComponent,
-    AccountListComponent
+    AccountListComponent,
+    UserPageComponent
   ],
   imports: [
     MatTabsModule,

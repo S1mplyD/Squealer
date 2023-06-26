@@ -6,10 +6,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AccountListComponent } from './followed-accounts/account-list.component';
+import { UserPageComponent } from './user-page/user-page.component';
 AccountListComponent
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'following', component: AccountListComponent }
+  { path: 'following', component: AccountListComponent },
+  { path: 'following/1', component: UserPageComponent}
 ];
 
 @NgModule({

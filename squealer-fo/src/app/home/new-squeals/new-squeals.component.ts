@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Squeal } from './squeal.interface';
+import { Squeal } from 'app/interfaces/squeal.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
 

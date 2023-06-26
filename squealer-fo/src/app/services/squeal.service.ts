@@ -1,6 +1,6 @@
 // tweet.service.ts
 import { Injectable } from '@angular/core';
-import { Squeal } from 'app/home/new-squeals/squeal.interface';
+import { Squeal } from 'app/interfaces/squeal.interface';
 @Injectable({
   providedIn: 'root'
 })

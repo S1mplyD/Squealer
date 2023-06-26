@@ -1,0 +1,40 @@
+<div class="user-profile">
+  <mat-card style="background-color: #3d0050;">
+    <mat-card-header>
+      <div mat-card-avatar class="profile-image">
+        <img *ngIf="account.profileImage" [src]="account.profileImage" [alt]="'profile image of ' + account.name" />
+        <img *ngIf="!account.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + account.name + ', but it seems to not be working properly...'" />
+      </div>
+      <mat-card-title style="color: white;"><h3>{{ account.name }}</h3></mat-card-title>
+      <br>
+      <mat-card-subtitle>
+        <p style="color: white;">@{{ account.username }}</p>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Followers: {{ account.followerCount }}</p>
+      <p>Following: {{ account.followingCount }}</p>
+      <p>Joined: {{ formatDate(account.createdAt) }}</p>
+    </mat-card-content>
+   </mat-card>
+
+  <mat-tab-group mat-stretch-tabs [backgroundColor]="'primary'">
+    <mat-tab label="Recent Posts" aria-label="primary">
+      <div class="post-list">
+        <div class="post" *ngFor="let post of recentPosts">
+          <p>{{ post.content }}</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Tagged Answers" aria-label="primary">
+      <div class="answer-list">
+        <div class="answer" *ngFor="let answer of taggedPosts">
+          <p>{{ answer.content }}</p>
+          <p>@{{ account.username }}</p>
+          <p><small>{{ formatDate(answer.timestamp) }}</small></p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

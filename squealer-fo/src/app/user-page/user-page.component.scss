@@ -1,12 +1,6 @@
-.account-list {
-  display: flex;
-  flex-wrap: wrap;
+.user-profile {
+  margin: 20px;
   height: 800px;
-}
-
-#squeal {
-  margin-bottom: 20px;
-  background-color: #3d0050;
 }
 
 .account-card {
@@ -27,4 +21,16 @@
 .account-details {
   display: flex;
   flex-direction: column;
+}
+
+.post-list,
+.answer-list {
+  margin-top: 20px;
+}
+
+.post,
+.answer {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
 }
