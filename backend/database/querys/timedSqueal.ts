@@ -78,7 +78,6 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
  * funzione che cancella uno squeal temporizzato
  * @param id id dello squeal temporizzato
  */
-//TODO fermare il timer
 export async function deleteTimedSqueal(id: string) {
   try {
     const squeal: TimedSqueal | null = (await timedSquealModel.findById(

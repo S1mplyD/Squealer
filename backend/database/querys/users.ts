@@ -107,13 +107,19 @@ export async function updateUser(user: User) {
             ErrorCodes.non_existent
           );
         else {
-          //TODO utente non modificato e utente modificato
+          return new Success(SuccessDescription.updated, SuccessCode.updated);
         }
       });
   } catch (error) {
     console.log(error);
   }
 }
+
+//TODO
+export async function updateProfilePicture(filename: string) {}
+
+// TODO
+export async function deleteProfilePicture() {}
 
 /**
  * cancella l'account dell'utente

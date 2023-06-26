@@ -36,7 +36,10 @@ router
       console.log(error);
     }
   })
-  //TODO
+  /**
+   * DELETE
+   * elimina uno squeal temporizzato
+   */
   .delete(async (req, res) => {
     try {
       await deleteTimedSqueal(req.query.id as string);
