@@ -13,6 +13,7 @@ import { router as squealMediaRoute } from "./routes/squealMedia";
 import { router as squealGeoRoute } from "./routes/squealGeo";
 import { router as squealTimedRoute } from "./routes/timedSqueal";
 import { router as mediaRoute } from "./routes/media";
+import { Error } from "./util/types";
 
 config();
 
@@ -48,7 +49,7 @@ app.use("/api/media", mediaRoute);
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
   console.log("connected to mongoose");
-  const ret: any = await startAllTimer();
+  const ret: Error | undefined = await startAllTimer();
   console.log(ret);
 });
 
