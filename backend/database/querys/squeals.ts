@@ -12,6 +12,9 @@ import timedSquealModel from "../models/timedSqueals.model";
 import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
+import { stopTimer } from "../../util/timers";
+
+//FUNZIONI GLOBALI
 
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
@@ -37,82 +40,12 @@ export async function getAllSqueals() {
   }
 }
 
-/**
- * funzione che cancella uno squeal
- * @param id id dello squeal
- * @returns errori eventuali
- */
-export async function deleteSqueal(id: string) {
-  try {
-    const deleted: any = await squealModel.deleteOne(
-      { _id: id },
-      { returnDocument: "after" }
-    );
-    if (deleted.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
-  } catch (error) {
-    console.log(error);
-  }
-}
+//FUNZIONI TEXT
 
 /**
- * funzione che ritorna tutti i media squeals
- * @returns un array di media squeals o un errore
+ * funzione che ritorna tutti i text squeal
+ * @returns error o gli squeal text
  */
-export async function getMediaSqueals() {
-  try {
-    const squeals: any[] = await squealMediaModel.find();
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return squeals;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-//TODO
-export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
-  try {
-    const channels: any = await getAllChannels();
-
-    const newSqueal: any = await squealMediaModel.create({
-      body: filename,
-      recipients: squeal.recipients,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-    });
-
-    if (!newSqueal)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
-      );
-    else {
-      if (newSqueal.channels.length < 1) {
-        return new Success(SuccessDescription.created, SuccessCode.created);
-      } else {
-        for (let i of newSqueal.channels) {
-          for (let j of channels) {
-            if (i === j.name) {
-              const id: unknown = newSqueal._id;
-              const ret: any = await addSquealToChannel(j.name, id as string);
-              return ret;
-            }
-          }
-        }
-        return new Success(SuccessDescription.created, SuccessCode.created);
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export async function getTextSqueals() {
   try {
     const squeals: any[] = await squealModel.find();
@@ -167,51 +100,23 @@ export async function postTextSqueal(squeal: Squeal) {
   }
 }
 
-export async function getGeoSqueals() {
+/**
+ * funzione che cancella uno squeal
+ * @param id id dello squeal
+ * @returns errori eventuali
+ */
+export async function deleteTextSqueal(id: string) {
   try {
-    const squeals: any[] = await squealGeoModel.find();
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return squeals;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function postGeoSqueal(squeal: SquealGeo) {
-  try {
-    const channels: any = await getAllChannels();
-
-    const newSqueal: any = await squealGeoModel.create({
-      lat: squeal.lat,
-      lng: squeal.lng,
-      recipients: squeal.recipients,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-    });
-
-    if (!newSqueal)
+    const deleted: any = await squealModel.deleteOne(
+      { _id: id },
+      { returnDocument: "after" }
+    );
+    if (deleted.deletedCount < 1)
       return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
+        ErrorDescriptions.cannot_delete,
+        ErrorCodes.cannot_delete
       );
-    else {
-      if (newSqueal.channels.length < 1) {
-        return new Success(SuccessDescription.created, SuccessCode.created);
-      } else {
-        for (let i of newSqueal.channels) {
-          for (let j of channels) {
-            if (i === j.name) {
-              const id: unknown = newSqueal._id;
-              const ret: any = await addSquealToChannel(j.name, id as string);
-              return ret;
-            }
-          }
-        }
-        return new Success(SuccessDescription.created, SuccessCode.created);
-      }
-    }
+    else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error) {
     console.log(error);
   }
@@ -288,100 +193,6 @@ export async function getSquealsByChannel(channel: string) {
         );
       else return squealArray;
     }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-/**
- * funzione che ritorna tutti gli squeal temporizzati
- * @returns squeals temporizzati
- * TESTATA
- */
-export async function getAllTimers() {
-  try {
-    const timedSqueals: TimedSqueal[] = await timedSquealModel.find();
-    if (timedSqueals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
-    else return timedSqueals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
-}
-
-/**
- * inserisce l'id dell'interval al timedSqueal
- * @param intervalId id dell'intervallo
- */
-export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
-  try {
-    await timedSquealModel
-      .findByIdAndUpdate(
-        squeal._id,
-        {
-          intervalId: intervalId,
-        },
-        { returnDocument: "after" }
-      )
-      .then((newDocument) => {
-        if (!newDocument)
-          return new Error(
-            ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent
-          );
-        else {
-          if (intervalId === newDocument.intervalId) {
-            return new Success(SuccessDescription.updated, SuccessCode.updated);
-          } else {
-            return new Error(
-              ErrorDescriptions.cannot_update,
-              ErrorCodes.cannot_update
-            );
-          }
-        }
-      });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-/**
- * funzione che crea uno squeal temporizzato (per farlo partire usare la funzione apposita)
- * @param squeal squeal temporizzato
- */
-export async function postTimedSqueal(squeal: TimedSqueal) {
-  try {
-    const newSqueal: any = await timedSquealModel.create(squeal);
-    if (!newSqueal)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
-      );
-    else return new Success(SuccessDescription.created, SuccessCode.created);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-/**
- * funzione che cancella uno squeal temporizzato
- * @param id id dello squeal temporizzato
- */
-//TODO fermare il timer
-export async function deleteTimedSqueal(id: string) {
-  try {
-    const deleted: any = await timedSquealModel.deleteOne(
-      { _id: id },
-      {
-        returnDocument: "after",
-      }
-    );
-    if (deleted.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error) {
     console.log(error);
   }
