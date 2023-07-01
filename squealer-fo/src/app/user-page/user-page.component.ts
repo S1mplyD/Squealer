@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Account } from 'app/interfaces/account.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { Squeal } from 'app/interfaces/squeal.interface';
+import { ActivatedRoute } from '@angular/router';
+import { AccountService } from 'app/services/account.service';
 
 @Component({
   selector: 'app-user-page',
@@ -10,87 +12,46 @@ import { Squeal } from 'app/interfaces/squeal.interface';
   styleUrls: ['./user-page.component.scss'],
 })
 export class UserPageComponent implements OnInit {
-  account!: Account;
+  account: Account | undefined;
+  answerers!: Account[];
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
+  userName!: string;
 
   constructor(
     private squealService: SquealService,
-    private datePipe: DatePipe) {}
+    private datePipe: DatePipe,
+    public activeRoute: ActivatedRoute,
+    private accountService: AccountService) {}
 
   ngOnInit() {
-    // Simulate API or data retrieval
+    this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
     this.getAccountData();
     this.getRecentPosts();
     this.getTaggedAnswers();
   }
 
-  formatDate(date: Date): string | null{
+  formatDate(date: Date | undefined): string | null{
     return this.datePipe.transform(date, 'dd/MM/yyyy'); // Change the format pattern as per your requirement
   }
 
   getAccountData() {
-    // Replace this with your API or data retrieval logic
-    // Example: Fetch account data from an API
-    // this.accountService.getAccountData().subscribe((data) => {
-    //   this.account = data;
-    // });
-
-    // Mock data for demonstration purposes
-    this.account = {
-      id: 1,
-      name: 'John Doe',
-      username: 'johndoe',
-      profileImage: null,
-      followerCount: 100,
-      followingCount: 50,
-      createdAt: new Date('2023-06-17')
-    };
+    this.account = this.accountService.getSpecificAccount(this.userName);
   }
 
   getRecentPosts() {
-    // Replace this with your API or data retrieval logic for recent posts
-    // this.postService.getRecentPosts().subscribe((data) => {
-    //   this.recentPosts = data;
-    // });
-
-    // Mock data for demonstration purposes
-    this.recentPosts = [
-      {
-        id: 1,
-        username: this.account.username,
-        timestamp: new Date(),
-        content: 'This is the content of the first post'
-      },
-      {
-        id: 2,
-        username: this.account.username,
-        timestamp: new Date(),
-        content: 'This is the content of the second post'
-      }
-    ];
+    this.recentPosts = this.squealService.getTweetsForUsers(this.userName);
   }
 
   getTaggedAnswers() {
-    // Replace this with your API or data retrieval logic for tagged answers
-    // this.answerService.getTaggedAnswers().subscribe((data) => {
-    //   this.taggedAnswers = data;
-    // });
-
-    // Mock data for demonstration purposes
-    this.taggedPosts = [
-      {
-        id: 1,
-        username: this.account.username,
-        timestamp: new Date(),
-        content: 'This is the content of the first post'
-      },
-      {
-        id: 2,
-        username: this.account.username,
-        timestamp: new Date(),
-        content: 'This is the content of the second post'
+    this.taggedPosts = this.squealService.getAnswersForUsers(this.userName);
+    this.answerers = this.accountService.getAccounts();
+    for (let tp of this.taggedPosts) {
+      for (const answerer of this.answerers) {
+        if (tp.username == answerer.username) {
+          tp.profileImage = answerer.profileImage;
+        }
       }
-    ];
+    }
   }
 }

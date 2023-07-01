@@ -11,7 +11,7 @@ AccountListComponent
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'following', component: AccountListComponent },
-  { path: 'following/1', component: UserPageComponent}
+  { path: 'following/:username', component: UserPageComponent}
 ];
 
 @NgModule({

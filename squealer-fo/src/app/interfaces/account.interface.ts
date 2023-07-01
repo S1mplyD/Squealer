@@ -7,3 +7,5 @@ export interface Account {
   followingCount: number,
   createdAt: Date
 }
+
+

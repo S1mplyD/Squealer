@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Squeal } from 'app/interfaces/squeal.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
+import { Account } from 'app/interfaces/account.interface';
+import { AccountService } from 'app/services/account.service';
 
 @Component({
   selector: 'app-new-squeal',
@@ -10,8 +12,9 @@ import { DatePipe } from '@angular/common';
 })
 export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
+  accounts: Account[] = [];
 
-  newSqueal: Squeal = { id: 0, username: '', content: '', timestamp: new Date() };
+  newSqueal: Squeal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
 
   isLoggedIn: boolean = false;
 
@@ -19,10 +22,20 @@ export class NewSquealsComponent implements OnInit {
 
   constructor(
     private squealService: SquealService,
-    private datePipe: DatePipe) {}
+    private datePipe: DatePipe,
+    private accountService: AccountService) {}
 
   ngOnInit(): void {
     this.squeals = this.squealService.getTweets();
+    this.accounts = this.accountService.getAccounts();
+    for (let tp of this.squeals) {
+      for (const acc of this.accounts) {
+        if (tp.username == acc.username) {
+          tp.profileImage = acc.profileImage;
+        }
+      }
+    }
+
   }
 
   formatDate(date: Date): string | null{
@@ -35,7 +48,7 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { id: 0, username: '', content: '', timestamp: new Date() };
+    this.newSqueal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
   }
 
   login() {
@@ -47,7 +60,8 @@ export class NewSquealsComponent implements OnInit {
     const newId = this.squeals.length + 1;
     const newSqueal: Squeal = {
       id: newId,
-      username: 'delusional_990',
+      profileImage: null,
+      username: 'delusional',
       content: this.newSqueal.content,
       timestamp: new Date()
     };
@@ -55,5 +69,12 @@ export class NewSquealsComponent implements OnInit {
     this.squeals.unshift(newSqueal); // Add the new post at the beginning of the array
     this.newSqueal.content = ''; // Clear the form field
     this.isPostFormOpen = false;
+    for (let tp of this.squeals) {
+      for (const acc of this.accounts) {
+        if (tp.username == acc.username) {
+          tp.profileImage = acc.profileImage;
+        }
+      }
+    }
   }
 }
