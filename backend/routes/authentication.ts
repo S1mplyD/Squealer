@@ -142,8 +142,8 @@ router.get("/logout", (req, res, next) => {
       }
       res.status(200).redirect("/");
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.send({ errorName: error.name, errorDescription: error.message });
   }
 });
 
@@ -153,6 +153,7 @@ router
    * Genero un token e lo invio per mail all'utente
    */
   .get(async (req, res) => {
+    //TODO separare funzioni
     const mail: any = req.query.mail;
     const token: string = generate();
     console.log(token);

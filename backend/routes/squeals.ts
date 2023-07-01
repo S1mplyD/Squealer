@@ -22,8 +22,8 @@ router
     try {
       const squeals: any = await getAllSqueals();
       res.status(200).send(squeals);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });
 
@@ -37,8 +37,8 @@ router
     try {
       const squeals: any = await getTextSqueals();
       res.send(squeals);
-    } catch (error) {
-      res.send(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -49,8 +49,8 @@ router
     try {
       const ret: any = await postTextSqueal(req.body);
       res.send(ret);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -62,8 +62,8 @@ router
       await deleteTextSqueal(req.query.id as string).then((ret) => {
         res.send(ret);
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });
 
@@ -79,8 +79,8 @@ router
         req.query.recipient as string
       );
       res.send(squeals);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });
 
@@ -96,7 +96,7 @@ router
         req.query.channel as string
       );
       res.send(squeals);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });

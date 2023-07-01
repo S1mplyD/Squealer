@@ -35,5 +35,9 @@ const upload = multer({ storage: storage });
  * carica un media sul server e manda in response il nome del file caricato
  */
 router.route("/media").post(upload.single("file"), (req, res) => {
-  res.send(req.file?.filename);
+  try {
+    res.send(req.file?.filename);
+  } catch (error: any) {
+    res.send({ errorName: error.name, errorDescription: error.message });
+  }
 });

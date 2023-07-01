@@ -19,8 +19,8 @@ router
       const squeals: SquealMedia[] | Error | undefined =
         await getMediaSqueals();
       res.send(squeals);
-    } catch (error) {
-      res.send(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -34,8 +34,8 @@ router
         req.query.filename as string
       );
       res.send(newSqueal);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -47,7 +47,7 @@ router
       await deleteMediaSqueal(req.query.id as string).then((ret: any) => {
         res.send(ret);
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });

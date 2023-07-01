@@ -20,7 +20,6 @@ router
         await getAllTimers();
       res.send(timedSqueals);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
@@ -32,8 +31,8 @@ router
     try {
       const squeal: TimedSqueal = req.body.squeal;
       startTimer(squeal);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**

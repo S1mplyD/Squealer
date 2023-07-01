@@ -51,8 +51,8 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
           }
         }
       });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -69,8 +69,8 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
         ErrorCodes.cannot_create
       );
     else return new Success(SuccessDescription.created, SuccessCode.created);
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -100,7 +100,7 @@ export async function deleteTimedSqueal(id: string) {
         );
       else return new Success(SuccessDescription.removed, SuccessCode.removed);
     }
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }

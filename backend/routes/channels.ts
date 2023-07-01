@@ -21,8 +21,8 @@ router
       await getAllChannels().then((channels) => {
         res.send(channels);
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -37,7 +37,6 @@ router
         res.send(ret);
       });
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
@@ -52,7 +51,6 @@ router
         res.send(ret);
       });
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   });

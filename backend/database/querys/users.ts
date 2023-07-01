@@ -2,6 +2,10 @@ import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { User } from "../../util/types";
 import userModel from "../models/users.model";
+import fs from "fs";
+import { resolve } from "path";
+
+const publicUploadPath = resolve(__dirname, "../../..", "public");
 
 /**
  * Ritorna tutti gli utenti
@@ -12,8 +16,8 @@ export async function getAllUsers() {
     if (users.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return users;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -47,8 +51,8 @@ export async function createDefaultUser(
         else
           return new Success(SuccessDescription.created, SuccessCode.created);
       });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -85,8 +89,8 @@ export async function createUserUsingGoogle(
         else
           return new Success(SuccessDescription.created, SuccessCode.created);
       });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -110,16 +114,59 @@ export async function updateUser(user: User) {
           return new Success(SuccessDescription.updated, SuccessCode.updated);
         }
       });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
-//TODO
-export async function updateProfilePicture(filename: string) {}
+/**
+ * funzione che aggiorna il path all'immagine profilo dell'utente
+ * @param id id dell'utente
+ * @param filename nome del file
+ * @returns Errore o Successo
+ */
+export async function updateProfilePicture(id: string, filename: string) {
+  try {
+    const user = await userModel.updateOne(
+      { _id: id },
+      { profilepicture: filename }
+    );
+    if (user.modifiedCount < 1)
+      return new Error(
+        ErrorDescriptions.cannot_update,
+        ErrorCodes.cannot_update
+      );
+    else return new Success(SuccessDescription.updated, SuccessCode.updated);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
+  }
+}
 
-// TODO
-export async function deleteProfilePicture() {}
+/**
+ * funzione che elimina la foto profilo dell'utente
+ * @param id id dell'utente
+ */
+export async function deleteProfilePicture(id: string) {
+  try {
+    const user = await userModel.findById({ _id: id });
+    await fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
+      if (err)
+        return new Error(
+          ErrorDescriptions.cannot_delete,
+          ErrorCodes.cannot_delete
+        );
+      else {
+        const result = await user?.updateOne(
+          { profilePicture: "default.png" },
+          { returnDocument: "after" }
+        );
+        console.log(result);
+      }
+    });
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
+  }
+}
 
 /**
  * cancella l'account dell'utente
@@ -128,12 +175,24 @@ export async function deleteProfilePicture() {}
  */
 export async function deleteAccount(mail: string, password: string) {
   try {
-    // TODO errori e successi
-    await userModel.deleteOne({
+    const profilepicture = await userModel.findOne({ mail: mail });
+    await fs.unlink(
+      publicUploadPath + profilepicture?.profilePicture,
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
+    const user = await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
     });
-  } catch (error) {
-    console.log(error);
+    if (user.deletedCount < 1)
+      return new Error(
+        ErrorDescriptions.cannot_delete,
+        ErrorCodes.cannot_delete
+      );
+    else return new Success(SuccessDescription.removed, SuccessCode.removed);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -144,10 +203,18 @@ export async function deleteAccount(mail: string, password: string) {
  */
 export async function updateResetToken(mail: string, token: string) {
   try {
-    // TODO errori e successi
-    await userModel.updateOne({ mail: mail }, { resetToken: token });
-  } catch (error) {
-    console.log(error);
+    const result = await userModel.updateOne(
+      { mail: mail },
+      { resetToken: token }
+    );
+    if (result.modifiedCount < 1)
+      return new Error(
+        ErrorDescriptions.cannot_update,
+        ErrorCodes.cannot_update
+      );
+    else return new Success(SuccessDescription.updated, SuccessCode.updated);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -180,7 +247,7 @@ export async function updatePassword(mail: string, password: string) {
             );
         }
       });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }

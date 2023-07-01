@@ -18,8 +18,8 @@ router
     try {
       const squeals: SquealGeo[] | Error | undefined = await getGeoSqueals();
       res.send(squeals);
-    } catch (error) {
-      res.send(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -30,8 +30,8 @@ router
     try {
       const ret: any = await postGeoSqueal(req.body);
       res.send(ret);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   })
   /**
@@ -43,7 +43,7 @@ router
       await deleteGeoSqueal(req.query.id as string).then((ret) => {
         res.send(ret);
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      res.send({ errorName: error.name, errorDescription: error.message });
     }
   });

@@ -35,8 +35,8 @@ export async function getAllSqueals() {
     if (squeals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return squeals;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -52,8 +52,8 @@ export async function getTextSqueals() {
     if (squeals.length < 1)
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
     else return squeals;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -95,8 +95,8 @@ export async function postTextSqueal(squeal: Squeal) {
         return new Success(SuccessDescription.created, SuccessCode.created);
       }
     }
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -117,8 +117,8 @@ export async function deleteTextSqueal(id: string) {
         ErrorCodes.cannot_delete
       );
     else return new Success(SuccessDescription.removed, SuccessCode.removed);
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -154,8 +154,8 @@ export async function getSquealsByRecipients(recipient: string) {
         );
       else return squealArray;
     }
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -193,7 +193,7 @@ export async function getSquealsByChannel(channel: string) {
         );
       else return squealArray;
     }
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
