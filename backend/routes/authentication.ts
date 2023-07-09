@@ -3,6 +3,7 @@ import LocalStrategy from "passport-local";
 import passport = require("passport");
 import userModel from "../database/models/users.model";
 import {
+  getAllUsers,
   createDefaultUser,
   createUserUsingGoogle,
   updatePassword,
@@ -36,7 +37,7 @@ passport.use(
             profile.displayName,
             profile._json.email,
             profile.id,
-            profile._json.picture
+            profile._json.picture,
           ).then((newUser) => {
             done(null, newUser);
           });
@@ -44,13 +45,13 @@ passport.use(
           done(null, currentUser);
         }
       });
-    }
-  )
+    },
+  ),
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["email", "profile"] })
+  passport.authenticate("google", { scope: ["email", "profile"] }),
 );
 
 router.get(
@@ -58,7 +59,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.redirect("/");
-  }
+  },
 );
 
 /**
@@ -78,37 +79,67 @@ passport.use(
       }
       return done(null, user);
     });
-  })
+  }),
 );
 
 /**
  * Strategia per la registrazione locale
  */
+// passport.use(
+//   "local-signup",
+//   new LocalStrategy.Strategy(
+//     { passReqToCallback: true },
+//     (req, username, password, done) => {
+//       userModel.findOne({ username: username }, async (err: any, user: any) => {
+//         if (err) {
+//           return done(err);
+//         }
+//         if (user) {
+//           return done(null, false);
+//         } else {
+//           const encryptedPassword = await bcrypt.hash(password, 10);
+//           createDefaultUser(
+//             req.body.name,
+//             username,
+//             req.body.mail,
+//             encryptedPassword
+//           ).then((user) => {
+//             return done(null, user!);
+//           });
+//         }
+//       });
+//     }
+//   )
+// );
 passport.use(
   "local-signup",
   new LocalStrategy.Strategy(
     { passReqToCallback: true },
-    (req, username, password, done) => {
-      userModel.findOne({ username: username }, async (err: any, user: any) => {
-        if (err) {
-          return done(err);
-        }
+    async (req, username, password, done) => {
+      try {
+        const user = await userModel.findOne({ username: username }).exec();
+
         if (user) {
           return done(null, false);
         } else {
           const encryptedPassword = await bcrypt.hash(password, 10);
-          createDefaultUser(
+          const newUser = await createDefaultUser(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword
-          ).then((user) => {
-            return done(null, user!);
-          });
+            encryptedPassword,
+          );
+          if (newUser) {
+            return done(null, newUser);
+          } else {
+            return done(null, false);
+          }
         }
-      });
-    }
-  )
+      } catch (err) {
+        return done(err);
+      }
+    },
+  ),
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
@@ -177,3 +208,12 @@ router
       await updatePassword(mail, password);
     }
   });
+
+router.route("/").get(async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    res.send(users);
+  } catch (error: any) {
+    res.send({ errorName: error.name, errorDescription: error.message });
+  }
+});
