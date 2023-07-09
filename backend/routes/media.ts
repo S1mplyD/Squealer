@@ -4,8 +4,6 @@ import { resolve } from "path";
 
 const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
-console.log(publicUploadPath);
-
 export const router = express.Router();
 
 /**
@@ -34,7 +32,7 @@ const upload = multer({ storage: storage });
  * POST
  * carica un media sul server e manda in response il nome del file caricato
  */
-router.route("/media").post(upload.single("file"), (req, res) => {
+router.route("/").post(upload.single("file"), (req, res) => {
   try {
     res.send(req.file?.filename);
   } catch (error: any) {
