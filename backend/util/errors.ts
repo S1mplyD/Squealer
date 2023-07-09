@@ -10,13 +10,13 @@ export class Error {
 
 // enum per il codice degli errori
 export enum ErrorCodes {
-  cannot_create = 1,
-  non_existent = 2,
-  cannot_update = 3,
-  no_timers = 4,
-  cannot_delete = 5,
-  not_supported = 6,
-  not_recived = 7,
+  cannot_create = 10,
+  non_existent = 20,
+  cannot_update = 30,
+  no_timers = 40,
+  cannot_delete = 50,
+  not_supported = 60,
+  not_recived = 70,
 }
 
 export enum ErrorDescriptions {
