@@ -27,7 +27,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "http://localhost:8000/auth/google/callback",
+      callbackURL: "http://localhost:3000/auth/google/callback",
     },
     (accessToken: any, refreshToken: any, profile: any, done: any) => {
       userModel.findOne({ serviceId: profile.id }).then((currentUser: any) => {
@@ -173,7 +173,6 @@ router.get("/logout", (req, res, next) => {
     res.send({ errorName: error.name, errorDescription: error.message });
   }
 });
-
 router
   .route("/forgotPassword")
   /**

@@ -7,7 +7,6 @@ export class Success {
     this.code = code;
   }
 }
-
 // enum per il codice dei successi
 export enum SuccessCode {
   created = 0,
