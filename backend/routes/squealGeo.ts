@@ -28,8 +28,12 @@ router
    */
   .post(async (req, res) => {
     try {
-      const ret: any = await postGeoSqueal(req.body);
-      res.send(ret);
+      if (req.user) {
+        console.log(req.user);
+
+        // const ret: any = await postGeoSqueal(req.body, req.user!.username);
+        // res.send(ret);
+      }
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
