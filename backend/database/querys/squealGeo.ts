@@ -35,7 +35,7 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
       date: new Date(),
       category: squeal.category,
       channels: squeal.channels,
-      // author: author,
+      author: author,
     });
 
     if (!newSqueal)
