@@ -32,25 +32,21 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string
+  password: string,
 ) {
   try {
-    await userModel
-      .create({
-        name: name,
-        username: username,
-        mail: mail,
-        password: password,
-      })
-      .then((doc) => {
-        if (!doc)
-          return new Error(
-            ErrorDescriptions.cannot_create,
-            ErrorCodes.cannot_create
-          );
-        else
-          return new Success(SuccessDescription.created, SuccessCode.created);
-      });
+    const doc = await userModel.create({
+      name: name,
+      username: username,
+      mail: mail,
+      password: password,
+    });
+    if (!doc)
+      return new Error(
+        ErrorDescriptions.cannot_create,
+        ErrorCodes.cannot_create,
+      );
+    else return doc;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
@@ -69,7 +65,7 @@ export async function createUserUsingGoogle(
   username: string,
   mail: string,
   serviceId: number,
-  profilePicture: string
+  profilePicture: string,
 ) {
   try {
     await userModel
@@ -84,7 +80,7 @@ export async function createUserUsingGoogle(
         if (!doc)
           return new Error(
             ErrorDescriptions.cannot_create,
-            ErrorCodes.cannot_create
+            ErrorCodes.cannot_create,
           );
         else
           return new Success(SuccessDescription.created, SuccessCode.created);
@@ -108,7 +104,7 @@ export async function updateUser(user: User) {
         if (!doc)
           return new Error(
             ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent
+            ErrorCodes.non_existent,
           );
         else {
           return new Success(SuccessDescription.updated, SuccessCode.updated);
@@ -129,12 +125,12 @@ export async function updateProfilePicture(id: string, filename: string) {
   try {
     const user = await userModel.updateOne(
       { _id: id },
-      { profilepicture: filename }
+      { profilepicture: filename },
     );
     if (user.modifiedCount < 1)
       return new Error(
         ErrorDescriptions.cannot_update,
-        ErrorCodes.cannot_update
+        ErrorCodes.cannot_update,
       );
     else return new Success(SuccessDescription.updated, SuccessCode.updated);
   } catch (error: any) {
@@ -153,12 +149,12 @@ export async function deleteProfilePicture(id: string) {
       if (err)
         return new Error(
           ErrorDescriptions.cannot_delete,
-          ErrorCodes.cannot_delete
+          ErrorCodes.cannot_delete,
         );
       else {
         const result = await user?.updateOne(
           { profilePicture: "default.png" },
-          { returnDocument: "after" }
+          { returnDocument: "after" },
         );
         console.log(result);
       }
@@ -180,7 +176,7 @@ export async function deleteAccount(mail: string, password: string) {
       publicUploadPath + profilepicture?.profilePicture,
       (err) => {
         if (err) console.log(err);
-      }
+      },
     );
     const user = await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
@@ -188,7 +184,7 @@ export async function deleteAccount(mail: string, password: string) {
     if (user.deletedCount < 1)
       return new Error(
         ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
+        ErrorCodes.cannot_delete,
       );
     else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error: any) {
@@ -205,12 +201,12 @@ export async function updateResetToken(mail: string, token: string) {
   try {
     const result = await userModel.updateOne(
       { mail: mail },
-      { resetToken: token }
+      { resetToken: token },
     );
     if (result.modifiedCount < 1)
       return new Error(
         ErrorDescriptions.cannot_update,
-        ErrorCodes.cannot_update
+        ErrorCodes.cannot_update,
       );
     else return new Success(SuccessDescription.updated, SuccessCode.updated);
   } catch (error: any) {
@@ -229,13 +225,13 @@ export async function updatePassword(mail: string, password: string) {
       .findOneAndUpdate(
         { mail: mail },
         { password: password, resetToken: "" },
-        { returnDocument: "after" }
+        { returnDocument: "after" },
       )
       .then((newDoc) => {
         if (!newDoc)
           return new Error(
             ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent
+            ErrorCodes.non_existent,
           );
         else {
           if (newDoc.password !== password)
@@ -243,7 +239,7 @@ export async function updatePassword(mail: string, password: string) {
           else
             return new Error(
               ErrorDescriptions.cannot_update,
-              ErrorCodes.cannot_update
+              ErrorCodes.cannot_update,
             );
         }
       });
