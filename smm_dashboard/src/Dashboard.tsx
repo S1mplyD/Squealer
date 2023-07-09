@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
   return (
     <div
       className={`container mx-auto px-4 sm:px-6 lg:px-8 ${
-        darkMode ? "bg-purple-700" : "bg-purple-200"
+        darkMode ? "bg-orange" : "bg-orange"
       } rounded-lg`}
     >
       <nav className="flex items-center justify-between py-4 ">
@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div>
           <button
-            className="p-4 py-2 rounded-lg bg-blue-500 text-white"
+            className="p-4 py-2 rounded-lg bg-grey text-white"
             onClick={toggleDarkMode}
           >
             {darkMode ? <FiSun /> : <FiMoon />}
@@ -57,14 +57,12 @@ const Dashboard: React.FC = () => {
       </nav>
 
       <div
-        className={`py-4 rounded-lg ${
-          darkMode ? "bg-purple-700" : "bg-purple-200"
-        }`}
+        className={`py-4 rounded-lg ${darkMode ? "bg-orange" : "bg-orange"}`}
       >
         <ul className="flex flex-wrap justify-center space-x-2 sm:justify-center sm:space-x-4">
           <li>
             <button
-              className="btn-link bg-purple-500 text-white rounded-lg p-4 m-2 w-[200px] "
+              className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px] "
               onClick={handleCreateNewSquealClick}
             >
               Create New Squeal
@@ -112,7 +110,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="btn-primary bg-purple-500 text-white px-4 py-2 rounded"
+                  className="btn-orange bg-grey text-white px-4 py-2 rounded"
                 >
                   Submit
                 </button>
@@ -120,22 +118,22 @@ const Dashboard: React.FC = () => {
             )}
           </li>
           <li>
-            <button className="btn-link bg-purple-500 text-white rounded-lg p-4 m-2 w-[200px]">
+            <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
               Analytics
             </button>
           </li>
           <li>
-            <button className="btn-link bg-purple-500 text-white rounded-lg p-4 m-2 w-[200px]">
+            <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
               Geolocation
             </button>
           </li>
           <li>
-            <button className="btn-link bg-purple-500 text-white rounded-lg p-4 m-2 w-[200px]">
+            <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
               Buy More Character
             </button>
           </li>
           <li>
-            <button className="btn-link bg-purple-500 text-white rounded-lg p-4 m-2 w-[200px]">
+            <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
               Add/Remove SMM
             </button>
           </li>

@@ -8,6 +8,7 @@ interface Squeal {
   negativeReactions?: number;
   category: string;
   channels?: string[];
+  author: string;
   criticalMass?: number;
   visual?: number;
 }
@@ -23,6 +24,7 @@ const squealSchema = new Schema<SquealDocument>({
   negativeReactions: { type: Number, default: 0 },
   category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso)
   channels: { type: [String] }, //Canali a cui è stato aggiunto dalla redazione
+  author: { type: String },
   //Non visualizzabili
   criticalMass: { type: Number, default: 0 }, //Massa critica (0,25 x visual)
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non

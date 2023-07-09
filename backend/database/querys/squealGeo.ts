@@ -24,7 +24,7 @@ export async function getGeoSqueals() {
  * @param squeal corpo del geo squeal da creare
  * @returns errore o successo
  */
-export async function postGeoSqueal(squeal: SquealGeo) {
+export async function postGeoSqueal(squeal: SquealGeo, author: string) {
   try {
     const channels: any = await getAllChannels();
 
@@ -35,12 +35,13 @@ export async function postGeoSqueal(squeal: SquealGeo) {
       date: new Date(),
       category: squeal.category,
       channels: squeal.channels,
+      // author: author,
     });
 
     if (!newSqueal)
       return new Error(
         ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
+        ErrorCodes.cannot_create,
       );
     else {
       if (newSqueal.channels.length < 1) {
@@ -72,12 +73,12 @@ export async function deleteGeoSqueal(id: string) {
   try {
     const deleted: any = await squealGeoModel.deleteOne(
       { _id: id },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     if (deleted.deletedCount < 1)
       return new Error(
         ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
+        ErrorCodes.cannot_delete,
       );
     else return new Success(SuccessDescription.removed, SuccessCode.removed);
   } catch (error: any) {
