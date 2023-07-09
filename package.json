@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "",
-    "api": "nodemon ./index.ts",
+    "api": "nodemon ./backend/index.ts",
     "build": "tsc"
   },
   "repository": {
@@ -25,6 +25,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
+    "chart.js": "^4.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -50,6 +51,7 @@
     "@types/passport-google-oauth20": "^2.0.11",
     "@types/passport-local": "^1.0.35",
     "@types/randomstring": "^1.1.8",
+    "prettier": "3.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
