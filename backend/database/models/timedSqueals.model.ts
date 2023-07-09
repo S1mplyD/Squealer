@@ -8,6 +8,7 @@ interface TimedSqueal {
   negativeReactions?: number;
   category: string;
   channels?: string[];
+  author: string;
   criticalMass?: number;
   visual: number;
   time?: number;
@@ -26,6 +27,7 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
   negativeReactions: { type: Number },
   category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso)
   channels: { type: [String] }, //Canali a cui è stato aggiunto dalla redazione
+  author: { type: String }, // id dell'autore
   //Non visualizzabili
   criticalMass: { type: Number }, //Massa critica (0,25 x visual)
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
@@ -37,7 +39,7 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
 
 const timedSquealModel = model<TimedSquealDocument>(
   "timedSquealData",
-  timedSquealSchema
+  timedSquealSchema,
 );
 
 export default timedSquealModel;

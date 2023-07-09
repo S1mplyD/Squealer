@@ -76,7 +76,7 @@ router
   .get(async (req, res) => {
     try {
       const squeals: any = await getSquealsByRecipients(
-        req.query.recipient as string
+        req.query.recipient as string,
       );
       res.send(squeals);
     } catch (error: any) {
@@ -93,7 +93,7 @@ router
   .get(async (req, res) => {
     try {
       const squeals: any = await getSquealsByChannel(
-        req.query.channel as string
+        req.query.channel as string,
       );
       res.send(squeals);
     } catch (error: any) {

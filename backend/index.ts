@@ -3,7 +3,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import session from "express-session";
 import mongoose from "mongoose";
-import passport = require("passport");
+import passport from "passport";
 import path from "path";
 import { router as authRoute } from "./routes/authentication";
 import { startAllTimer } from "./util/timers";
@@ -14,6 +14,7 @@ import { router as squealGeoRoute } from "./routes/squealGeo";
 import { router as squealTimedRoute } from "./routes/timedSqueal";
 import { router as mediaRoute } from "./routes/media";
 import { Error } from "./util/types";
+import fs from "fs";
 
 config();
 
@@ -31,8 +32,18 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
+
+//Controllo se la cartella per gli uploads esiste altrimenti la creo
+fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
+  if (err) console.log(err);
+  if (!files.includes("uploads")) {
+    fs.mkdir("public/uploads", (err) => {
+      if (err) console.log(err);
+    });
+  }
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
