@@ -14,6 +14,7 @@ import bcrypt from "bcryptjs";
 import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
+import { Success, SuccessCode, SuccessDescription } from "../util/success";
 config();
 
 export const router = express.Router();
@@ -65,52 +66,45 @@ router.get(
 /**
  * Autenticazione locale
  */
+// passport.use(
+//   new LocalStrategy.Strategy((username, password, done) => {
+//     userModel.findOne({ mail: username }, async (err: any, user: any) => {
+//       if (err) {
+//         return done(err);
+//       }
+//       if (!user) {
+//         return done(null, false);
+//       }
+//       if (!(await bcrypt.compare(password, user.password))) {
+//         return done(null, false);
+//       }
+//       return done(null, user);
+//     });
+//   }),
+// );
 passport.use(
-  new LocalStrategy.Strategy((username, password, done) => {
-    userModel.findOne({ mail: username }, async (err: any, user: any) => {
-      if (err) {
-        return done(err);
-      }
+  new LocalStrategy.Strategy(async (username, password, done) => {
+    try {
+      const user = await userModel.findOne({ mail: username }).exec();
+
       if (!user) {
         return done(null, false);
       }
-      if (!(await bcrypt.compare(password, user.password))) {
+      const isPasswordValid = await bcrypt.compare(password, user.password!);
+      if (!isPasswordValid) {
         return done(null, false);
       }
+
       return done(null, user);
-    });
+    } catch (err) {
+      return done(err);
+    }
   }),
 );
 
 /**
  * Strategia per la registrazione locale
  */
-// passport.use(
-//   "local-signup",
-//   new LocalStrategy.Strategy(
-//     { passReqToCallback: true },
-//     (req, username, password, done) => {
-//       userModel.findOne({ username: username }, async (err: any, user: any) => {
-//         if (err) {
-//           return done(err);
-//         }
-//         if (user) {
-//           return done(null, false);
-//         } else {
-//           const encryptedPassword = await bcrypt.hash(password, 10);
-//           createDefaultUser(
-//             req.body.name,
-//             username,
-//             req.body.mail,
-//             encryptedPassword
-//           ).then((user) => {
-//             return done(null, user!);
-//           });
-//         }
-//       });
-//     }
-//   )
-// );
 passport.use(
   "local-signup",
   new LocalStrategy.Strategy(
@@ -143,9 +137,11 @@ passport.use(
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
-  res.json();
+  if (req.user) {
+    res.send(new Success(SuccessDescription.logged_in, SuccessCode.logged_in));
+  }
 });
-
+//TODO return value
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
   res.json();
 });
@@ -212,6 +208,7 @@ router
 router.route("/").get(async (req, res) => {
   try {
     const users = await getAllUsers();
+    console.log(req.user);
     res.send(users);
   } catch (error: any) {
     res.send({ errorName: error.name, errorDescription: error.message });
