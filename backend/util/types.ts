@@ -9,6 +9,7 @@ export type Squeal = {
   negativeReactions: number | undefined;
   category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
   channels: string[] | undefined; //Canali a cui è stato aggiunto dalla redazione
+  author: string;
   //Non visualizzabili
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
@@ -24,6 +25,7 @@ export type SquealGeo = {
   negativeReactions?: number;
   category: string;
   channels?: string[];
+  author: string;
   criticalMass?: number;
   visual?: number;
   _id: string;
@@ -38,6 +40,7 @@ export type SquealMedia = {
   negativeReactions?: number;
   category: string;
   channels?: string[];
+  author: string;
   criticalMass?: number;
   visual?: number;
 };
@@ -51,6 +54,7 @@ export type TimedSqueal = {
   negativeReactions: number | undefined;
   category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
   channels: string[] | undefined; //Canali a cui è stato aggiunto dalla redazione
+  author: string;
   //Non visualizzabili
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
