@@ -4,7 +4,7 @@ import {
   getGeoSqueals,
   postGeoSqueal,
 } from "../database/querys/squealGeo";
-import { Error, SquealGeo } from "../util/types";
+import { Error, SquealGeo, User } from "../util/types";
 
 export const router = express.Router();
 
@@ -29,10 +29,11 @@ router
   .post(async (req, res) => {
     try {
       if (req.user) {
-        console.log(req.user);
-
-        // const ret: any = await postGeoSqueal(req.body, req.user!.username);
-        // res.send(ret);
+        const ret: any = await postGeoSqueal(
+          req.body,
+          (req.user as User).username,
+        );
+        res.send(ret);
       }
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
