@@ -47,7 +47,7 @@ export type SquealMedia = {
 
 // nuovo tipo per squeal temporizzati
 export type TimedSqueal = {
-  body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
+  body: string; //Corpo del messaggio (testo)
   recipients: string[]; //Destinatari (individuo, canale o keyword)
   date: Date; //Data e ora messaggio
   positiveReactions: number | undefined;
