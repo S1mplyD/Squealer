@@ -8,6 +8,7 @@ interface SquealGeo {
   positiveReactions?: number;
   negativeReactions?: number;
   category: string;
+  author: string;
   channels?: string[];
   criticalMass?: number;
   visual?: number;
@@ -24,6 +25,7 @@ const squealGeoSchema = new Schema<SquealGeoDocument>({
   positiveReactions: { type: Number, default: 0 },
   negativeReactions: { type: Number, default: 0 },
   category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso)
+  author: { type: String, required: true },
   channels: { type: [String] }, //Canali a cui è stato aggiunto dalla redazione
   //Non visualizzabili
   criticalMass: { type: Number, default: 0 }, //Massa critica (0,25 x visual)
@@ -32,7 +34,7 @@ const squealGeoSchema = new Schema<SquealGeoDocument>({
 
 const squealGeoModel = model<SquealGeoDocument>(
   "squealGeoData",
-  squealGeoSchema
+  squealGeoSchema,
 );
 
 export default squealGeoModel;
