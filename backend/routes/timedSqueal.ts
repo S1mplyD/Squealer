@@ -1,5 +1,5 @@
 import express from "express";
-import { Error, TimedSqueal } from "../util/types";
+import { Error, TimedSqueal, User } from "../util/types";
 import {
   deleteTimedSqueal,
   getAllTimers,
@@ -30,7 +30,7 @@ router
   .post(async (req, res) => {
     try {
       const squeal: TimedSqueal = req.body.squeal;
-      startTimer(squeal);
+      startTimer(squeal, (req.user as User).username);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
