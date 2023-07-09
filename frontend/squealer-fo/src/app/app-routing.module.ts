@@ -7,8 +7,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AccountListComponent } from './followed-accounts/account-list.component';
 import { UserPageComponent } from './user-page/user-page.component';
+import { AuthComponent } from './authentication/auth.component';
 AccountListComponent
 const routes: Routes = [
+  { path: 'authentication', component: AuthComponent},
   { path: '', component: HomeComponent },
   { path: 'following', component: AccountListComponent },
   { path: 'following/:username', component: UserPageComponent}
