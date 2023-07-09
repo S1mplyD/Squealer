@@ -32,13 +32,13 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
         {
           intervalId: intervalId,
         },
-        { returnDocument: "after" }
+        { returnDocument: "after" },
       )
       .then((newDocument) => {
         if (!newDocument)
           return new Error(
             ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent
+            ErrorCodes.non_existent,
           );
         else {
           if (intervalId === newDocument.intervalId) {
@@ -46,7 +46,7 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
           } else {
             return new Error(
               ErrorDescriptions.cannot_update,
-              ErrorCodes.cannot_update
+              ErrorCodes.cannot_update,
             );
           }
         }
@@ -60,13 +60,21 @@ export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
  * funzione che crea uno squeal temporizzato (per farlo partire usare la funzione apposita)
  * @param squeal squeal temporizzato
  */
-export async function postTimedSqueal(squeal: TimedSqueal) {
+//TODO
+export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
   try {
-    const newSqueal: any = await timedSquealModel.create(squeal);
+    const newSqueal: any = await timedSquealModel.create({
+      body: squeal.body,
+      recipients: squeal.recipients,
+      author: author,
+      date: new Date(),
+      category: squeal.category, //? automatico o manuale ?
+      channels: squeal.channels,
+    });
     if (!newSqueal)
       return new Error(
         ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
+        ErrorCodes.cannot_create,
       );
     else return new Success(SuccessDescription.created, SuccessCode.created);
   } catch (error: any) {
@@ -81,7 +89,7 @@ export async function postTimedSqueal(squeal: TimedSqueal) {
 export async function deleteTimedSqueal(id: string) {
   try {
     const squeal: TimedSqueal | null = (await timedSquealModel.findById(
-      id
+      id,
     )) as TimedSqueal;
     if (squeal === null) {
       return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
@@ -91,12 +99,12 @@ export async function deleteTimedSqueal(id: string) {
         { _id: id },
         {
           returnDocument: "after",
-        }
+        },
       );
       if (deleted.deletedCount < 1)
         return new Error(
           ErrorDescriptions.cannot_delete,
-          ErrorCodes.cannot_delete
+          ErrorCodes.cannot_delete,
         );
       else return new Success(SuccessDescription.removed, SuccessCode.removed);
     }
