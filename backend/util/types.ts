@@ -64,6 +64,21 @@ export type TimedSqueal = {
   _id: string;
 };
 
+export type AutomatedSqueal = {
+  body: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  author: string;
+  criticalMass?: number;
+  visual: number;
+  originalSqueal: string;
+  count?: number;
+};
+
 // nuovo tipo utente
 export type User = {
   _id: string; // mongodb id

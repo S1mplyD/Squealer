@@ -3,6 +3,7 @@ import { Error, TimedSqueal, User } from "../util/types";
 import {
   deleteTimedSqueal,
   getAllTimers,
+  postTimedSqueal,
 } from "../database/querys/timedSqueal";
 import { startTimer } from "../util/timers";
 
@@ -29,8 +30,12 @@ router
    */
   .post(async (req, res) => {
     try {
-      const squeal: TimedSqueal = req.body.squeal;
-      startTimer(squeal, (req.user as User).username);
+      const squeal: TimedSqueal = req.body;
+      const newSqueal: TimedSqueal = await postTimedSqueal(
+        squeal,
+        (req.user as User).username,
+      );
+      startTimer(newSqueal, (req.user as User).username);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }

@@ -24,7 +24,10 @@ export async function getAllTimers() {
  * inserisce l'id dell'interval al timedSqueal
  * @param intervalId id dell'intervallo
  */
-export async function setSquealInterval(squeal: TimedSqueal, intervalId: any) {
+export async function setSquealInterval(
+  squeal: TimedSqueal,
+  intervalId: string,
+) {
   try {
     await timedSquealModel
       .findByIdAndUpdate(
@@ -70,13 +73,14 @@ export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
       date: new Date(),
       category: squeal.category, //? automatico o manuale ?
       channels: squeal.channels,
+      time: squeal.time,
     });
     if (!newSqueal)
       return new Error(
         ErrorDescriptions.cannot_create,
         ErrorCodes.cannot_create,
       );
-    else return new Success(SuccessDescription.created, SuccessCode.created);
+    else return newSqueal;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }

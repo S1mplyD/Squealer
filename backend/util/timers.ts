@@ -1,3 +1,4 @@
+import { postAutomatedSqueal } from "../database/querys/automatedSqueal";
 import {
   getAllTimers,
   postTimedSqueal,
@@ -30,10 +31,13 @@ export async function startAllTimer() {
  * @param id id dello squeal
  */
 export async function startTimer(squeal: TimedSqueal, author: string) {
-  const interval: NodeJS.Timer = setInterval(async () => {
-    await postTimedSqueal(squeal, author);
-  }, squeal.time);
-  await setSquealInterval(squeal, interval);
+  console.log(squeal);
+
+  const interval: any = setInterval(async () => {
+    await postAutomatedSqueal(squeal, squeal._id);
+  }, squeal.time as number);
+
+  await setSquealInterval(squeal, interval as string);
 }
 
 /**
