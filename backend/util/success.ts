@@ -14,6 +14,7 @@ export enum SuccessCode {
   removed = 2,
   logged_in = 3,
   logged_out = 4,
+  signed_up = 5,
 }
 
 // enum per le descrizioni dei successi
@@ -23,4 +24,5 @@ export enum SuccessDescription {
   removed = "Removed successfully",
   logged_in = "Logged in successfully",
   logged_out = "Logged out successfully",
+  signed_up = "Signed up successfully",
 }
