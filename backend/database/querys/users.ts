@@ -172,12 +172,9 @@ export async function deleteProfilePicture(id: string) {
 export async function deleteAccount(mail: string, password: string) {
   try {
     const profilepicture = await userModel.findOne({ mail: mail });
-    await fs.unlink(
-      publicUploadPath + profilepicture?.profilePicture,
-      (err) => {
-        if (err) console.log(err);
-      },
-    );
+    fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
+      if (err) console.log(err);
+    });
     const user = await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
     });
@@ -221,28 +218,20 @@ export async function updateResetToken(mail: string, token: string) {
  */
 export async function updatePassword(mail: string, password: string) {
   try {
-    userModel
-      .findOneAndUpdate(
-        { mail: mail },
-        { password: password, resetToken: "" },
-        { returnDocument: "after" },
-      )
-      .then((newDoc) => {
-        if (!newDoc)
-          return new Error(
-            ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent,
-          );
-        else {
-          if (newDoc.password !== password)
-            return new Success(SuccessDescription.updated, SuccessCode.updated);
-          else
-            return new Error(
-              ErrorDescriptions.cannot_update,
-              ErrorCodes.cannot_update,
-            );
-        }
-      });
+    const newDoc = await userModel
+      .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
+      .lean();
+    if (!newDoc)
+      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    else {
+      if (newDoc.password !== password)
+        return new Success(SuccessDescription.updated, SuccessCode.updated);
+      else
+        return new Error(
+          ErrorDescriptions.cannot_update,
+          ErrorCodes.cannot_update,
+        );
+    }
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
