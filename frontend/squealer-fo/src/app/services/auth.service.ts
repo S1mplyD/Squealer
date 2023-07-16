@@ -26,11 +26,11 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
   }
 
-  signUp(email: string, password: string, name: string, username: string): Observable<any> {
+  signUp(mail: string, password: string, name: string, username: string): Observable<any> {
     // Implement your sign up logic here
     // You can make a POST request to your authentication API with the new user's email and password
     // Example:
-    return this.http.post(`${this.apiUrl}/register`, { email, password, name, username });
+    return this.http.post(`${this.apiUrl}/register`, { mail, password, name, username });
   }
 
 

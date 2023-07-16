@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from 'app/services/auth.service'; // Your authentication service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -14,9 +15,11 @@ export class AuthComponent {
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
 
+
   constructor(
     private authService: AuthService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
@@ -36,34 +39,19 @@ export class AuthComponent {
   }
 
   loginWithGoogle() {
-    this.authService.loginWithGoogle().subscribe(
-      (user) => {
-        // Successful login
-        this.isLoggedIn = true;
-        this.userName = user.name;
-      },
-      (error) => {
-        // Handle login error
-        console.error('Error logging in with Google:', error);
-      }
-    );
+    this.authService.loginWithGoogle();
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username','');
+    this.router.navigateByUrl('');
   }
 
   loginWithEmail() {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
-
-    this.authService.loginWithEmail(email, password).subscribe(
-      (user) => {
-        // Successful login
-        this.isLoggedIn = true;
-        this.userName = user.name;
-      },
-      (error) => {
-        // Handle login error
-        console.error('Error logging in with email and password:', error);
-      }
-    );
+    this.authService.loginWithEmail(email, password);
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username','');
+    this.router.navigateByUrl('');
   }
 
   signup() {
@@ -71,37 +59,21 @@ export class AuthComponent {
     const password = this.signupForm.value.password;
     const username = this.signupForm.value.username;
     const name = this.signupForm.value.name;
-
-    this.authService.signUp(email, password, username, name).subscribe(
-      (user) => {
-        // Successful signup
-        console.log('User signed up:', user);
-      },
-      (error) => {
-        // Handle signup error
-        console.error('Error signing up:', error);
-      }
-    );
+    this.authService.signUp(email, password, username, name);
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', username);
+    this.router.navigateByUrl('');
   }
 
   recoverPassword() {
     const email = this.recoverPasswordForm.value.email;
-
-    this.authService.recoverPassword(email).subscribe(
-      () => {
-        // Successful password recovery
-        console.log('Password recovery email sent');
-      },
-      (error) => {
-        // Handle password recovery error
-        console.error('Error recovering password:', error);
-      }
-    );
+    this.authService.recoverPassword(email);
   }
 
   logout() {
     this.authService.logout();
     this.isLoggedIn = false;
+    localStorage.setItem('isLoggedIn', 'false');
     this.userName = '';
   }
 }

@@ -48,7 +48,7 @@ fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use("/", express.static(path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")))
 app.use("/api/auth", authRoute);
 app.use("/api/channels", channelRoute);
 app.use("/api/squeals", squealsRoute);

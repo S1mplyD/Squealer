@@ -17,7 +17,7 @@ export class NewSquealsComponent implements OnInit {
   newSqueal: Squeal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
 
   isLoggedIn: boolean = false;
-
+  username: string = '';
   isPostFormOpen: boolean = false;
 
   constructor(
@@ -35,6 +35,14 @@ export class NewSquealsComponent implements OnInit {
         }
       }
     }
+    if (localStorage.getItem('isLoggedIn') === 'false') {
+      this.isLoggedIn = false;
+    } else if (localStorage.getItem('isLoggedIn') === 'true') {
+      this.isLoggedIn = true;
+    }
+    if (localStorage.getItem('username')) {
+      this.username = localStorage.getItem('username') + '';
+    }
 
   }
 
@@ -51,17 +59,12 @@ export class NewSquealsComponent implements OnInit {
     this.newSqueal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
   }
 
-  login() {
-    // Simulating login logic
-    this.isLoggedIn = true;
-  }
-
   addPost(): void {
     const newId = this.squeals.length + 1;
     const newSqueal: Squeal = {
       id: newId,
       profileImage: null,
-      username: 'delusional',
+      username: this.username,
       content: this.newSqueal.content,
       timestamp: new Date()
     };
