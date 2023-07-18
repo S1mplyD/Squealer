@@ -34,8 +34,6 @@ export async function startAllTimer() {
 export async function startTimer(squeal: TimedSqueal, author: string) {
   let interval: NodeJS.Timeout;
   interval = setInterval(async () => {
-    console.log("interval");
-
     const newSqueal: TimedSqueal | null = await timedSquealModel
       .findById(squeal._id)
       .lean();
