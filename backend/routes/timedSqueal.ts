@@ -6,6 +6,7 @@ import {
   postTimedSqueal,
 } from "../database/querys/timedSqueal";
 import { startTimer } from "../util/timers";
+import { Success } from "../util/success";
 
 export const router = express.Router();
 
@@ -33,9 +34,13 @@ router
       const squeal: TimedSqueal = req.body;
       const newSqueal: TimedSqueal = await postTimedSqueal(
         squeal,
-        (req.user as User).username,
+        (req.user as User).username
       );
-      startTimer(newSqueal, (req.user as User).username);
+      const ret: Error | Success = await startTimer(
+        newSqueal,
+        (req.user as User).username
+      );
+      res.send(ret);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
@@ -46,7 +51,10 @@ router
    */
   .delete(async (req, res) => {
     try {
-      await deleteTimedSqueal(req.query.id as string);
+      const ret: Error | Success | undefined = await deleteTimedSqueal(
+        req.query.id as string
+      );
+      res.send(ret);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
