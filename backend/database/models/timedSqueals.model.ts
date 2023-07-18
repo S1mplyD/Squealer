@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Schema, model, Document } from "mongoose";
 // squeal temporizzato di partenza
 interface TimedSqueal {
   body: string;
@@ -12,7 +12,6 @@ interface TimedSqueal {
   criticalMass?: number;
   visual: number;
   time?: number;
-  intervalId?: string;
   count?: number;
 }
 
@@ -33,13 +32,12 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
   // valori temporizzazione
   time: { type: Number, default: 0 }, //tempo per i messaggi automatici (in ms)
-  intervalId: { type: String }, // id dell'intervallo
   count: { type: Number }, // contatore di quante volte questo squeal è stato pubblicato
 });
 
 const timedSquealModel = model<TimedSquealDocument>(
   "timedSquealData",
-  timedSquealSchema,
+  timedSquealSchema
 );
 
 export default timedSquealModel;
