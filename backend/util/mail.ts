@@ -1,8 +1,6 @@
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
 config();
-console.log(process.env.GOOGLE_MAIL);
-console.log(process.env.PASSWORD);
 /**
  * transporter con i dati del servizio utilizzato per la mail
  */
@@ -24,7 +22,7 @@ export async function sendMail(token: string, mail: string) {
     from: "test@test.com",
     to: mail,
     subject: "Password reset",
-    html: `<h1>Reset passoword</h1><br><p>Your password reset token is ${token}</p>`,
+    html: `<h1>Reset passoword</h1><br><p>Your password reset token is: ${token}</p>`,
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
