@@ -1,11 +1,12 @@
+import timedSquealModel from "../database/models/timedSqueals.model";
 import { postAutomatedSqueal } from "../database/querys/automatedSqueal";
-import {
-  getAllTimers,
-  postTimedSqueal,
-  setSquealInterval,
-} from "../database/querys/timedSqueal";
+import { getAllTimers } from "../database/querys/timedSqueal";
 import { ErrorCodes, ErrorDescriptions, Error } from "./errors";
-import { TimedSqueal } from "./types";
+import { Success, SuccessCode, SuccessDescription } from "./success";
+import { Interval, TimedSqueal } from "./types";
+import mongoose, { Types } from "mongoose";
+
+var intervals: Array<Interval> = [];
 
 /**
  * funzione che attiva tutti i timer (da usare all'avvio del server)
@@ -31,13 +32,19 @@ export async function startAllTimer() {
  * @param id id dello squeal
  */
 export async function startTimer(squeal: TimedSqueal, author: string) {
-  console.log(squeal);
+  let interval: NodeJS.Timeout;
+  interval = setInterval(async () => {
+    console.log("interval");
 
-  const interval: any = setInterval(async () => {
-    await postAutomatedSqueal(squeal, squeal._id);
+    const newSqueal: TimedSqueal | null = await timedSquealModel
+      .findById(squeal._id)
+      .lean();
+    if (!newSqueal)
+      return new Error(ErrorDescriptions.no_timers, ErrorCodes.no_timers);
+    else await postAutomatedSqueal(newSqueal, newSqueal._id);
   }, squeal.time as number);
-
-  await setSquealInterval(squeal, interval as string);
+  const ret: Error | Success = await setSquealInterval(interval, squeal._id);
+  return ret;
 }
 
 /**
@@ -45,5 +52,37 @@ export async function startTimer(squeal: TimedSqueal, author: string) {
  * @param TimedSqueal squeal automatico da fermare
  */
 export async function stopTimer(squeal: TimedSqueal) {
-  clearInterval(squeal.intervalId);
+  clearInterval(await findInterval(squeal));
+  const newIntervals = intervals.filter(
+    (interval) => interval.id !== squeal._id
+  );
+  intervals = newIntervals;
+}
+
+export async function findInterval(squeal: TimedSqueal) {
+  const ret: Interval | undefined = intervals.find((el) =>
+    el.id.equals(squeal._id)
+  );
+  return ret?.timeout as NodeJS.Timeout;
+}
+
+/**
+ * funzione che salva gli intervalli degli squeal automatici
+ */
+export async function setSquealInterval(
+  timeout: NodeJS.Timeout,
+  id: mongoose.Types.ObjectId
+) {
+  const len: number = intervals.length;
+  const newInterval: Interval = {
+    timeout: timeout,
+    id: id,
+  };
+  intervals.push(newInterval);
+  console.log(newInterval.timeout);
+
+  if (intervals.length > len) {
+    return new Success(SuccessDescription.created, SuccessCode.created);
+  } else
+    return new Error(ErrorDescriptions.cannot_create, ErrorCodes.cannot_create);
 }

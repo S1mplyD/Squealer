@@ -2,6 +2,7 @@ import automatedSquealModel from "../models/automatedSqueal.model";
 import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
 import { Success, SuccessCode, SuccessDescription } from "../../util/success";
 import { AutomatedSqueal, TimedSqueal } from "../../util/types";
+import mongoose from "mongoose";
 
 export async function getAllAutomatedSqueals() {
   const squeals: AutomatedSqueal[] = await automatedSquealModel.find();
@@ -12,8 +13,9 @@ export async function getAllAutomatedSqueals() {
 
 export async function postAutomatedSqueal(
   squeal: TimedSqueal,
-  originalSqueal: string,
+  originalSqueal: mongoose.Types.ObjectId
 ) {
+  console.log("automated post");
   const newSqueal: AutomatedSqueal = await automatedSquealModel.create({
     body: squeal.body,
     recipients: squeal.recipients,
