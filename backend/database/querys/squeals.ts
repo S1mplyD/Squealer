@@ -9,8 +9,8 @@ import {
   Error as ErrorType,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
-import { ErrorCodes, Error, ErrorDescriptions } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
+import { created, removed } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import { stopTimer } from "../../util/timers";
 
@@ -32,8 +32,7 @@ export async function getAllSqueals() {
       ...squealsMedia,
       ...timedSqueal,
     ];
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (squeals.length < 1) return non_existent;
     else return squeals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -49,8 +48,7 @@ export async function getAllSqueals() {
 export async function getTextSqueals() {
   try {
     const squeals: any[] = await squealModel.find();
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (squeals.length < 1) return non_existent;
     else return squeals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -74,14 +72,10 @@ export async function postTextSqueal(squeal: Squeal) {
       channels: squeal.channels,
     });
 
-    if (!newSqueal)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
-      );
+    if (!newSqueal) return cannot_create;
     else {
       if (newSqueal.channels.length < 1) {
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       } else {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
@@ -92,7 +86,7 @@ export async function postTextSqueal(squeal: Squeal) {
             }
           }
         }
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       }
     }
   } catch (error: any) {
@@ -111,12 +105,8 @@ export async function deleteTextSqueal(id: string) {
       { _id: id },
       { returnDocument: "after" }
     );
-    if (deleted.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
+    if (deleted.deletedCount < 1) return cannot_delete;
+    else return removed;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
@@ -147,11 +137,7 @@ export async function getSquealsByRecipients(recipient: string) {
           }
         }
       }
-      if (squealArray.length < 1)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
+      if (squealArray.length < 1) return non_existent;
       else return squealArray;
     }
   } catch (error: any) {
@@ -186,11 +172,7 @@ export async function getSquealsByChannel(channel: string) {
           }
         }
       }
-      if (squealArray.length < 1)
-        return new Error(
-          ErrorDescriptions.non_existent,
-          ErrorCodes.non_existent
-        );
+      if (squealArray.length < 1) return non_existent;
       else return squealArray;
     }
   } catch (error: any) {

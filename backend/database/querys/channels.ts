@@ -1,5 +1,20 @@
-import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import {
+  Error,
+  ErrorCodes,
+  ErrorDescriptions,
+  cannot_create,
+  cannot_delete,
+  cannot_update,
+  non_existent,
+} from "../../util/errors";
+import {
+  Success,
+  SuccessCode,
+  SuccessDescription,
+  created,
+  removed,
+  updated,
+} from "../../util/success";
 import channelsModel from "../models/channels.model";
 
 /**
@@ -9,7 +24,7 @@ import channelsModel from "../models/channels.model";
 export async function getAllChannels() {
   const channels: any = await channelsModel.find();
   if (channels.length < 1) {
-    return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    return non_existent;
   } else {
     return channels;
   }
@@ -23,9 +38,8 @@ export async function getAllChannels() {
  */
 export async function createChannel(channelName: string) {
   const newChannel = await channelsModel.create({ name: channelName });
-  if (!newChannel)
-    return new Error(ErrorDescriptions.cannot_create, ErrorCodes.cannot_create);
-  else return new Success(SuccessDescription.created, SuccessCode.created);
+  if (!newChannel) return cannot_create;
+  else return created;
 }
 
 /**
@@ -43,16 +57,10 @@ export async function addSquealToChannel(
     { $push: { squeals: squealId } },
     { returnDocument: "after" }
   );
-  if (!updatedDoc)
-    return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+  if (!updatedDoc) return non_existent;
   else {
-    if (updatedDoc.squeals.includes(squealId))
-      return new Success(SuccessDescription.updated, SuccessCode.updated);
-    else
-      return new Error(
-        ErrorDescriptions.cannot_update,
-        ErrorCodes.cannot_update
-      );
+    if (updatedDoc.squeals.includes(squealId)) return updated;
+    else return cannot_update;
   }
 }
 
@@ -68,8 +76,8 @@ export async function deleteChannel(name: string) {
     { returnDocument: "after" }
   );
   if (deleted.deletedCount == 0) {
-    return new Error(ErrorDescriptions.cannot_delete, ErrorCodes.cannot_delete);
+    return cannot_delete;
   } else {
-    return new Success(SuccessDescription.removed, SuccessCode.removed);
+    return removed;
   }
 }

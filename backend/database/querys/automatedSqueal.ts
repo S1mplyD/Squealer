@@ -1,13 +1,17 @@
 import automatedSquealModel from "../models/automatedSqueal.model";
-import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import {
+  Error,
+  ErrorCodes,
+  ErrorDescriptions,
+  cannot_create,
+  non_existent,
+} from "../../util/errors";
 import { AutomatedSqueal, TimedSqueal } from "../../util/types";
 import mongoose from "mongoose";
 
 export async function getAllAutomatedSqueals() {
   const squeals: AutomatedSqueal[] = await automatedSquealModel.find();
-  if (squeals.length < 1)
-    return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+  if (squeals.length < 1) return non_existent;
   else return squeals;
 }
 
@@ -25,7 +29,6 @@ export async function postAutomatedSqueal(
     originalSqueal: originalSqueal,
     channels: squeal.channels,
   });
-  if (!newSqueal)
-    return new Error(ErrorDescriptions.cannot_create, ErrorCodes.cannot_create);
+  if (!newSqueal) return cannot_create;
   else return newSqueal;
 }

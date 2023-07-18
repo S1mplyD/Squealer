@@ -1,12 +1,8 @@
-// classe per i successi
-export class Success {
+export interface Success {
   message: SuccessDescription;
   code: SuccessCode;
-  constructor(message: SuccessDescription, code: SuccessCode) {
-    this.message = message;
-    this.code = code;
-  }
 }
+
 // enum per il codice dei successi
 export enum SuccessCode {
   created = 0,
@@ -26,3 +22,28 @@ export enum SuccessDescription {
   logged_out = "Logged out successfully",
   signed_up = "Signed up successfully",
 }
+
+export const created: Success = {
+  message: SuccessDescription.created,
+  code: SuccessCode.created,
+};
+export const updated: Success = {
+  message: SuccessDescription.updated,
+  code: SuccessCode.updated,
+};
+export const removed: Success = {
+  message: SuccessDescription.removed,
+  code: SuccessCode.removed,
+};
+export const logged_in: Success = {
+  message: SuccessDescription.logged_in,
+  code: SuccessCode.logged_in,
+};
+export const logged_out: Success = {
+  message: SuccessDescription.logged_out,
+  code: SuccessCode.logged_out,
+};
+export const signed_up: Success = {
+  message: SuccessDescription.signed_up,
+  code: SuccessCode.signed_up,
+};

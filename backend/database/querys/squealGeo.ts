@@ -1,5 +1,18 @@
-import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import {
+  Error,
+  ErrorCodes,
+  ErrorDescriptions,
+  cannot_create,
+  cannot_delete,
+  non_existent,
+} from "../../util/errors";
+import {
+  Success,
+  SuccessCode,
+  SuccessDescription,
+  created,
+  removed,
+} from "../../util/success";
 import { SquealGeo } from "../../util/types";
 import squealGeoModel from "../models/squealGeo.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
@@ -11,8 +24,7 @@ import { addSquealToChannel, getAllChannels } from "./channels";
 export async function getGeoSqueals() {
   try {
     const squeals: any[] = await squealGeoModel.find();
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (squeals.length < 1) return non_existent;
     else return squeals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -38,14 +50,10 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
       author: author,
     });
 
-    if (!newSqueal)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create,
-      );
+    if (!newSqueal) return cannot_create;
     else {
       if (newSqueal.channels.length < 1) {
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       } else {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
@@ -56,7 +64,7 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
             }
           }
         }
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       }
     }
   } catch (error: any) {
@@ -73,14 +81,10 @@ export async function deleteGeoSqueal(id: string) {
   try {
     const deleted: any = await squealGeoModel.deleteOne(
       { _id: id },
-      { returnDocument: "after" },
+      { returnDocument: "after" }
     );
-    if (deleted.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete,
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
+    if (deleted.deletedCount < 1) return cannot_delete;
+    else return removed;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }

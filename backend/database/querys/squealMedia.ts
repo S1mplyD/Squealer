@@ -1,6 +1,12 @@
 import { imagetypes, videotypes } from "../../util/constants";
-import { ErrorCodes, ErrorDescriptions, Error } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import {
+  cannot_delete,
+  non_existent,
+  not_recived,
+  not_supported,
+  cannot_create,
+} from "../../util/errors";
+import { created, removed } from "../../util/success";
 import { SquealMedia } from "../../util/types";
 import squealMediaModel from "../models/squalMedia.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
@@ -16,8 +22,7 @@ const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 export async function getMediaSqueals() {
   try {
     const squeals: SquealMedia[] = await squealMediaModel.find();
-    if (squeals.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (squeals.length < 1) return non_existent;
     else return squeals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -36,17 +41,14 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
     var type: string | undefined = filename.split(".").pop();
 
     if (typeof type === "undefined") {
-      return new Error(ErrorDescriptions.not_recived, ErrorCodes.not_recived);
+      return not_recived;
     } else {
       if (imagetypes.includes(type)) {
         type = "image";
       } else if (videotypes.includes(type)) {
         type = "video";
       } else {
-        return new Error(
-          ErrorDescriptions.not_supported,
-          ErrorCodes.not_supported
-        );
+        return not_supported;
       }
     }
 
@@ -59,14 +61,10 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
       channels: squeal.channels,
     });
 
-    if (!newSqueal)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create
-      );
+    if (!newSqueal) return cannot_create;
     else {
       if (newSqueal.channels.length < 1) {
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       } else {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
@@ -77,7 +75,7 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
             }
           }
         }
-        return new Success(SuccessDescription.created, SuccessCode.created);
+        return created;
       }
     }
   } catch (error: any) {
@@ -95,22 +93,15 @@ export async function deleteMediaSqueal(id: string) {
     const file = await squealMediaModel.findById(id);
     await fs.unlink(resolve(publicUploadPath, file?.body!), (err) => {
       if (err) {
-        return new Error(
-          ErrorDescriptions.cannot_delete,
-          ErrorCodes.cannot_delete
-        );
+        return cannot_delete;
       }
     });
     const deleted: any = await squealMediaModel.deleteOne(
       { _id: id },
       { returnDocument: "after" }
     );
-    if (deleted.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
+    if (deleted.deletedCount < 1) return cannot_delete;
+    else return removed;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }

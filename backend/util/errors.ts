@@ -1,11 +1,6 @@
-// classe per gli errori
-export class Error {
+export interface Error {
   message: ErrorDescriptions;
   code: ErrorCodes;
-  constructor(message: ErrorDescriptions, code: ErrorCodes) {
-    this.message = message;
-    this.code = code;
-  }
 }
 
 // enum per il codice degli errori
@@ -28,3 +23,38 @@ export enum ErrorDescriptions {
   not_supported = "File format not supported!",
   not_recived = "Nothing has been recived, check post request!",
 }
+
+export const cannot_create: Error = {
+  message: ErrorDescriptions.cannot_create,
+  code: ErrorCodes.cannot_create,
+};
+
+export const non_existent: Error = {
+  message: ErrorDescriptions.non_existent,
+  code: ErrorCodes.non_existent,
+};
+
+export const cannot_update: Error = {
+  message: ErrorDescriptions.cannot_update,
+  code: ErrorCodes.cannot_update,
+};
+
+export const no_timers: Error = {
+  message: ErrorDescriptions.no_timers,
+  code: ErrorCodes.no_timers,
+};
+
+export const cannot_delete: Error = {
+  message: ErrorDescriptions.cannot_delete,
+  code: ErrorCodes.cannot_delete,
+};
+
+export const not_supported: Error = {
+  message: ErrorDescriptions.not_supported,
+  code: ErrorCodes.not_supported,
+};
+
+export const not_recived: Error = {
+  message: ErrorDescriptions.not_recived,
+  code: ErrorCodes.not_recived,
+};

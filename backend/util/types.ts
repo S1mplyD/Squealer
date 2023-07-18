@@ -1,5 +1,6 @@
 import mongoose, { mongo } from "mongoose";
 import { ErrorCodes, ErrorDescriptions } from "./errors";
+import { SuccessCode, SuccessDescription } from "./success";
 
 // nuovo tipo Squeal
 export type Squeal = {
@@ -107,6 +108,11 @@ export type Channel = {
 export type Error = {
   message: ErrorDescriptions;
   code: ErrorCodes;
+};
+
+export type Success = {
+  message: SuccessDescription;
+  code: SuccessCode;
 };
 
 // nuovo tipo per intervalli

@@ -1,5 +1,20 @@
-import { Error, ErrorCodes, ErrorDescriptions } from "../../util/errors";
-import { Success, SuccessCode, SuccessDescription } from "../../util/success";
+import {
+  Error,
+  ErrorCodes,
+  ErrorDescriptions,
+  cannot_create,
+  cannot_delete,
+  cannot_update,
+  non_existent,
+} from "../../util/errors";
+import {
+  Success,
+  SuccessCode,
+  SuccessDescription,
+  created,
+  removed,
+  updated,
+} from "../../util/success";
 import { User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
@@ -13,8 +28,7 @@ const publicUploadPath = resolve(__dirname, "../../..", "public");
 export async function getAllUsers() {
   try {
     const users: any = await userModel.find();
-    if (users.length < 1)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (users.length < 1) return non_existent;
     else return users;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -32,7 +46,7 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string,
+  password: string
 ) {
   try {
     const doc = await userModel.create({
@@ -41,11 +55,7 @@ export async function createDefaultUser(
       mail: mail,
       password: password,
     });
-    if (!doc)
-      return new Error(
-        ErrorDescriptions.cannot_create,
-        ErrorCodes.cannot_create,
-      );
+    if (!doc) return cannot_create;
     else return doc;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -65,7 +75,7 @@ export async function createUserUsingGoogle(
   username: string,
   mail: string,
   serviceId: number,
-  profilePicture: string,
+  profilePicture: string
 ) {
   try {
     await userModel
@@ -77,13 +87,8 @@ export async function createUserUsingGoogle(
         profilePicture: profilePicture,
       })
       .then((doc) => {
-        if (!doc)
-          return new Error(
-            ErrorDescriptions.cannot_create,
-            ErrorCodes.cannot_create,
-          );
-        else
-          return new Success(SuccessDescription.created, SuccessCode.created);
+        if (!doc) return cannot_create;
+        else return created;
       });
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
@@ -101,13 +106,9 @@ export async function updateUser(user: User) {
         returnDocument: "after",
       })
       .then((doc) => {
-        if (!doc)
-          return new Error(
-            ErrorDescriptions.non_existent,
-            ErrorCodes.non_existent,
-          );
+        if (!doc) return non_existent;
         else {
-          return new Success(SuccessDescription.updated, SuccessCode.updated);
+          return updated;
         }
       });
   } catch (error: any) {
@@ -125,14 +126,10 @@ export async function updateProfilePicture(id: string, filename: string) {
   try {
     const user = await userModel.updateOne(
       { _id: id },
-      { profilepicture: filename },
+      { profilepicture: filename }
     );
-    if (user.modifiedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_update,
-        ErrorCodes.cannot_update,
-      );
-    else return new Success(SuccessDescription.updated, SuccessCode.updated);
+    if (user.modifiedCount < 1) return cannot_update;
+    else return updated;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
@@ -146,15 +143,11 @@ export async function deleteProfilePicture(id: string) {
   try {
     const user = await userModel.findById({ _id: id });
     fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
-      if (err)
-        return new Error(
-          ErrorDescriptions.cannot_delete,
-          ErrorCodes.cannot_delete,
-        );
+      if (err) return cannot_delete;
       else {
         const result = await user?.updateOne(
           { profilePicture: "default.png" },
-          { returnDocument: "after" },
+          { returnDocument: "after" }
         );
         console.log(result);
       }
@@ -178,12 +171,8 @@ export async function deleteAccount(mail: string, password: string) {
     const user = await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
     });
-    if (user.deletedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_delete,
-        ErrorCodes.cannot_delete,
-      );
-    else return new Success(SuccessDescription.removed, SuccessCode.removed);
+    if (user.deletedCount < 1) return cannot_delete;
+    else return removed;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
@@ -198,14 +187,10 @@ export async function updateResetToken(mail: string, token: string) {
   try {
     const result = await userModel.updateOne(
       { mail: mail },
-      { resetToken: token },
+      { resetToken: token }
     );
-    if (result.modifiedCount < 1)
-      return new Error(
-        ErrorDescriptions.cannot_update,
-        ErrorCodes.cannot_update,
-      );
-    else return new Success(SuccessDescription.updated, SuccessCode.updated);
+    if (result.modifiedCount < 1) return cannot_update;
+    else return updated;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
@@ -221,16 +206,10 @@ export async function updatePassword(mail: string, password: string) {
     const newDoc = await userModel
       .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
       .lean();
-    if (!newDoc)
-      return new Error(ErrorDescriptions.non_existent, ErrorCodes.non_existent);
+    if (!newDoc) return non_existent;
     else {
-      if (newDoc.password !== password)
-        return new Success(SuccessDescription.updated, SuccessCode.updated);
-      else
-        return new Error(
-          ErrorDescriptions.cannot_update,
-          ErrorCodes.cannot_update,
-        );
+      if (newDoc.password !== password) return updated;
+      else return cannot_update;
     }
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });

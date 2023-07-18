@@ -1,10 +1,10 @@
 import timedSquealModel from "../database/models/timedSqueals.model";
 import { postAutomatedSqueal } from "../database/querys/automatedSqueal";
 import { getAllTimers } from "../database/querys/timedSqueal";
-import { ErrorCodes, ErrorDescriptions, Error } from "./errors";
-import { Success, SuccessCode, SuccessDescription } from "./success";
-import { Interval, TimedSqueal } from "./types";
-import mongoose, { Types } from "mongoose";
+import { no_timers, cannot_create } from "./errors";
+import { created } from "./success";
+import { Interval, TimedSqueal, Error, Success } from "./types";
+import mongoose from "mongoose";
 
 var intervals: Array<Interval> = [];
 
@@ -12,17 +12,18 @@ var intervals: Array<Interval> = [];
  * funzione che attiva tutti i timer (da usare all'avvio del server)
  */
 export async function startAllTimer() {
+  console.log("[STARTING TIMERS...]");
   const squeals: TimedSqueal[] | Error | undefined = await getAllTimers();
+
   if (squeals instanceof Error) {
+    return squeals as Error;
+  } else if (squeals === undefined) {
     return squeals;
-  }
-  if (squeals) {
-    if (squeals.length > 0) {
-      for (let i of squeals) {
-        await startTimer(i as TimedSqueal, i.author);
-      }
-    } else return new Error(ErrorDescriptions.no_timers, ErrorCodes.no_timers);
-  } else return new Error(ErrorDescriptions.no_timers, ErrorCodes.no_timers);
+  } else if (Array.isArray(squeals)) {
+    for (let i of squeals) {
+      await startTimer(i, i.author);
+    }
+  } else return no_timers;
 }
 
 /**
@@ -37,8 +38,7 @@ export async function startTimer(squeal: TimedSqueal, author: string) {
     const newSqueal: TimedSqueal | null = await timedSquealModel
       .findById(squeal._id)
       .lean();
-    if (!newSqueal)
-      return new Error(ErrorDescriptions.no_timers, ErrorCodes.no_timers);
+    if (!newSqueal) return no_timers;
     else await postAutomatedSqueal(newSqueal, newSqueal._id);
   }, squeal.time as number);
   const ret: Error | Success = await setSquealInterval(interval, squeal._id);
@@ -80,7 +80,6 @@ export async function setSquealInterval(
   console.log(newInterval.timeout);
 
   if (intervals.length > len) {
-    return new Success(SuccessDescription.created, SuccessCode.created);
-  } else
-    return new Error(ErrorDescriptions.cannot_create, ErrorCodes.cannot_create);
+    return created;
+  } else return cannot_create;
 }
