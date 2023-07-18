@@ -145,7 +145,7 @@ export async function updateProfilePicture(id: string, filename: string) {
 export async function deleteProfilePicture(id: string) {
   try {
     const user = await userModel.findById({ _id: id });
-    await fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
+    fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
       if (err)
         return new Error(
           ErrorDescriptions.cannot_delete,
