@@ -60,7 +60,6 @@ export type TimedSqueal = {
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
   time: number | undefined; //tempo per i messaggi automatici (in ms)
-  intervalId: number | undefined; // id dell'intervallo
   count: number | undefined;
   _id: mongoose.Types.ObjectId;
 };
