@@ -1,3 +1,4 @@
+import mongoose, { mongo } from "mongoose";
 import { ErrorCodes, ErrorDescriptions } from "./errors";
 
 // nuovo tipo Squeal
@@ -61,7 +62,7 @@ export type TimedSqueal = {
   time: number | undefined; //tempo per i messaggi automatici (in ms)
   intervalId: number | undefined; // id dell'intervallo
   count: number | undefined;
-  _id: string;
+  _id: mongoose.Types.ObjectId;
 };
 
 export type AutomatedSqueal = {
@@ -107,4 +108,10 @@ export type Channel = {
 export type Error = {
   message: ErrorDescriptions;
   code: ErrorCodes;
+};
+
+// nuovo tipo per intervalli
+export type Interval = {
+  timeout: NodeJS.Timeout;
+  id: mongoose.Types.ObjectId;
 };
