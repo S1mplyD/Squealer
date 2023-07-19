@@ -13,6 +13,7 @@ export enum ErrorCodes {
   not_supported = 60,
   not_recived = 70,
   unauthorized = 80,
+  cannot_send = 90,
 }
 
 export enum ErrorDescriptions {
@@ -24,6 +25,7 @@ export enum ErrorDescriptions {
   not_supported = "File format not supported!",
   not_recived = "Nothing has been recived, check post request!",
   unauthorized = "You don't have enough permissions to perform this action!",
+  cannot_send = "Cannot send email!",
 }
 
 export const cannot_create: Error = {
@@ -64,4 +66,9 @@ export const not_recived: Error = {
 export const unauthorized: Error = {
   message: ErrorDescriptions.unauthorized,
   code: ErrorCodes.unauthorized,
+};
+
+export const cannot_send: Error = {
+  message: ErrorDescriptions.cannot_send,
+  code: ErrorCodes.cannot_send,
 };
