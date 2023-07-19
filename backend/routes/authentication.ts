@@ -5,7 +5,6 @@ import userModel from "../database/models/users.model";
 import {
   getAllUsers,
   createDefaultUser,
-  createUserUsingGoogle,
   updatePassword,
   updateResetToken,
 } from "../database/querys/users";
@@ -14,8 +13,9 @@ import bcrypt from "bcryptjs";
 import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
-import { Success, SuccessCode, SuccessDescription } from "../util/success";
-import { Error } from "../util/errors";
+import { Success, logged_in, sent, signed_up } from "../util/success";
+import { cannot_send, cannot_update, non_existent } from "../util/errors";
+import { Error, User } from "../util/types";
 config();
 
 export const router = express.Router();
@@ -49,13 +49,13 @@ passport.use(
           done(null, currentUser);
         }
       });
-    },
-  ),
+    }
+  )
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
@@ -63,7 +63,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.redirect("/");
-  },
+  }
 );
 
 /**
@@ -86,7 +86,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  }),
+  })
 );
 
 /**
@@ -108,7 +108,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword,
+            encryptedPassword
           );
           if (newUser) {
             return done(null, newUser);
@@ -119,19 +119,18 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    },
-  ),
+    }
+  )
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(new Success(SuccessDescription.logged_in, SuccessCode.logged_in));
+    res.send(logged_in);
   }
 });
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
-  if (req.user)
-    res.send(new Success(SuccessDescription.signed_up, SuccessCode.signed_up));
+  if (req.user) res.send(signed_up);
 });
 
 passport.deserializeUser((id, done) => {
@@ -167,16 +166,17 @@ router
    * Genero un token e lo invio per mail all'utente
    */
   .get(async (req, res) => {
-    //TODO separare funzioni
-    const mail: any = req.query.mail;
+    const mail: string = req.query.mail as string;
     const token: string = generate();
-    console.log(token);
 
-    await sendMail(token, mail).then(async () => {
-      await updateResetToken(mail, token).finally(() => {
-        res.sendStatus(200);
-      });
-    });
+    const returnValue = await sendMail(token, mail);
+    const queryResult: Error | Success | undefined = await updateResetToken(
+      mail,
+      token
+    );
+    if (queryResult === undefined) return cannot_update;
+    else if (returnValue instanceof Error) return returnValue;
+    else res.send(sent);
   })
   /**
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
@@ -190,16 +190,25 @@ router
     if (token === user.resetToken) {
       const ret: Error | Success | undefined = await updatePassword(
         mail,
-        encryptedPassword,
+        encryptedPassword
       );
-      res.send(ret);
+      if (!ret) {
+        res.send(cannot_update);
+      } else {
+        res.send(ret);
+      }
     }
   });
 
+/**
+ * GET
+ * funzione che ritorna tutti gli utenti
+ */
 router.route("/").get(async (req, res) => {
   try {
-    const users = await getAllUsers();
-    res.send(users);
+    const users: User[] | Error | undefined = await getAllUsers();
+    if (users === undefined) res.send(non_existent);
+    else res.send(users);
   } catch (error: any) {
     res.send({ errorName: error.name, errorDescription: error.message });
   }
