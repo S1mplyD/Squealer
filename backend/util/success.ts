@@ -11,6 +11,7 @@ export enum SuccessCode {
   logged_in = 3,
   logged_out = 4,
   signed_up = 5,
+  sent = 6,
 }
 
 // enum per le descrizioni dei successi
@@ -21,6 +22,7 @@ export enum SuccessDescription {
   logged_in = "Logged in successfully",
   logged_out = "Logged out successfully",
   signed_up = "Signed up successfully",
+  sent = "Email sent correctly",
 }
 
 export const created: Success = {
@@ -46,4 +48,9 @@ export const logged_out: Success = {
 export const signed_up: Success = {
   message: SuccessDescription.signed_up,
   code: SuccessCode.signed_up,
+};
+
+export const sent: Success = {
+  message: SuccessDescription.sent,
+  code: SuccessCode.sent,
 };
