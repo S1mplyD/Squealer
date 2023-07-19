@@ -41,7 +41,6 @@ export async function getTimedSqueal(id: mongoose.Types.ObjectId) {
  * funzione che crea uno squeal temporizzato (per farlo partire usare la funzione apposita)
  * @param squeal squeal temporizzato
  */
-//TODO
 export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
   try {
     const newSqueal: any = await timedSquealModel.create({
