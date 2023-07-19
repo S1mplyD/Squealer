@@ -28,7 +28,7 @@ const userSchema = new Schema<UserDocument>({
   dailyCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
   weeklyCharacters: { type: Number, required: true, default: 2000 }, //Caratteri settimanali
   monthlyCharacters: { type: Number, required: true, default: 7500 }, //Caratteri mensili
-  plan: { type: String, default: "base" }, //Tipo di account (base, [verificato], professional, journalist, moderatore)
+  plan: { type: String, default: "base" }, //Tipo di account (base, [verificato], professional, journalist, admin)
   SMM: { type: String }, // SMM dell´account, modificabile solo se l'account è professional
   managedAccounts: { type: [String] }, //Account gestiti da un SMM, modificabile se il plan è pro
   resetToken: { type: String, default: "" },
