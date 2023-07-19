@@ -6,13 +6,14 @@ import {
   TimedSqueal,
   SquealGeo,
   SquealMedia,
-  Error as ErrorType,
+  Error,
+  Success,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
 import { created, removed } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
-import { stopTimer } from "../../util/timers";
+import mongoose from "mongoose";
 
 //FUNZIONI GLOBALI
 
@@ -55,6 +56,12 @@ export async function getTextSqueals() {
   }
 }
 
+export async function getTextSqueal(id: mongoose.Types.ObjectId) {
+  const squeal: Squeal | null = await squealModel.findById(id);
+  if (!squeal) return non_existent;
+  else return squeal;
+}
+
 /**
  * crea un nuovo squeal (non automatizzato)
  * @param squeal oggetto contenente i parametri dello squeal
@@ -81,7 +88,10 @@ export async function postTextSqueal(squeal: Squeal) {
           for (let j of channels) {
             if (i === j.name) {
               const id: unknown = newSqueal._id;
-              const ret: any = await addSquealToChannel(j.name, id as string);
+              const ret: Error | Success = await addSquealToChannel(
+                j.name,
+                id as string
+              );
               return ret;
             }
           }
@@ -126,9 +136,9 @@ export async function getSquealsByRecipients(recipient: string) {
         | SquealMedia
         | TimedSqueal
       )[];
-    if (squeals instanceof Error) return Error;
+    if (squeals instanceof Error) return squeals;
     else {
-      let squealArray: any[] = [];
+      let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
       //Controllo che il destinatario ricercato sia presente in uno squeal
       for (let i of squeals) {
         for (let j of i.recipients) {
@@ -159,9 +169,9 @@ export async function getSquealsByChannel(channel: string) {
         | SquealMedia
         | TimedSqueal
       )[];
-    if (squeals instanceof Error) return Error;
+    if (squeals instanceof Error) return squeals;
     else {
-      let squealArray: any[] = [];
+      let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
       //Controllo che il destinatario ricercato sia presente in uno squeal
       for (let i of squeals) {
         if (i.channels) {
