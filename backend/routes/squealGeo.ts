@@ -46,7 +46,6 @@ router
    * DELETE
    * chiamata per rimuovere un geo squeal
    */
-  //TODO controllo per SMM
   .delete(async (req, res) => {
     try {
       // Controllo se l'utente è loggato
@@ -65,7 +64,13 @@ router
         );
         if (squeal instanceof Error) return squeal;
         else {
-          if ((squeal as SquealGeo).author === (req.user as User).username) {
+          //Controllo se l'utente è il creatore dello squeal oppure se gestisce l'account del creatore dello squeal
+          if (
+            (squeal as SquealGeo).author === (req.user as User).username ||
+            (req.user as User).managedAccounts.includes(
+              (squeal as SquealGeo).author as string
+            )
+          ) {
             const returnValue: Error | Success | undefined =
               await deleteGeoSqueal(req.query.id as string);
             res.send(returnValue);
@@ -76,3 +81,22 @@ router
       res.send({ errorName: error.name, errorDescription: error.message });
     }
   });
+
+/**
+ * POST
+ * chiamata per permettere al social media manager di postare a nome di un account gestito
+ */
+router.route("/smm").post(async (req, res) => {
+  try {
+    if (
+      (req.user as User).managedAccounts.includes(req.query.username as string)
+    ) {
+      const returnValue = await postGeoSqueal(
+        req.body as SquealGeo,
+        req.query.username as string
+      );
+    } else res.send(unauthorized);
+  } catch (error: any) {
+    res.send({ errorName: error.name, errorDescription: error.message });
+  }
+});

@@ -89,7 +89,12 @@ router
         );
         if (squeal instanceof Error) return squeal;
         else {
-          if ((squeal as Squeal).author === (req.user as User).username) {
+          if (
+            (squeal as Squeal).author === (req.user as User).username ||
+            (req.user as User).managedAccounts.includes(
+              (squeal as Squeal).author as string
+            )
+          ) {
             const returnValue: Error | Success | undefined =
               await deleteTextSqueal(req.query.id as string);
             res.send(returnValue);

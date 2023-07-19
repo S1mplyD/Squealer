@@ -62,7 +62,12 @@ router
         );
         if (squeal instanceof Error) return squeal;
         else {
-          if ((squeal as SquealMedia).author === (req.user as User).username) {
+          if (
+            (squeal as SquealMedia).author === (req.user as User).username ||
+            (req.user as User).managedAccounts.includes(
+              (squeal as SquealMedia).author as string
+            )
+          ) {
             const returnValue: Error | Success | undefined =
               await deleteMediaSqueal(req.query.id as string);
             res.send(returnValue);
