@@ -8,6 +8,7 @@ import {
   SquealMedia,
   Error,
   Success,
+  Id,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
@@ -87,11 +88,8 @@ export async function postTextSqueal(squeal: Squeal) {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
             if (i === j.name) {
-              const id: unknown = newSqueal._id;
-              const ret: Error | Success = await addSquealToChannel(
-                j.name,
-                id as string
-              );
+              const id: Id = newSqueal._id;
+              const ret: Error | Success = await addSquealToChannel(j.name, id);
               return ret;
             }
           }

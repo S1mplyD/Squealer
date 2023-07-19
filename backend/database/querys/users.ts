@@ -27,7 +27,7 @@ const publicUploadPath = resolve(__dirname, "../../..", "public");
  */
 export async function getAllUsers() {
   try {
-    const users: any = await userModel.find();
+    const users: User[] | null = await userModel.find();
     if (users.length < 1) return non_existent;
     else return users;
   } catch (error: any) {

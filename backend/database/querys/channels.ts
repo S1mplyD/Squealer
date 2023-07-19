@@ -15,6 +15,7 @@ import {
   removed,
   updated,
 } from "../../util/success";
+import { Channel, Id } from "../../util/types";
 import channelsModel from "../models/channels.model";
 
 /**
@@ -22,7 +23,7 @@ import channelsModel from "../models/channels.model";
  * @returns Error o tutti i canali
  */
 export async function getAllChannels() {
-  const channels: any = await channelsModel.find();
+  const channels: Channel[] = await channelsModel.find();
   if (channels.length < 1) {
     return non_existent;
   } else {
@@ -48,10 +49,7 @@ export async function createChannel(channelName: string) {
  * @param squealId id dello squeal da aggiungere al canale
  * @returns Error non existent, Error cannot update o Success
  */
-export async function addSquealToChannel(
-  channelName: string,
-  squealId: string
-) {
+export async function addSquealToChannel(channelName: string, squealId: Id) {
   const updatedDoc: any = await channelsModel.findOneAndUpdate(
     { name: channelName },
     { $push: { squeals: squealId } },

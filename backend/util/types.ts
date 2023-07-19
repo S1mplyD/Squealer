@@ -1,6 +1,7 @@
 import mongoose, { mongo } from "mongoose";
 import { ErrorCodes, ErrorDescriptions } from "./errors";
 import { SuccessCode, SuccessDescription } from "./success";
+export type Id = mongoose.Types.ObjectId;
 
 // nuovo tipo Squeal
 export type Squeal = {
@@ -15,7 +16,7 @@ export type Squeal = {
   //Non visualizzabili
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
-  _id: string;
+  _id: Id;
 };
 
 export type SquealGeo = {
@@ -30,7 +31,7 @@ export type SquealGeo = {
   author: string;
   criticalMass?: number;
   visual?: number;
-  _id: string;
+  _id: Id;
 };
 
 export type SquealMedia = {
@@ -45,6 +46,7 @@ export type SquealMedia = {
   author: string;
   criticalMass?: number;
   visual?: number;
+  _id: Id;
 };
 
 // nuovo tipo per squeal temporizzati
@@ -62,7 +64,7 @@ export type TimedSqueal = {
   visual: number | undefined; //Visualizzazioni di account registrati e non
   time: number | undefined; //tempo per i messaggi automatici (in ms)
   count: number | undefined;
-  _id: mongoose.Types.ObjectId;
+  _id: Id;
 };
 
 export type AutomatedSqueal = {
@@ -78,11 +80,12 @@ export type AutomatedSqueal = {
   visual: number;
   originalSqueal: string;
   count?: number;
+  _id: Id;
 };
 
 // nuovo tipo utente
 export type User = {
-  _id: string; // mongodb id
+  _id: Id; // mongodb id
   name: string; //Nome completo (nome e cognome)
   username: string; // Username dell'utente
   mail: string; // Mail dell'utente
@@ -94,7 +97,7 @@ export type User = {
   monthlyCharacters: number; //Caratteri mensili
   plan: string; //Tipo di account (base, [verificato], professional, journalist, moderatore)
   SMM: string | undefined; // SMM dell´account, modificabile solo se l'account è professional
-  managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro
+  managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro (username)
   resetToken: string;
 };
 
@@ -118,5 +121,5 @@ export type Success = {
 // nuovo tipo per intervalli
 export type Interval = {
   timeout: NodeJS.Timeout;
-  id: mongoose.Types.ObjectId;
+  id: Id;
 };
