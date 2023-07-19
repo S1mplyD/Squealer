@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   Error,
   ErrorCodes,
@@ -29,6 +30,12 @@ export async function getGeoSqueals() {
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+export async function getGeoSqueal(id: mongoose.Types.ObjectId) {
+  const squeal: SquealGeo | null = await squealGeoModel.findById(id);
+  if (!squeal) return non_existent;
+  else return squeal;
 }
 
 /**
