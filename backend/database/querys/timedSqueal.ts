@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   Error,
   ErrorCodes,
@@ -28,6 +29,12 @@ export async function getAllTimers() {
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+export async function getTimedSqueal(id: mongoose.Types.ObjectId) {
+  const timedSqueal: TimedSqueal | null = await timedSquealModel.findById(id);
+  if (!timedSqueal) return non_existent;
+  else return timedSqueal;
 }
 
 /**
