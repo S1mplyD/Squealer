@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { imagetypes, videotypes } from "../../util/constants";
 import {
   cannot_delete,
@@ -27,6 +28,12 @@ export async function getMediaSqueals() {
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+export async function getMediaSqueal(id: mongoose.Types.ObjectId) {
+  const squeal: SquealMedia | null = await squealMediaModel.findById(id);
+  if (!squeal) return non_existent;
+  else return squeal;
 }
 
 /**
