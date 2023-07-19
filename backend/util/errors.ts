@@ -12,6 +12,7 @@ export enum ErrorCodes {
   cannot_delete = 50,
   not_supported = 60,
   not_recived = 70,
+  unauthorized = 80,
 }
 
 export enum ErrorDescriptions {
@@ -22,6 +23,7 @@ export enum ErrorDescriptions {
   cannot_delete = "Cannot delete!",
   not_supported = "File format not supported!",
   not_recived = "Nothing has been recived, check post request!",
+  unauthorized = "You don't have enough permissions to perform this action!",
 }
 
 export const cannot_create: Error = {
@@ -57,4 +59,9 @@ export const not_supported: Error = {
 export const not_recived: Error = {
   message: ErrorDescriptions.not_recived,
   code: ErrorCodes.not_recived,
+};
+
+export const unauthorized: Error = {
+  message: ErrorDescriptions.unauthorized,
+  code: ErrorCodes.unauthorized,
 };
