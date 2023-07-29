@@ -1,21 +1,11 @@
 import {
-  Error,
-  ErrorCodes,
-  ErrorDescriptions,
   cannot_create,
   cannot_delete,
   cannot_update,
   non_existent,
 } from "../../util/errors";
-import {
-  Success,
-  SuccessCode,
-  SuccessDescription,
-  created,
-  removed,
-  updated,
-} from "../../util/success";
-import { User } from "../../util/types";
+import { created, removed, updated } from "../../util/success";
+import { Id, User, Error } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
 import { resolve } from "path";
@@ -33,6 +23,17 @@ export async function getAllUsers() {
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+/**
+ * funzione che ritorna un utente
+ * @param id id dell'utente
+ * @returns Error | User
+ */
+export async function getUser(id: Id) {
+  const user: User | null = await userModel.findOne({ _id: id });
+  if (!user) return non_existent;
+  else return user;
 }
 
 /**
