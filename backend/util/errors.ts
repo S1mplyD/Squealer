@@ -6,14 +6,16 @@ export interface Error {
 // enum per il codice degli errori
 export enum ErrorCodes {
   cannot_create = 10,
+  cannot_delete = 11,
+  cannot_send = 12,
+  cannot_update = 13,
+
   non_existent = 20,
-  cannot_update = 30,
-  no_timers = 40,
-  cannot_delete = 50,
-  not_supported = 60,
-  not_recived = 70,
-  unauthorized = 80,
-  cannot_send = 90,
+  no_timers = 21,
+  no_characters = 22,
+  not_supported = 30,
+  not_recived = 31,
+  unauthorized = 40,
 }
 
 export enum ErrorDescriptions {
@@ -26,6 +28,7 @@ export enum ErrorDescriptions {
   not_recived = "Nothing has been recived, check post request!",
   unauthorized = "You don't have enough permissions to perform this action!",
   cannot_send = "Cannot send email!",
+  no_characters = "Not enough characters",
 }
 
 export const cannot_create: Error = {
@@ -71,4 +74,9 @@ export const unauthorized: Error = {
 export const cannot_send: Error = {
   message: ErrorDescriptions.cannot_send,
   code: ErrorCodes.cannot_send,
+};
+
+export const no_characters: Error = {
+  message: ErrorDescriptions.no_characters,
+  code: ErrorCodes.no_characters,
 };
