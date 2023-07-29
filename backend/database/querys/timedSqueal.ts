@@ -1,20 +1,13 @@
 import mongoose from "mongoose";
 import {
-  Error,
-  ErrorCodes,
-  ErrorDescriptions,
   cannot_create,
   cannot_delete,
+  cannot_update,
   non_existent,
 } from "../../util/errors";
-import {
-  Success,
-  SuccessCode,
-  SuccessDescription,
-  removed,
-} from "../../util/success";
+import { removed, updated } from "../../util/success";
 import { stopTimer } from "../../util/timers";
-import { TimedSqueal } from "../../util/types";
+import { Id, TimedSqueal } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 
 /**
@@ -85,4 +78,19 @@ export async function deleteTimedSqueal(id: string) {
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+/**
+ * funzione che aggiorna il conteggio dei post automatici
+ * @param id id dello squeal
+ * @returns Success | Error
+ */
+export async function updateCount(id: Id) {
+  const update = await timedSquealModel.updateOne(
+    { _id: id },
+    { $inc: { count: 1 } }
+  );
+  if (update.modifiedCount < 1) {
+    return updated;
+  } else return cannot_update;
 }
