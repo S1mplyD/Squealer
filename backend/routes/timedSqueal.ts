@@ -43,7 +43,8 @@ router
         );
         const ret: Error | Success = await startTimer(
           newSqueal,
-          (req.user as User).username
+          (req.user as User).username,
+          (req.user as User)._id
         );
         res.send(ret);
       }
