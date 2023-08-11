@@ -6,9 +6,13 @@ import {
   Success,
   TimedSqueal,
   Error,
+  TimedSquealGeo,
+  AutomatedGeoSqueal,
 } from "../../util/types";
 import { updateCount } from "./timedSqueal";
 import { getUserCharacter, updateDailyCharacters } from "../../util/characters";
+import { geoCharacters } from "../../util/constants";
+import automatedSquealGeoModel from "../models/automatedSquealGeo";
 
 export async function getAllAutomatedSqueals() {
   const squeals: AutomatedSqueal[] = await automatedSquealModel.find();
@@ -24,7 +28,7 @@ export async function getAllAutomatedSqueals() {
  * @returns Error | AutomatedSqueal
  */
 export async function postAutomatedSqueal(
-  squeal: TimedSqueal,
+  squeal: TimedSqueal | TimedSquealGeo,
   originalSqueal: Id,
   userId: Id,
 ) {
@@ -39,30 +43,60 @@ export async function postAutomatedSqueal(
       number,
       number,
     ];
-    if (dailyCharacters > squeal.body.length) {
-      const newSqueal: AutomatedSqueal = await automatedSquealModel.create({
-        body: squeal.body,
-        recipients: squeal.recipients,
-        date: new Date(),
-        category: squeal.category,
-        author: squeal.author,
-        originalSqueal: originalSqueal,
-        channels: squeal.channels,
-      });
-      if (!newSqueal) return cannot_create;
-      else {
-        const updateCharacter: Error | Success = await updateDailyCharacters(
-          userId,
-          newSqueal.body.length,
-        );
-        if (updateCharacter instanceof Error) return updateCharacter;
-        const count: Error | Success = await updateCount(squeal._id);
-        if (count instanceof Error) {
-          return count;
-        } else {
-          return newSqueal;
+    if ("body" in squeal) {
+      if (dailyCharacters > squeal.body.length) {
+        const newSqueal: AutomatedSqueal = await automatedSquealModel.create({
+          body: squeal.body,
+          recipients: squeal.recipients,
+          date: new Date(),
+          category: squeal.category,
+          author: squeal.author,
+          originalSqueal: originalSqueal,
+          channels: squeal.channels,
+        });
+        if (!newSqueal) return cannot_create;
+        else {
+          const updateCharacter: Error | Success = await updateDailyCharacters(
+            userId,
+            newSqueal.body.length,
+          );
+          if (updateCharacter instanceof Error) return updateCharacter;
+          const count: Error | Success = await updateCount(squeal._id);
+          if (count instanceof Error) {
+            return count;
+          } else {
+            return newSqueal;
+          }
         }
-      }
-    } else return no_characters;
+      } else return no_characters;
+    } else if ("lat" in squeal) {
+      if (dailyCharacters > geoCharacters) {
+        const newSqueal: AutomatedGeoSqueal =
+          await automatedSquealGeoModel.create({
+            lat: squeal.lat,
+            lng: squeal.lng,
+            recipients: squeal.recipients,
+            date: new Date(),
+            category: squeal.category,
+            author: squeal.author,
+            originalSqueal: originalSqueal,
+            channels: squeal.channels,
+          });
+        if (!newSqueal) return cannot_create;
+        else {
+          const updateCharacter: Error | Success = await updateDailyCharacters(
+            userId,
+            geoCharacters,
+          );
+          if (updateCharacter instanceof Error) return updateCharacter;
+          const count: Error | Success = await updateCount(squeal._id);
+          if (count instanceof Error) {
+            return count;
+          } else {
+            return newSqueal;
+          }
+        }
+      } else return no_characters;
+    }
   }
 }
