@@ -5,7 +5,7 @@ import {
   non_existent,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
-import { Id, User, Error } from "../../util/types";
+import { Id, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
 import { resolve } from "path";
@@ -47,7 +47,7 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string
+  password: string,
 ) {
   try {
     const doc = await userModel.create({
@@ -76,7 +76,7 @@ export async function createUserUsingGoogle(
   username: string,
   mail: string,
   serviceId: number,
-  profilePicture: string
+  profilePicture: string,
 ) {
   try {
     await userModel
@@ -127,7 +127,7 @@ export async function updateProfilePicture(id: string, filename: string) {
   try {
     const user = await userModel.updateOne(
       { _id: id },
-      { profilepicture: filename }
+      { profilepicture: filename },
     );
     if (user.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -148,7 +148,7 @@ export async function deleteProfilePicture(id: string) {
       else {
         const result = await user?.updateOne(
           { profilePicture: "default.png" },
-          { returnDocument: "after" }
+          { returnDocument: "after" },
         );
         console.log(result);
       }
@@ -188,7 +188,7 @@ export async function updateResetToken(mail: string, token: string) {
   try {
     const result = await userModel.updateOne(
       { mail: mail },
-      { resetToken: token }
+      { resetToken: token },
     );
     if (result.modifiedCount < 1) return cannot_update;
     else return updated;
