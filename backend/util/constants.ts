@@ -12,6 +12,7 @@ const defaultCharactersBase = [300, 2000, 7500];
 const defaultCharactersVerified = [600, 4000, 15000];
 const defaultCharactersProfessional = [1000, 6500, 25000];
 const defaultCharactersJournalist = [3000, 20000, 75000];
+const geoCharacters = 125;
 
 export {
   imagetypes,
@@ -21,4 +22,5 @@ export {
   defaultCharactersJournalist,
   defaultCharactersProfessional,
   defaultCharactersVerified,
+  geoCharacters,
 };
