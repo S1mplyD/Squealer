@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Squeal } from 'app/interfaces/squeal.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
-import { Account } from 'app/interfaces/account.interface';
+import { User } from 'app/interfaces/account.interface';
 import { AccountService } from 'app/services/account.service';
 
 @Component({
@@ -12,9 +12,9 @@ import { AccountService } from 'app/services/account.service';
 })
 export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
-  accounts: Account[] = [];
+  accounts: User[] = [];
 
-  newSqueal: Squeal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
+  newSqueal: Squeal = { id: 0, profileImage: undefined, username: '', content: '', timestamp: new Date() };
 
   isLoggedIn: boolean = false;
   username: string = '';
@@ -31,7 +31,7 @@ export class NewSquealsComponent implements OnInit {
     for (let tp of this.squeals) {
       for (const acc of this.accounts) {
         if (tp.username == acc.username) {
-          tp.profileImage = acc.profileImage;
+          tp.profileImage = acc.profilePicture;
         }
       }
     }
@@ -56,14 +56,14 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { id: 0, profileImage: null, username: '', content: '', timestamp: new Date() };
+    this.newSqueal = { id: 0, profileImage: undefined, username: '', content: '', timestamp: new Date() };
   }
 
   addPost(): void {
     const newId = this.squeals.length + 1;
     const newSqueal: Squeal = {
       id: newId,
-      profileImage: null,
+      profileImage: undefined,
       username: this.username,
       content: this.newSqueal.content,
       timestamp: new Date()
@@ -75,7 +75,7 @@ export class NewSquealsComponent implements OnInit {
     for (let tp of this.squeals) {
       for (const acc of this.accounts) {
         if (tp.username == acc.username) {
-          tp.profileImage = acc.profileImage;
+          tp.profileImage = acc.profilePicture;
         }
       }
     }

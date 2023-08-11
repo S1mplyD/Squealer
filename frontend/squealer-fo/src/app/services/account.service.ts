@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Account } from 'app/interfaces/account.interface';
+import { User } from 'app/interfaces/account.interface';
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  private accounts: Account[] = [
+  private accounts: User[] = [
     // Example tweets
     {
       id: 1,
       name: 'John Doe',
       username: 'johndoe',
-      profileImage: null,
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: undefined,
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -19,8 +25,14 @@ export class AccountService {
       id: 2,
       name: 'Jane Smith',
       username: 'janesmith',
-      profileImage: null,
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: undefined,
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -28,8 +40,14 @@ export class AccountService {
       id: 3,
       name: 'Lorenzo De Luise',
       username: 'delusional',
-      profileImage: '../../assets/delusional.jpg',
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'admin',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: '../../assets/delusional.jpg',
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -37,8 +55,14 @@ export class AccountService {
       id: 4,
       name: 'Luca Bennati',
       username: 'simplyd',
-      profileImage: null,
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'admin',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: undefined,
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -46,8 +70,14 @@ export class AccountService {
       id: 5,
       name: 'Fabio Vitali',
       username: 'fabiovitali',
-      profileImage: '../../assets/vitali.jpg',
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: '../../assets/vitali.jpg',
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -55,8 +85,14 @@ export class AccountService {
       id: 6,
       name: 'Carcarlo Pravettoni',
       username: 'gialappas',
-      profileImage: '../../assets/gialappas.jpg',
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: '../../assets/gialappas.jpg',
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -64,8 +100,14 @@ export class AccountService {
       id: 7,
       name: 'Adrian LaSerieEvento',
       username: 'adrian',
-      profileImage: '../../assets/trasferimento.jpg',
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: '../../assets/trasferimento.jpg',
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
@@ -73,20 +115,27 @@ export class AccountService {
       id: 8,
       name: 'Darian Befana',
       username: 'darian',
-      profileImage: '../../assets/darian.webp',
-      followerCount: 1,
+      mail: '',
+      dailyCharacters: 1000,
+      weeklyCharacters: 10000,
+      plan: 'base',
+      monthlyCharacters: 1000,
+      resetToken: '',
+      profilePicture: '../../assets/darian.webp',
+      followersCount: 1,
       followingCount: 10,
       createdAt: new Date()
     },
     // Add more tweets as needed
   ];
 
-  getAccounts(): Account[] {
+  getAccounts(): User[] {
     // Sort tweets by timestamp in descending order
     return this.accounts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
-  getSpecificAccount(username: string): Account | undefined{
-    let account: Account | undefined;
+
+  getSpecificAccount(username: string): User | undefined{
+    let account: User | undefined;
     account = this.accounts.find(element => element.username == username);
     return account;
   }

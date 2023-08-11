@@ -5,8 +5,8 @@
     <mat-card style="background-color: #ec8b0d;">
       <mat-card-header>
         <div mat-card-avatar class="profile-image">
-          <img *ngIf="account.profileImage" [src]="account.profileImage" [alt]="'profile image of ' + account.name" />
-          <img *ngIf="!account.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + account.name + ', but it seems to not be working properly...'" />
+          <img *ngIf="account.profilePicture" [src]="account.profilePicture" [alt]="'profile image of ' + account.name" />
+          <img *ngIf="!account.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account.name + ', but it seems to not be working properly...'" />
         </div>
         <mat-card-title style="color: white;"><h3>{{ account.name }}</h3></mat-card-title>
         <br>

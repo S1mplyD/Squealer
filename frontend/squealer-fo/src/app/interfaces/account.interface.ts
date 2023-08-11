@@ -1,11 +1,21 @@
-export interface Account {
+export interface User {
   id: number;
-  name: string;
+ name: string;
   username: string;
-  profileImage: string | null;
-  followerCount: number;
-  followingCount: number,
-  createdAt: Date
+  mail: string;
+  serviceId?: number;
+  password?: string;
+  profilePicture?: string;
+  dailyCharacters: number;
+  weeklyCharacters: number;
+  monthlyCharacters: number;
+  plan: string;
+  SMM?: string;
+  managedAccounts?: string[];
+  resetToken: string;
+  createdAt: Date;
+  followersCount: number;
+  followingCount: number;
 }
 
 

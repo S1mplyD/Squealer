@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Account } from 'app/interfaces/account.interface';
+import { User } from 'app/interfaces/account.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { Squeal } from 'app/interfaces/squeal.interface';
 import { ActivatedRoute } from '@angular/router';
@@ -12,8 +12,8 @@ import { AccountService } from 'app/services/account.service';
   styleUrls: ['./user-page.component.scss'],
 })
 export class UserPageComponent implements OnInit {
-  account: Account | undefined;
-  answerers!: Account[];
+  account: User | undefined;
+  answerers!: User[];
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
   userName!: string;
@@ -49,7 +49,7 @@ export class UserPageComponent implements OnInit {
     for (let tp of this.taggedPosts) {
       for (const answerer of this.answerers) {
         if (tp.username == answerer.username) {
-          tp.profileImage = answerer.profileImage;
+          tp.profileImage = answerer.profilePicture;
         }
       }
     }

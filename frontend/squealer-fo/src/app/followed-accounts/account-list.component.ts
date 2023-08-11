@@ -1,6 +1,6 @@
 // account-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { Account } from 'app/interfaces/account.interface';
+import { User } from 'app/interfaces/account.interface';
 import { Router } from '@angular/router';
 import { AccountService } from 'app/services/account.service';
 
@@ -10,7 +10,7 @@ import { AccountService } from 'app/services/account.service';
   styleUrls: ['./account-list.component.scss'],
 })
 export class AccountListComponent implements OnInit{
-  accounts: Account[] = [];
+  accounts: User[] = [];
   constructor(private router: Router,
     private accountService: AccountService) {}
     ngOnInit(): void {
