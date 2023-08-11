@@ -14,6 +14,9 @@ interface User {
   SMM?: string;
   managedAccounts?: string[];
   resetToken: string;
+  followersCount: number;
+  followingCount: number;
+  createdAt: Date;
 }
 
 interface UserDocument extends User, Document {}
@@ -28,10 +31,13 @@ const userSchema = new Schema<UserDocument>({
   dailyCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
   weeklyCharacters: { type: Number, required: true, default: 2000 }, //Caratteri settimanali
   monthlyCharacters: { type: Number, required: true, default: 7500 }, //Caratteri mensili
-  plan: { type: String, default: "base" }, //Tipo di account (base, [verificato], professional, journalist, admin)
+  plan: { type: String, default: "base", required: true }, //Tipo di account (base, [verificato], professional, journalist, admin)
   SMM: { type: String }, // SMM dell´account, modificabile solo se l'account è professional
   managedAccounts: { type: [String] }, //Account gestiti da un SMM, modificabile se il plan è pro (usermane)
   resetToken: { type: String, default: "" },
+  followersCount: { type: Number, defualt: 0, required: true },
+  followingCount: { type: Number, defualt: 0, required: true },
+  createdAt: { type: Date, required: true },
   // dailyExtraCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
   // weeklyExtraCharacters: { type: Number, required: true, default: 2000 }, //Caratteri settimanali
   // monthlyExtraCharacters: { type: Number, required: true, default: 7500 }, //Caratteri mensili
