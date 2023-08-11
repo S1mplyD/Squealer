@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Document } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 // squeal temporizzato di partenza
 interface TimedSqueal {
   body: string;
@@ -37,7 +37,7 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
 
 const timedSquealModel = model<TimedSquealDocument>(
   "timedSquealData",
-  timedSquealSchema
+  timedSquealSchema,
 );
 
 export default timedSquealModel;
