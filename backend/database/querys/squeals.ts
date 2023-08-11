@@ -9,12 +9,16 @@ import {
   Error,
   Success,
   Id,
+  TimedSquealGeo,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
 import { created, removed } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import mongoose from "mongoose";
+import timedSquealGeoModel from "../models/timedSquealGeo.model";
+import { getAllTextTimers } from "./timedSqueal";
+import { getAllGeoTimers } from "./timedSquealGeo";
 
 //FUNZIONI GLOBALI
 
@@ -28,17 +32,38 @@ export async function getAllSqueals() {
     const squealsGeo: SquealGeo[] = await squealGeoModel.find();
     const squealsMedia: SquealMedia[] = await squealMediaModel.find();
     const timedSqueal: TimedSqueal[] = await timedSquealModel.find();
-    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [
+    const timedGeoSqueal: TimedSquealGeo[] = await timedSquealGeoModel.find();
+    const squeals: (
+      | Squeal
+      | SquealGeo
+      | SquealMedia
+      | TimedSqueal
+      | TimedSquealGeo
+    )[] = [
       ...squealsText,
       ...squealsGeo,
       ...squealsMedia,
       ...timedSqueal,
+      ...timedGeoSqueal,
     ];
     if (squeals.length < 1) return non_existent;
     else return squeals;
   } catch (error: any) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
+}
+
+export async function getAllTimedSqueals() {
+  const timedTextSqueals: TimedSqueal[] | Error | undefined =
+    await timedSquealGeoModel.find();
+  const timedGeoSqueals: TimedSquealGeo[] | Error | undefined =
+    await timedSquealGeoModel.find();
+  const squeals: (TimedSqueal | TimedSquealGeo)[] = [
+    ...timedGeoSqueals,
+    ...timedTextSqueals,
+  ];
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
 }
 
 //FUNZIONI TEXT
@@ -111,7 +136,7 @@ export async function deleteTextSqueal(id: string) {
   try {
     const deleted: any = await squealModel.deleteOne(
       { _id: id },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     if (deleted.deletedCount < 1) return cannot_delete;
     else return removed;
