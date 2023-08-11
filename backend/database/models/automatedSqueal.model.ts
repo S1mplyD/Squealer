@@ -13,7 +13,6 @@ interface AutomatedSqueal {
   criticalMass?: number;
   visual: number;
   originalSqueal: string;
-  count?: number;
 }
 
 interface AutomatedSquealDocument extends Document, AutomatedSqueal {}
@@ -33,7 +32,6 @@ const automatedSquealSchema = new Schema<AutomatedSquealDocument>({
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
   // valori temporizzazione
   originalSqueal: { type: String, required: true },
-  count: { type: Number }, // contatore di quante volte questo squeal è stato pubblicato
 });
 
 const automatedSquealModel = model<AutomatedSquealDocument>(
