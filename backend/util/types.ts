@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { ErrorCodes, ErrorDescriptions } from "./errors";
 import { SuccessCode, SuccessDescription } from "./success";
 export type Id = mongoose.Types.ObjectId;
@@ -67,6 +67,26 @@ export type TimedSqueal = {
   _id: Id;
 };
 
+export type TimedSquealGeo = {
+  //visualizzabili
+  lat: string;
+  lng: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  author: string;
+  //non visualizzabili
+  criticalMass?: number;
+  visual?: number;
+  time?: number;
+  count?: number;
+  _id: Id;
+};
+
+//tipo per squeal di testo automatico
 export type AutomatedSqueal = {
   body: string;
   recipients: string[];
@@ -79,7 +99,23 @@ export type AutomatedSqueal = {
   criticalMass?: number;
   visual: number;
   originalSqueal: string;
-  count?: number;
+  _id: Id;
+};
+
+// tipo per squeal geo automatici
+export type AutomatedGeoSqueal = {
+  lat: string;
+  lng: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
+  author: string;
+  criticalMass?: number;
+  visual: number;
+  originalSqueal: string;
   _id: Id;
 };
 
@@ -99,6 +135,9 @@ export type User = {
   SMM: string | undefined; // SMM dell´account, modificabile solo se l'account è professional
   managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro (username)
   resetToken: string;
+  followersCount: number;
+  followingCount: number;
+  createdAt: Date;
 };
 
 // nuovo tipo canali
