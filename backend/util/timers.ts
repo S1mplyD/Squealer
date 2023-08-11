@@ -1,9 +1,18 @@
 import timedSquealModel from "../database/models/timedSqueals.model";
 import { postAutomatedSqueal } from "../database/querys/automatedSqueal";
-import { getAllTimers } from "../database/querys/timedSqueal";
+import { getAllTimedSqueals, getTextSqueal } from "../database/querys/squeals";
+import { getTimedSqueal } from "../database/querys/timedSqueal";
+import { getTimedSquealGeo } from "../database/querys/timedSquealGeo";
 import { no_timers, cannot_create } from "./errors";
 import { created } from "./success";
-import { Interval, TimedSqueal, Error, Success, Id } from "./types";
+import {
+  Interval,
+  TimedSqueal,
+  Error,
+  Success,
+  Id,
+  TimedSquealGeo,
+} from "./types";
 import mongoose from "mongoose";
 
 var intervals: Array<Interval> = [];
@@ -13,8 +22,8 @@ var intervals: Array<Interval> = [];
  */
 export async function startAllTimer() {
   console.log("[STARTING TIMERS...]");
-  const squeals: TimedSqueal[] | Error | undefined = await getAllTimers();
-
+  const squeals: (TimedSqueal | TimedSquealGeo)[] | Error =
+    await getAllTimedSqueals();
   if (squeals instanceof Error) {
     return squeals as Error;
   } else if (squeals === undefined) {
@@ -31,15 +40,23 @@ export async function startAllTimer() {
  * @param squeal lo squeal da postare
  * @param time il tempo necessario per postare uno squeal
  * @param id id dello squeal
+ * @returns Error | Success
  */
-export async function startTimer(squeal: TimedSqueal, userId: Id) {
+export async function startTimer(
+  squeal: TimedSqueal | TimedSquealGeo,
+  userId: Id,
+) {
   let interval: NodeJS.Timeout;
   interval = setInterval(async () => {
-    const newSqueal: TimedSqueal | null = await timedSquealModel
-      .findById(squeal._id)
-      .lean();
-    if (!newSqueal) return no_timers;
-    else await postAutomatedSqueal(newSqueal, newSqueal._id, userId);
+    const newSqueal: TimedSqueal | TimedSquealGeo | Error =
+      await getTimedSquealById(squeal._id);
+    if (newSqueal instanceof Error) return no_timers;
+    else
+      await postAutomatedSqueal(
+        newSqueal as TimedSqueal | TimedSquealGeo,
+        (newSqueal as TimedSqueal | TimedSquealGeo)._id,
+        userId,
+      );
   }, squeal.time as number);
   const ret: Error | Success = await setSquealInterval(interval, squeal._id);
   return ret;
@@ -49,7 +66,7 @@ export async function startTimer(squeal: TimedSqueal, userId: Id) {
  * funzione che ferma un post automatico
  * @param TimedSqueal squeal automatico da fermare
  */
-export async function stopTimer(squeal: TimedSqueal) {
+export async function stopTimer(squeal: TimedSqueal | TimedSquealGeo) {
   clearInterval(await findInterval(squeal));
   const newIntervals = intervals.filter(
     (interval) => interval.id !== squeal._id,
@@ -57,11 +74,29 @@ export async function stopTimer(squeal: TimedSqueal) {
   intervals = newIntervals;
 }
 
-export async function findInterval(squeal: TimedSqueal) {
+/**
+ * funzione che trova e ritorna l'intervalId di uno squeal
+ * @param TimedSqueal | TimedSquealGeo squeal
+ * @returns NodeJS.Timeout
+ */
+export async function findInterval(squeal: TimedSqueal | TimedSquealGeo) {
   const ret: Interval | undefined = intervals.find((el) =>
     el.id.equals(squeal._id),
   );
   return ret?.timeout as NodeJS.Timeout;
+}
+
+/**
+ *funzione che trova e ritorna uno squeal temporizzato dato un id
+ * @param id id dello squeal
+ * @returns TimedSqueal | TimedSquealGeo | Error
+ */
+export async function getTimedSquealById(id: Id) {
+  const timedSqueal: TimedSqueal | Error = await getTimedSqueal(id);
+  if (timedSqueal instanceof Error) {
+    const timedGeoSqueal: TimedSquealGeo | Error = await getTimedSquealGeo(id);
+    return timedGeoSqueal;
+  } else return timedSqueal;
 }
 
 /**
