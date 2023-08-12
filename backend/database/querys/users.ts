@@ -216,3 +216,25 @@ export async function updatePassword(mail: string, password: string) {
     console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
+
+/**
+ * funzione che aggiorna il numero di followers di un utente e il numero di followed del seguito
+ * @param userId id dell'utente che segue
+ * @param followId id dell'utente seguito
+ * @returns Error | Success
+ */
+export async function followUser(userId: Id, followId: Id) {
+  const update = await userModel.updateOne(
+    { _id: userId },
+    { $inc: { followersCount: 1 } },
+  );
+  if (update.modifiedCount < 1) return cannot_update;
+  else {
+    const updateUser = await userModel.updateOne(
+      { _id: followId },
+      { $inc: { followingCount: 1 } },
+    );
+    if (updateUser.modifiedCount < 1) return cannot_update;
+    else return updated;
+  }
+}
