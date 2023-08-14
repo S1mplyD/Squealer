@@ -125,7 +125,7 @@ passport.use(
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(logged_in);
+    res.send(req.user);
   }
 });
 

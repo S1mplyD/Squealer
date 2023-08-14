@@ -18,6 +18,7 @@ export class NewSquealsComponent implements OnInit {
 
   isLoggedIn: boolean = false;
   username: string = '';
+  plan: string | null = '';
   isPostFormOpen: boolean = false;
 
   constructor(
@@ -35,6 +36,7 @@ export class NewSquealsComponent implements OnInit {
         }
       }
     }
+    this.plan = localStorage.getItem('plan');
     if (localStorage.getItem('isLoggedIn') === 'false') {
       this.isLoggedIn = false;
     } else if (localStorage.getItem('isLoggedIn') === 'true') {

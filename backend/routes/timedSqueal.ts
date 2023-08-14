@@ -2,7 +2,7 @@ import express from "express";
 import { Error, TimedSqueal, User } from "../util/types";
 import {
   deleteTimedSqueal,
-  getAllTimers,
+  getAllTextTimers,
   getTimedSqueal,
   postTimedSqueal,
 } from "../database/querys/timedSqueal";
@@ -22,7 +22,7 @@ router
   .get(async (req, res) => {
     try {
       const timedSqueals: TimedSqueal[] | Error | undefined =
-        await getAllTimers();
+        await getAllTextTimers();
       res.send(timedSqueals);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });

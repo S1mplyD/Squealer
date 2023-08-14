@@ -13,39 +13,24 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   loginWithGoogle(): Observable<any> {
-    // Implement your login with Google logic here
-    // You can make a POST request to your authentication API to initiate the Google login process
-    // Example:
     return this.http.post(`${this.apiUrl}/google`, {});
   }
 
-  loginWithEmail(email: string, password: string): Observable<any> {
-    // Implement your login with email and password logic here
-    // You can make a POST request to your authentication API with the email and password
-    // Example:
-    return this.http.post(`${this.apiUrl}/login`, { email, password });
+  loginWithEmail(username: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { username, password });
   }
 
   signUp(mail: string, password: string, name: string, username: string): Observable<any> {
-    // Implement your sign up logic here
-    // You can make a POST request to your authentication API with the new user's email and password
-    // Example:
     return this.http.post(`${this.apiUrl}/register`, { mail, password, name, username });
   }
 
 
   recoverPassword(email: string): Observable<any> {
-    // Implement your password recovery logic here
-    // You can make a POST request to your authentication API to send a password reset email
-    // Example:
     return this.http.post(`${this.apiUrl}/forgotPassword`, { email });
 
   }
 
   logout(): Observable<any> {
-    // Implement your logout logic here
-    // You can make a POST request to your authentication API to invalidate the user's session
-    // Example:
     return this.http.post(`${this.apiUrl}/logout`, {});
   }
 }

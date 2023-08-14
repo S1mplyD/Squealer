@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from 'app/services/auth.service'; // Your authentication service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { User } from 'app/interfaces/account.interface';
 
 @Component({
   selector: 'app-auth',
@@ -11,6 +12,20 @@ import { Router } from '@angular/router';
 export class AuthComponent {
   isLoggedIn = false;
   userName: string = '';
+  user: User = {
+    id: 0,
+    name: '',
+    username: '',
+    mail: '',
+    dailyCharacters: 0,
+    weeklyCharacters: 0,
+    monthlyCharacters: 0,
+    plan: '',
+    resetToken: '',
+    createdAt: new Date(),
+    followersCount: 0,
+    followingCount: 0
+  };
   loginForm: FormGroup;
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
@@ -39,18 +54,26 @@ export class AuthComponent {
   }
 
   loginWithGoogle() {
-    this.authService.loginWithGoogle();
+    this.authService.loginWithGoogle()
+    .subscribe((acc) => {
+      this.user = acc;
+      localStorage.setItem('plan', acc.plan);
+      localStorage.setItem('username', acc.username);
+    });
     localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username','');
     this.router.navigateByUrl('');
   }
 
   loginWithEmail() {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
-    this.authService.loginWithEmail(email, password);
+    this.authService.loginWithEmail(email, password).subscribe((acc) => {
+      this.user = acc;
+      localStorage.setItem('plan', acc.plan);
+      localStorage.setItem('username', acc.username);
+    });
+
     localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username','');
     this.router.navigateByUrl('');
   }
 
@@ -59,9 +82,12 @@ export class AuthComponent {
     const password = this.signupForm.value.password;
     const username = this.signupForm.value.username;
     const name = this.signupForm.value.name;
-    this.authService.signUp(email, password, username, name);
+    this.authService.signUp(email, password, username, name).subscribe((acc) => {
+      this.user = acc;
+      localStorage.setItem('plan', acc.plan);
+      localStorage.setItem('username', acc.username);
+    });
     localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username', username);
     this.router.navigateByUrl('');
   }
 
