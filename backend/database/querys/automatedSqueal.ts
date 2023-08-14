@@ -14,8 +14,14 @@ import { getUserCharacter, updateDailyCharacters } from "../../util/characters";
 import { geoCharacters } from "../../util/constants";
 import automatedSquealGeoModel from "../models/automatedSquealGeo";
 
+/**
+ * funzione che ritorna tutti gli squeal automatizzati
+ * @returns Error | (...AutomatedSqueal,...AutomatedGeoSqueal)[]
+ */
 export async function getAllAutomatedSqueals() {
-  const squeals: AutomatedSqueal[] = await automatedSquealModel.find();
+  const squealstext: AutomatedSqueal[] = await automatedSquealModel.find();
+  const squealsgeo: AutomatedGeoSqueal[] = await automatedSquealGeoModel.find();
+  const squeals = [...squealsgeo, ...squealstext];
   if (squeals.length < 1) return non_existent;
   else return squeals;
 }
