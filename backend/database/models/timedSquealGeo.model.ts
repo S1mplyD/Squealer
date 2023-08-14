@@ -1,7 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 // squeal temporizzato di partenza
-interface TimedSqueal {
-  body: string;
+interface TimedSquealGeo {
+  lat: string;
+  lng: string;
   recipients: string[];
   date: Date;
   positiveReactions?: number;
@@ -15,11 +16,12 @@ interface TimedSqueal {
   count?: number;
 }
 
-interface TimedSquealDocument extends TimedSqueal, Document {}
+interface TimedSquealGeoDocument extends TimedSquealGeo, Document {}
 
-const timedSquealSchema = new Schema<TimedSquealDocument>({
+const timedSquealGeoSchema = new Schema<TimedSquealGeoDocument>({
   //Visualizzabili
-  body: { type: String, required: true }, //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
+  lat: { type: String, required: true },
+  lng: { type: String, required: true },
   recipients: { type: [String], required: true }, //Destinatari (individuo, canale o keyword)
   date: { type: Date, required: true }, //Data e ora messaggio
   positiveReactions: { type: Number },
@@ -35,9 +37,9 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
   count: { type: Number }, // contatore di quante volte questo squeal è stato pubblicato
 });
 
-const timedSquealModel = model<TimedSquealDocument>(
-  "timedSquealData",
-  timedSquealSchema,
+const timedSquealGeoModel = model<TimedSquealGeoDocument>(
+  "timedSquealGeoData",
+  timedSquealGeoSchema,
 );
 
-export default timedSquealModel;
+export default timedSquealGeoModel;

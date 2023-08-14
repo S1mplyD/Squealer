@@ -17,7 +17,6 @@ import { Error } from "./util/types";
 import fs from "fs";
 
 config();
-
 const maxAge: number = 24 * 60 * 60 * 1000;
 const app = express();
 const uri: string = process.env.MONGO_TEST!;

@@ -5,7 +5,6 @@ import userModel from "../database/models/users.model";
 import {
   getAllUsers,
   createDefaultUser,
-  createUserUsingGoogle,
   updatePassword,
   updateResetToken,
 } from "../database/querys/users";
@@ -14,7 +13,9 @@ import bcrypt from "bcryptjs";
 import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
-import { Success, SuccessCode, SuccessDescription } from "../util/success";
+import { Success, logged_in, sent, signed_up } from "../util/success";
+import { cannot_send, cannot_update, non_existent } from "../util/errors";
+import { Error, User } from "../util/types";
 config();
 
 export const router = express.Router();
@@ -25,34 +26,36 @@ export const router = express.Router();
 passport.use(
   new GoogleStrategy.Strategy(
     {
-      clientID: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      clientID: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      callbackURL: "http://localhost:3000/api/auth/google/callback",
     },
     (accessToken: any, refreshToken: any, profile: any, done: any) => {
       userModel.findOne({ serviceId: profile.id }).then((currentUser: any) => {
         if (!currentUser) {
           //Utente non registrato, lo creo
-          createUserUsingGoogle(
-            profile.displayName,
-            profile.displayName,
-            profile._json.email,
-            profile.id,
-            profile._json.picture,
-          ).then((newUser) => {
-            done(null, newUser);
-          });
+          userModel
+            .create({
+              name: profile.displayName,
+              username: profile.displayName,
+              mail: profile._json.email,
+              serviceId: profile.id,
+              profilePicture: profile._json.picture,
+            })
+            .then((newUser) => {
+              done(null, newUser);
+            });
         } else {
           done(null, currentUser);
         }
       });
-    },
-  ),
+    }
+  )
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["email", "profile"] }),
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
@@ -60,28 +63,12 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.redirect("/");
-  },
+  }
 );
 
 /**
  * Autenticazione locale
  */
-// passport.use(
-//   new LocalStrategy.Strategy((username, password, done) => {
-//     userModel.findOne({ mail: username }, async (err: any, user: any) => {
-//       if (err) {
-//         return done(err);
-//       }
-//       if (!user) {
-//         return done(null, false);
-//       }
-//       if (!(await bcrypt.compare(password, user.password))) {
-//         return done(null, false);
-//       }
-//       return done(null, user);
-//     });
-//   }),
-// );
 passport.use(
   new LocalStrategy.Strategy(async (username, password, done) => {
     try {
@@ -99,7 +86,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  }),
+  })
 );
 
 /**
@@ -121,7 +108,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword,
+            encryptedPassword
           );
           if (newUser) {
             return done(null, newUser);
@@ -132,18 +119,18 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    },
-  ),
+    }
+  )
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(new Success(SuccessDescription.logged_in, SuccessCode.logged_in));
+    res.send(logged_in);
   }
 });
-//TODO return value
+
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
-  res.json();
+  if (req.user) res.send(signed_up);
 });
 
 passport.deserializeUser((id, done) => {
@@ -179,16 +166,17 @@ router
    * Genero un token e lo invio per mail all'utente
    */
   .get(async (req, res) => {
-    //TODO separare funzioni
-    const mail: any = req.query.mail;
+    const mail: string = req.query.mail as string;
     const token: string = generate();
-    console.log(token);
 
-    await sendMail(token, mail).then(async () => {
-      await updateResetToken(mail, token).finally(() => {
-        res.sendStatus(200);
-      });
-    });
+    const returnValue = await sendMail(token, mail);
+    const queryResult: Error | Success | undefined = await updateResetToken(
+      mail,
+      token
+    );
+    if (queryResult === undefined) return cannot_update;
+    else if (returnValue instanceof Error) return returnValue;
+    else res.send(sent);
   })
   /**
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
@@ -197,17 +185,30 @@ router
     const token: any = req.body.token;
     const mail: any = req.query.mail;
     const user: any = await userModel.findOne({ mail: mail });
-
-    const password: any = req.query.password;
+    const password: any = req.body.password;
+    const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      await updatePassword(mail, password);
+      const ret: Error | Success | undefined = await updatePassword(
+        mail,
+        encryptedPassword
+      );
+      if (!ret) {
+        res.send(cannot_update);
+      } else {
+        res.send(ret);
+      }
     }
   });
 
+/**
+ * GET
+ * funzione che ritorna tutti gli utenti
+ */
 router.route("/").get(async (req, res) => {
   try {
-    const users = await getAllUsers();
-    res.send(users);
+    const users: User[] | Error | undefined = await getAllUsers();
+    if (users === undefined) res.send(non_existent);
+    else res.send(users);
   } catch (error: any) {
     res.send({ errorName: error.name, errorDescription: error.message });
   }

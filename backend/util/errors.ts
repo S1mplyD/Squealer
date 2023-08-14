@@ -1,22 +1,21 @@
-// classe per gli errori
-export class Error {
+export interface Error {
   message: ErrorDescriptions;
   code: ErrorCodes;
-  constructor(message: ErrorDescriptions, code: ErrorCodes) {
-    this.message = message;
-    this.code = code;
-  }
 }
 
 // enum per il codice degli errori
 export enum ErrorCodes {
-  cannot_create = 1,
-  non_existent = 2,
-  cannot_update = 3,
-  no_timers = 4,
-  cannot_delete = 5,
-  not_supported = 6,
-  not_recived = 7,
+  cannot_create = 10,
+  cannot_delete = 11,
+  cannot_send = 12,
+  cannot_update = 13,
+
+  non_existent = 20,
+  no_timers = 21,
+  no_characters = 22,
+  not_supported = 30,
+  not_recived = 31,
+  unauthorized = 40,
 }
 
 export enum ErrorDescriptions {
@@ -27,4 +26,57 @@ export enum ErrorDescriptions {
   cannot_delete = "Cannot delete!",
   not_supported = "File format not supported!",
   not_recived = "Nothing has been recived, check post request!",
+  unauthorized = "You don't have enough permissions to perform this action!",
+  cannot_send = "Cannot send email!",
+  no_characters = "Not enough characters",
 }
+
+export const cannot_create: Error = {
+  message: ErrorDescriptions.cannot_create,
+  code: ErrorCodes.cannot_create,
+};
+
+export const non_existent: Error = {
+  message: ErrorDescriptions.non_existent,
+  code: ErrorCodes.non_existent,
+};
+
+export const cannot_update: Error = {
+  message: ErrorDescriptions.cannot_update,
+  code: ErrorCodes.cannot_update,
+};
+
+export const no_timers: Error = {
+  message: ErrorDescriptions.no_timers,
+  code: ErrorCodes.no_timers,
+};
+
+export const cannot_delete: Error = {
+  message: ErrorDescriptions.cannot_delete,
+  code: ErrorCodes.cannot_delete,
+};
+
+export const not_supported: Error = {
+  message: ErrorDescriptions.not_supported,
+  code: ErrorCodes.not_supported,
+};
+
+export const not_recived: Error = {
+  message: ErrorDescriptions.not_recived,
+  code: ErrorCodes.not_recived,
+};
+
+export const unauthorized: Error = {
+  message: ErrorDescriptions.unauthorized,
+  code: ErrorCodes.unauthorized,
+};
+
+export const cannot_send: Error = {
+  message: ErrorDescriptions.cannot_send,
+  code: ErrorCodes.cannot_send,
+};
+
+export const no_characters: Error = {
+  message: ErrorDescriptions.no_characters,
+  code: ErrorCodes.no_characters,
+};

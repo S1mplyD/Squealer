@@ -1,6 +1,7 @@
 import { Schema, model, Document } from "mongoose";
-// squeal temporizzato di partenza
-interface TimedSqueal {
+
+// squeal temporizzati pubblicati
+interface AutomatedSqueal {
   body: string;
   recipients: string[];
   date: Date;
@@ -11,15 +12,14 @@ interface TimedSqueal {
   author: string;
   criticalMass?: number;
   visual: number;
-  time?: number;
-  count?: number;
+  originalSqueal: string;
 }
 
-interface TimedSquealDocument extends TimedSqueal, Document {}
+interface AutomatedSquealDocument extends Document, AutomatedSqueal {}
 
-const timedSquealSchema = new Schema<TimedSquealDocument>({
+const automatedSquealSchema = new Schema<AutomatedSquealDocument>({
   //Visualizzabili
-  body: { type: String, required: true }, //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
+  body: { type: String, required: true }, //Corpo del messaggio (testo)
   recipients: { type: [String], required: true }, //Destinatari (individuo, canale o keyword)
   date: { type: Date, required: true }, //Data e ora messaggio
   positiveReactions: { type: Number },
@@ -31,13 +31,12 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
   criticalMass: { type: Number }, //Massa critica (0,25 x visual)
   visual: { type: Number, default: 0, required: true }, //Visualizzazioni di account registrati e non
   // valori temporizzazione
-  time: { type: Number, default: 0 }, //tempo per i messaggi automatici (in ms)
-  count: { type: Number }, // contatore di quante volte questo squeal è stato pubblicato
+  originalSqueal: { type: String, required: true },
 });
 
-const timedSquealModel = model<TimedSquealDocument>(
-  "timedSquealData",
-  timedSquealSchema,
+const automatedSquealModel = model<AutomatedSquealDocument>(
+  "automatedSquealData",
+  automatedSquealSchema,
 );
 
-export default timedSquealModel;
+export default automatedSquealModel;

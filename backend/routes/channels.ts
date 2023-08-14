@@ -5,7 +5,9 @@ import {
   createChannel,
   deleteChannel,
 } from "../database/querys/channels";
-import { Error, ErrorCodes, ErrorDescriptions } from "../util/errors";
+import { ErrorCodes, ErrorDescriptions, unauthorized } from "../util/errors";
+import { Success, User, Error } from "../util/types";
+import { plans } from "../util/constants";
 
 export const router = express.Router();
 
@@ -32,10 +34,14 @@ router
    */
   .post(async (req, res) => {
     try {
-      await createChannel(req.query.name as string).then((ret) => {
-        console.log(ret);
-        res.send(ret);
-      });
+      if ((req.user as User).plan === "admin") {
+        const returnValue: Error | Success = await createChannel(
+          req.query.name as string
+        );
+        res.send(returnValue);
+      } else {
+        res.send(unauthorized);
+      }
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
@@ -47,9 +53,14 @@ router
    */
   .delete(async (req, res) => {
     try {
-      await deleteChannel(req.query.name as string).then((ret) => {
-        res.send(ret);
-      });
+      if ((req.user as User).plan === "admin") {
+        const returnValue: Error | Success = await deleteChannel(
+          req.query.name as string
+        );
+        res.send(returnValue);
+      } else {
+        res.send(unauthorized);
+      }
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
@@ -64,11 +75,13 @@ router
    */
   .post(async (req, res) => {
     try {
-      await addSquealToChannel(req.body.channelName!, req.body.squealId!).then(
-        (ret) => {
-          res.send(ret);
-        }
-      );
+      if ((req.user as User).plan === "admin") {
+        const returnValue: Error | Success = await addSquealToChannel(
+          req.body.channelName!,
+          req.body.squealId!
+        );
+        res.send(returnValue);
+      } else res.send(unauthorized);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }

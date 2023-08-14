@@ -1,6 +1,7 @@
 import multer from "multer";
 import express from "express";
 import { resolve } from "path";
+import { unauthorized } from "../util/errors";
 
 const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
@@ -34,7 +35,8 @@ const upload = multer({ storage: storage });
  */
 router.route("/").post(upload.single("file"), (req, res) => {
   try {
-    res.send(req.file?.filename);
+    if (req.user) res.send(req.file?.filename);
+    else res.send(unauthorized);
   } catch (error: any) {
     res.send({ errorName: error.name, errorDescription: error.message });
   }

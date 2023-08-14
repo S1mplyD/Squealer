@@ -1,10 +1,13 @@
 import express from "express";
 import {
   deleteMediaSqueal,
+  getMediaSqueal,
   getMediaSqueals,
   postMediaSqueal,
 } from "../database/querys/squealMedia";
-import { Error, SquealMedia } from "../util/types";
+import { Error, SquealMedia, Success, User } from "../util/types";
+import { unauthorized } from "../util/errors";
+import mongoose from "mongoose";
 
 export const router = express.Router();
 
@@ -29,11 +32,13 @@ router
    */
   .post(async (req, res) => {
     try {
-      const newSqueal: any = await postMediaSqueal(
-        req.body,
-        req.query.filename as string
-      );
-      res.send(newSqueal);
+      if (req.user) {
+        const newSqueal: any = await postMediaSqueal(
+          req.body,
+          req.query.filename as string
+        );
+        res.send(newSqueal);
+      } else res.send(unauthorized);
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
@@ -44,9 +49,31 @@ router
    */
   .delete(async (req, res) => {
     try {
-      await deleteMediaSqueal(req.query.id as string).then((ret: any) => {
+      if (!req.user) res.send(unauthorized);
+      else if ((req.user as User).plan === "admin") {
+        const ret: Error | Success | undefined = await deleteMediaSqueal(
+          req.query.id as string
+        );
         res.send(ret);
-      });
+      } else {
+        //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
+        const squeal: SquealMedia | Error = await getMediaSqueal(
+          req.query.id as unknown as mongoose.Types.ObjectId
+        );
+        if (squeal instanceof Error) return squeal;
+        else {
+          if (
+            (squeal as SquealMedia).author === (req.user as User).username ||
+            (req.user as User).managedAccounts.includes(
+              (squeal as SquealMedia).author as string
+            )
+          ) {
+            const returnValue: Error | Success | undefined =
+              await deleteMediaSqueal(req.query.id as string);
+            res.send(returnValue);
+          } else res.send(unauthorized);
+        }
+      }
     } catch (error: any) {
       res.send({ errorName: error.name, errorDescription: error.message });
     }
