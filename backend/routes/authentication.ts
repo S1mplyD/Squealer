@@ -49,13 +49,13 @@ passport.use(
           done(null, currentUser);
         }
       });
-    }
-  )
+    },
+  ),
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 
 router.get(
@@ -63,7 +63,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.redirect("/");
-  }
+  },
 );
 
 /**
@@ -86,7 +86,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  })
+  }),
 );
 
 /**
@@ -108,7 +108,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword
+            encryptedPassword,
           );
           if (newUser) {
             return done(null, newUser);
@@ -119,13 +119,13 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(logged_in);
+    res.send(req.user);
   }
 });
 
@@ -172,7 +172,7 @@ router
     const returnValue = await sendMail(token, mail);
     const queryResult: Error | Success | undefined = await updateResetToken(
       mail,
-      token
+      token,
     );
     if (queryResult === undefined) return cannot_update;
     else if (returnValue instanceof Error) return returnValue;
@@ -190,7 +190,7 @@ router
     if (token === user.resetToken) {
       const ret: Error | Success | undefined = await updatePassword(
         mail,
-        encryptedPassword
+        encryptedPassword,
       );
       if (!ret) {
         res.send(cannot_update);
