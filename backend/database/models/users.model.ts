@@ -17,6 +17,8 @@ interface User {
   followersCount: number;
   followingCount: number;
   createdAt: Date;
+  status: string;
+  blockedFor: number;
 }
 
 interface UserDocument extends User, Document {}
@@ -38,6 +40,8 @@ const userSchema = new Schema<UserDocument>({
   followersCount: { type: Number, defualt: 0, required: true },
   followingCount: { type: Number, defualt: 0, required: true },
   createdAt: { type: Date, required: true },
+  status: { type: String, default: "normal" }, //normal, ban, block
+  blockedFor: { type: Number },
   // dailyExtraCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
   // weeklyExtraCharacters: { type: Number, required: true, default: 2000 }, //Caratteri settimanali
   // monthlyExtraCharacters: { type: Number, required: true, default: 7500 }, //Caratteri mensili
