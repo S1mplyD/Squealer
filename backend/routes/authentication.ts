@@ -7,6 +7,7 @@ import {
   createDefaultUser,
   updatePassword,
   updateResetToken,
+  createUserUsingGoogle,
 } from "../database/querys/users";
 import express from "express";
 import bcrypt from "bcryptjs";
@@ -23,6 +24,7 @@ export const router = express.Router();
 /**
  * Autenticazione tramite google
  */
+//TODO testare funzione
 passport.use(
   new GoogleStrategy.Strategy(
     {
@@ -31,31 +33,66 @@ passport.use(
       callbackURL: "http://localhost:3000/api/auth/google/callback",
     },
     (accessToken: any, refreshToken: any, profile: any, done: any) => {
-      userModel.findOne({ serviceId: profile.id }).then((currentUser: any) => {
-        if (!currentUser) {
-          //Utente non registrato, lo creo
-          userModel
-            .create({
-              name: profile.displayName,
-              username: profile.displayName,
-              mail: profile._json.email,
-              serviceId: profile.id,
-              profilePicture: profile._json.picture,
-            })
-            .then((newUser) => {
-              done(null, newUser);
-            });
+      userModel
+        .findOne({ serviceId: profile.id })
+        .then(async (currentUser: any) => {
+          if (!currentUser) {
+            //Utente non registrato, lo creo
+            const newUser = await createUserUsingGoogle(
+              profile.displayName,
+              profile.displayName,
+              profile._json.email,
+              profile.id,
+              profile._json.picture,
+              new Date()
+            );
+            if (newUser) return done(null, newUser);
+            else return done(null, false);
+          } else {
+            done(null, currentUser);
+          }
+        });
+    }
+  )
+);
+
+/**
+ * Strategia per la registrazione locale
+ */
+passport.use(
+  "local-signup",
+  new LocalStrategy.Strategy(
+    { passReqToCallback: true },
+    async (req, username, password, done) => {
+      try {
+        const user = await userModel.findOne({ username: username }).exec();
+
+        if (user) {
+          return done(null, false);
         } else {
-          done(null, currentUser);
+          const encryptedPassword = await bcrypt.hash(password, 10);
+          const newUser = await createDefaultUser(
+            req.body.name,
+            username,
+            req.body.mail,
+            encryptedPassword
+          );
+          if (newUser) {
+            return done(null, newUser);
+          } else {
+            return done(null, false);
+          }
         }
-      });
-    },
-  ),
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
@@ -63,7 +100,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.redirect("/");
-  },
+  }
 );
 
 /**
@@ -86,41 +123,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  }),
-);
-
-/**
- * Strategia per la registrazione locale
- */
-passport.use(
-  "local-signup",
-  new LocalStrategy.Strategy(
-    { passReqToCallback: true },
-    async (req, username, password, done) => {
-      try {
-        const user = await userModel.findOne({ username: username }).exec();
-
-        if (user) {
-          return done(null, false);
-        } else {
-          const encryptedPassword = await bcrypt.hash(password, 10);
-          const newUser = await createDefaultUser(
-            req.body.name,
-            username,
-            req.body.mail,
-            encryptedPassword,
-          );
-          if (newUser) {
-            return done(null, newUser);
-          } else {
-            return done(null, false);
-          }
-        }
-      } catch (err) {
-        return done(err);
-      }
-    },
-  ),
+  })
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
@@ -141,7 +144,7 @@ passport.deserializeUser((id, done) => {
 
 passport.serializeUser((user: any, cb) => {
   process.nextTick(() => {
-    return cb(null, user.id);
+    return cb(null, user._id);
   });
 });
 
@@ -172,7 +175,7 @@ router
     const returnValue = await sendMail(token, mail);
     const queryResult: Error | Success | undefined = await updateResetToken(
       mail,
-      token,
+      token
     );
     if (queryResult === undefined) return cannot_update;
     else if (returnValue instanceof Error) return returnValue;
@@ -190,7 +193,7 @@ router
     if (token === user.resetToken) {
       const ret: Error | Success | undefined = await updatePassword(
         mail,
-        encryptedPassword,
+        encryptedPassword
       );
       if (!ret) {
         res.send(cannot_update);
@@ -199,17 +202,3 @@ router
       }
     }
   });
-
-/**
- * GET
- * funzione che ritorna tutti gli utenti
- */
-router.route("/").get(async (req, res) => {
-  try {
-    const users: User[] | Error | undefined = await getAllUsers();
-    if (users === undefined) res.send(non_existent);
-    else res.send(users);
-  } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
-  }
-});
