@@ -24,7 +24,7 @@ export async function getAllTextTimers() {
   }
 }
 
-export async function getTimedSqueal(id: mongoose.Types.ObjectId) {
+export async function getTimedSqueal(id: Id) {
   const timedSqueal: TimedSqueal | null = await timedSquealModel.findById(id);
   if (!timedSqueal) return non_existent;
   else return timedSqueal;
@@ -60,7 +60,7 @@ export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
 export async function deleteTimedSqueal(id: string) {
   try {
     const squeal: TimedSqueal | null = (await timedSquealModel.findById(
-      id,
+      id
     )) as TimedSqueal;
     if (squeal === null) {
       return non_existent;
@@ -70,7 +70,7 @@ export async function deleteTimedSqueal(id: string) {
         { _id: id },
         {
           returnDocument: "after",
-        },
+        }
       );
       if (deleted.deletedCount < 1) return cannot_delete;
       else return removed;
@@ -88,7 +88,7 @@ export async function deleteTimedSqueal(id: string) {
 export async function updateCount(id: Id) {
   const update = await timedSquealModel.updateOne(
     { _id: id },
-    { $inc: { count: 1 } },
+    { $inc: { count: 1 } }
   );
   if (update.modifiedCount < 1) {
     return updated;
