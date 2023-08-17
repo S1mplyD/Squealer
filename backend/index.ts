@@ -55,6 +55,7 @@ app.use("/api/squeals/media", squealMediaRoute);
 app.use("/api/squeals/geo", squealGeoRoute);
 app.use("/api/squeals/timed", squealTimedRoute);
 app.use("/api/media", mediaRoute);
+app.use("/backoffice", express.static(path.join(__dirname, "../frontend/squealer-bo")));
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {

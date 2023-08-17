@@ -9,8 +9,7 @@
     </mat-form-field>
     <div class="button-group">
       <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
-
-      <button mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" href="">Go to Backoffice</button>
+      <button mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button"><a class="button-href" href="/backoffice">Go to Backoffice</a></button>
     </div>
   </div>
 
