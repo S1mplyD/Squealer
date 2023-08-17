@@ -9,12 +9,13 @@ export enum ErrorCodes {
   cannot_delete = 11,
   cannot_send = 12,
   cannot_update = 13,
-
+  cannot_get_location = 14,
   non_existent = 20,
   no_timers = 21,
   no_characters = 22,
   not_supported = 30,
   not_recived = 31,
+  browser_not_supported = 32,
   unauthorized = 40,
 }
 
@@ -29,6 +30,8 @@ export enum ErrorDescriptions {
   unauthorized = "You don't have enough permissions to perform this action!",
   cannot_send = "Cannot send email!",
   no_characters = "Not enough characters",
+  cannot_get_location = "Cannot get location",
+  browser_not_supported = "Browser is not supportes",
 }
 
 export const cannot_create: Error = {
@@ -79,4 +82,14 @@ export const cannot_send: Error = {
 export const no_characters: Error = {
   message: ErrorDescriptions.no_characters,
   code: ErrorCodes.no_characters,
+};
+
+export const cannot_get_location: Error = {
+  message: ErrorDescriptions.cannot_get_location,
+  code: ErrorCodes.cannot_get_location,
+};
+
+export const browser_not_supported: Error = {
+  message: ErrorDescriptions.browser_not_supported,
+  code: ErrorCodes.browser_not_supported,
 };

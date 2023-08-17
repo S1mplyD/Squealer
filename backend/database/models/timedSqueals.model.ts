@@ -24,7 +24,7 @@ const timedSquealSchema = new Schema<TimedSquealDocument>({
   date: { type: Date, required: true }, //Data e ora messaggio
   positiveReactions: { type: Number },
   negativeReactions: { type: Number },
-  category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso)
+  category: { type: String, required: true }, //Categorie (privato, pubblico, popolare, impopolare, controverso) - automatico: scelto dal sistema
   channels: { type: [String] }, //Canali a cui è stato aggiunto dalla redazione
   author: { type: String }, // id dell'autore
   //Non visualizzabili

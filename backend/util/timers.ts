@@ -1,4 +1,3 @@
-import timedSquealModel from "../database/models/timedSqueals.model";
 import { postAutomatedSqueal } from "../database/querys/automatedSqueal";
 import { getAllTimedSqueals, getTextSqueal } from "../database/querys/squeals";
 import { getTimedSqueal } from "../database/querys/timedSqueal";
@@ -101,6 +100,8 @@ export async function getTimedSquealById(id: Id) {
 
 /**
  * funzione che salva gli intervalli degli squeal automatici
+ * @param timeout valore dell'interval
+ * @param id id squeal
  */
 export async function setSquealInterval(
   timeout: NodeJS.Timeout,

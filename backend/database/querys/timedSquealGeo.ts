@@ -23,6 +23,11 @@ export async function getAllGeoTimers() {
   }
 }
 
+/**
+ * funzione che ritorna un timed geo squeal dato il suo id
+ * @param id id dello squeal
+ * @returns Error | TimedSquealGeo
+ */
 export async function getTimedSquealGeo(id: mongoose.Types.ObjectId) {
   const timedSqueal: TimedSquealGeo | null = await timedSquealGeoModel.findById(
     id,
@@ -46,7 +51,6 @@ export async function postTimedSquealGeo(
       recipients: squeal.recipients,
       author: author,
       date: new Date(),
-      category: squeal.category, //? automatico o manuale ?
       channels: squeal.channels,
       time: squeal.time,
     });
@@ -61,6 +65,7 @@ export async function postTimedSquealGeo(
 /**
  * funzione che cancella uno squeal temporizzato
  * @param id id dello squeal temporizzato
+ * @returns Error | Success
  */
 export async function deleteTimedSquealGeo(id: string) {
   try {
