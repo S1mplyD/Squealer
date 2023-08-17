@@ -26,6 +26,21 @@ export async function getAllAutomatedSqueals() {
   else return squeals;
 }
 
+export async function getAutomatedSqueal(id: Id) {
+  const squeal: AutomatedSqueal | null = await automatedSquealModel.findById(
+    id
+  );
+  if (!squeal) return non_existent;
+  else return squeal;
+}
+
+export async function getAutomatedGeoSqueal(id: Id) {
+  const squeal: AutomatedGeoSqueal | null =
+    await automatedSquealGeoModel.findById(id);
+  if (!squeal) return non_existent;
+  else return squeal;
+}
+
 /**
  * funzione che posta uno squeal automatico
  * @param squeal TimedSqueal da postare in automatico
@@ -36,10 +51,10 @@ export async function getAllAutomatedSqueals() {
 export async function postAutomatedSqueal(
   squeal: TimedSqueal | TimedSquealGeo,
   originalSqueal: Id,
-  userId: Id,
+  userId: Id
 ) {
   const result: [number, number, number] | Error = await getUserCharacter(
-    userId,
+    userId
   );
 
   if (result instanceof Error) return result;
@@ -64,7 +79,7 @@ export async function postAutomatedSqueal(
         else {
           const updateCharacter: Error | Success = await updateDailyCharacters(
             userId,
-            newSqueal.body.length,
+            newSqueal.body.length
           );
           if (updateCharacter instanceof Error) return updateCharacter;
           const count: Error | Success = await updateCount(squeal._id);
@@ -92,7 +107,7 @@ export async function postAutomatedSqueal(
         else {
           const updateCharacter: Error | Success = await updateDailyCharacters(
             userId,
-            geoCharacters,
+            geoCharacters
           );
           if (updateCharacter instanceof Error) return updateCharacter;
           const count: Error | Success = await updateCount(squeal._id);

@@ -1,7 +1,8 @@
 import userModel from "../database/models/users.model";
+import { getUser } from "../database/querys/users";
 import { cannot_update, non_existent } from "../util/errors";
 import { updated } from "../util/success";
-import { Id, User } from "../util/types";
+import { Error, Id, User } from "../util/types";
 
 /**
  * funzione che ritorna i followers di un utente
@@ -9,10 +10,11 @@ import { Id, User } from "../util/types";
  * @returns followersCount | Error
  */
 export async function getAllFollowers(userId: Id) {
-  const user: User | null = await userModel.findOne({ _id: userId });
-  if (!user) return non_existent;
-  const followers: number = user?.followersCount;
-  return followers;
+  const user: User | Error = await getUser(userId);
+  if (user instanceof Error) return user;
+  else {
+    return (user as User).followersCount;
+  }
 }
 
 /**
@@ -21,10 +23,11 @@ export async function getAllFollowers(userId: Id) {
  * @returns followingCount | Error
  */
 export async function getAllFollowing(userId: Id) {
-  const user: User | null = await userModel.findOne({ _id: userId });
-  if (!user) return non_existent;
-  const following: number = user?.followingCount;
-  return following;
+  const user: User | Error = await getUser(userId);
+  if (user instanceof Error) return user;
+  else {
+    return (user as User).followingCount;
+  }
 }
 
 /**
@@ -36,13 +39,13 @@ export async function getAllFollowing(userId: Id) {
 export async function followUser(userId: Id, followId: Id) {
   const update = await userModel.updateOne(
     { _id: userId },
-    { $inc: { followingCount: 1 } },
+    { $inc: { followingCount: 1 } }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     const updateUser = await userModel.updateOne(
       { _id: followId },
-      { $inc: { followersCount: 1 } },
+      { $inc: { followersCount: 1 } }
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -58,13 +61,13 @@ export async function followUser(userId: Id, followId: Id) {
 export async function unfollowUser(userId: Id, followId: Id) {
   const update = await userModel.updateOne(
     { _id: userId },
-    { $inc: { followingCount: -1 } },
+    { $inc: { followingCount: -1 } }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     const updateUser = await userModel.updateOne(
       { _id: followId },
-      { $inc: { followersCount: -1 } },
+      { $inc: { followersCount: -1 } }
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;

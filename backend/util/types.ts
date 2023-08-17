@@ -138,6 +138,8 @@ export type User = {
   followersCount: number;
   followingCount: number;
   createdAt: Date;
+  status: string;
+  blockedFor: number;
 };
 
 // nuovo tipo canali

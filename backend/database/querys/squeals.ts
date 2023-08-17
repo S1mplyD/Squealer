@@ -15,10 +15,11 @@ import timedSquealModel from "../models/timedSqueals.model";
 import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
 import { created, removed } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
-import mongoose from "mongoose";
 import timedSquealGeoModel from "../models/timedSquealGeo.model";
-import { getAllTextTimers } from "./timedSqueal";
-import { getAllGeoTimers } from "./timedSquealGeo";
+import { getTimedSqueal } from "./timedSqueal";
+import { getTimedSquealGeo } from "./timedSquealGeo";
+import { getGeoSqueal } from "./squealGeo";
+import { getMediaSqueal } from "./squealMedia";
 
 //FUNZIONI GLOBALI
 
@@ -66,6 +67,29 @@ export async function getAllTimedSqueals() {
   else return squeals;
 }
 
+export async function getSquealById(
+  id: Id
+): Promise<
+  Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo | Error
+> {
+  const textSqueal = await getTextSqueal(id);
+  if (!(textSqueal instanceof Error)) return textSqueal;
+
+  const geoSqueal = await getGeoSqueal(id);
+  if (!(geoSqueal instanceof Error)) return geoSqueal;
+
+  const mediaSqueal = await getMediaSqueal(id);
+  if (!(mediaSqueal instanceof Error)) return mediaSqueal;
+
+  const timedTextSqueal = await getTimedSqueal(id);
+  if (!(timedTextSqueal instanceof Error)) return timedTextSqueal;
+
+  const timedGeoSqueal = await getTimedSquealGeo(id);
+  if (!(timedGeoSqueal instanceof Error)) return timedGeoSqueal;
+
+  return non_existent;
+}
+
 //FUNZIONI TEXT
 
 /**
@@ -82,7 +106,7 @@ export async function getTextSqueals() {
   }
 }
 
-export async function getTextSqueal(id: mongoose.Types.ObjectId) {
+export async function getTextSqueal(id: Id) {
   const squeal: Squeal | null = await squealModel.findById(id);
   if (!squeal) return non_existent;
   else return squeal;
@@ -136,7 +160,7 @@ export async function deleteTextSqueal(id: string) {
   try {
     const deleted: any = await squealModel.deleteOne(
       { _id: id },
-      { returnDocument: "after" },
+      { returnDocument: "after" }
     );
     if (deleted.deletedCount < 1) return cannot_delete;
     else return removed;
