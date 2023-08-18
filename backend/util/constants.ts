@@ -13,6 +13,8 @@ const defaultCharactersVerified = [600, 4000, 15000];
 const defaultCharactersProfessional = [1000, 6500, 25000];
 const defaultCharactersJournalist = [3000, 20000, 75000];
 const geoCharacters = 125;
+// ms * s * m * h
+const updateAnalyticTime = 1000 * 60 * 60 * 3;
 
 export {
   imagetypes,
@@ -23,4 +25,5 @@ export {
   defaultCharactersProfessional,
   defaultCharactersVerified,
   geoCharacters,
+  updateAnalyticTime,
 };
