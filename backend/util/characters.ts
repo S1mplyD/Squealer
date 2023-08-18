@@ -8,14 +8,14 @@ import {
 } from "./constants";
 import { cannot_update, non_existent } from "./errors";
 import { updated } from "./success";
-import { Error, Id, User } from "./types";
+import { Error, User } from "./types";
 
 /**
  * funzione che ritorna i caratteri di un utente
  * @param id id utente
  * @returns Error | characters
  */
-export async function getUserCharacter(id: Id) {
+export async function getUserCharacter(id: string) {
   const user: User | Error = await getUser(id);
   if (user instanceof Error) return non_existent;
   else {
@@ -34,14 +34,17 @@ export async function getUserCharacter(id: Id) {
  * @param usedCharacters caratteri utilizzati in uno squeal
  * @returns Error | Success
  */
-export async function updateDailyCharacters(id: Id, usedCharacters: number) {
+export async function updateDailyCharacters(
+  id: string,
+  usedCharacters: number
+) {
   const update = await userModel.updateOne(
     { _id: id },
     {
       $inc: {
         dailyCharacters: -usedCharacters,
       },
-    },
+    }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -52,9 +55,9 @@ export async function updateDailyCharacters(id: Id, usedCharacters: number) {
  * @param id id utente
  * @returns Success | Error
  */
-export async function resetCharactersDaily(id: Id) {
+export async function resetCharactersDaily(id: string) {
   const characters: Error | [number, number, number] = await getUserCharacter(
-    id,
+    id
   );
   if (characters instanceof Error) {
     return characters;
@@ -62,7 +65,7 @@ export async function resetCharactersDaily(id: Id) {
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | Error = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan,
+    (user as User).plan
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
@@ -71,15 +74,15 @@ export async function resetCharactersDaily(id: Id) {
         dailyCharacters: defaultCharacters[0],
         weeklyCharacters: weekly - daily,
         monthlyCharacters: monthly - daily,
-      },
+      }
     );
   }
 }
 
 //TODO return values
-export async function resetCharactersWeekly(id: Id) {
+export async function resetCharactersWeekly(id: string) {
   const characters: Error | [number, number, number] = await getUserCharacter(
-    id,
+    id
   );
   if (characters instanceof Error) {
     return characters;
@@ -87,7 +90,7 @@ export async function resetCharactersWeekly(id: Id) {
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | Error = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan,
+    (user as User).plan
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
@@ -95,29 +98,29 @@ export async function resetCharactersWeekly(id: Id) {
       {
         weeklyCharacters: defaultCharacters[1],
         monthlyCharacters: monthly - weekly,
-      },
+      }
     );
   }
 }
 
 //TODO return values
-export async function resetCharactersMonthly(id: Id) {
+export async function resetCharactersMonthly(id: string) {
   const characters: Error | [number, number, number] = await getUserCharacter(
-    id,
+    id
   );
   if (characters instanceof Error) {
     return characters;
   }
   const user: User | Error = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan,
+    (user as User).plan
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
       { _id: id },
       {
         monthlyCharacters: defaultCharacters[2],
-      },
+      }
     );
   }
 }
@@ -137,7 +140,7 @@ export async function getDefaultCharacters(plan: string) {
   }
 }
 
-export async function updateCharacter(id: Id, usedCharacters: number) {
+export async function updateCharacter(id: string, usedCharacters: number) {
   const update = await userModel.updateOne({ _id: id }, {});
 }
 

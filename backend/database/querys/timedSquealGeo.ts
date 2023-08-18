@@ -7,7 +7,7 @@ import {
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import { stopTimer } from "../../util/timers";
-import { Id, TimedSquealGeo } from "../../util/types";
+import { TimedSquealGeo } from "../../util/types";
 import timedSquealGeoModel from "../models/timedSquealGeo.model";
 /**
  * funzione che ritorna tutti gli squeal temporizzati
@@ -28,9 +28,9 @@ export async function getAllGeoTimers() {
  * @param id id dello squeal
  * @returns Error | TimedSquealGeo
  */
-export async function getTimedSquealGeo(id: mongoose.Types.ObjectId) {
+export async function getTimedSquealGeo(id: string) {
   const timedSqueal: TimedSquealGeo | null = await timedSquealGeoModel.findById(
-    id,
+    id
   );
   if (!timedSqueal) return non_existent;
   else return timedSqueal;
@@ -42,7 +42,7 @@ export async function getTimedSquealGeo(id: mongoose.Types.ObjectId) {
  */
 export async function postTimedSquealGeo(
   squeal: TimedSquealGeo,
-  author: string,
+  author: string
 ) {
   try {
     const newSqueal: any = await timedSquealGeoModel.create({
@@ -70,7 +70,7 @@ export async function postTimedSquealGeo(
 export async function deleteTimedSquealGeo(id: string) {
   try {
     const squeal: TimedSquealGeo | null = (await timedSquealGeoModel.findById(
-      id,
+      id
     )) as TimedSquealGeo;
     if (squeal === null) {
       return non_existent;
@@ -80,7 +80,7 @@ export async function deleteTimedSquealGeo(id: string) {
         { _id: id },
         {
           returnDocument: "after",
-        },
+        }
       );
       if (deleted.deletedCount < 1) return cannot_delete;
       else return removed;
@@ -95,10 +95,10 @@ export async function deleteTimedSquealGeo(id: string) {
  * @param id id dello squeal
  * @returns Success | Error
  */
-export async function updateCount(id: Id) {
+export async function updateCount(id: string) {
   const update = await timedSquealGeoModel.updateOne(
     { _id: id },
-    { $inc: { count: 1 } },
+    { $inc: { count: 1 } }
   );
   if (update.modifiedCount < 1) {
     return updated;

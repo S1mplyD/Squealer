@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { cannot_create, cannot_delete, non_existent } from "../../util/errors";
 import { created, removed } from "../../util/success";
-import { Channel, SquealGeo, Error, Id, Success } from "../../util/types";
+import { Channel, SquealGeo, Error, Success } from "../../util/types";
 import squealGeoModel from "../models/squealGeo.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
 
@@ -19,7 +19,7 @@ export async function getGeoSqueals() {
   }
 }
 
-export async function getGeoSqueal(id: mongoose.Types.ObjectId) {
+export async function getGeoSqueal(id: string) {
   const squeal: SquealGeo | null = await squealGeoModel.findById(id);
   if (!squeal) return non_existent;
   else return squeal;
@@ -54,7 +54,7 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
           for (let i of newSqueal.channels!) {
             for (let j of channels as Channel[]) {
               if (i === j.name) {
-                const id: Id = newSqueal._id;
+                const id: string = newSqueal._id;
                 const ret: Error | Success = await addSquealToChannel(
                   j.name,
                   id

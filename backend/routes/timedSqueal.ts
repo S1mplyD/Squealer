@@ -39,11 +39,11 @@ router
         const squeal: TimedSqueal = req.body;
         const newSqueal: TimedSqueal = await postTimedSqueal(
           squeal,
-          (req.user as User).username,
+          (req.user as User).username
         );
         const ret: Error | Success = await startTimer(
           newSqueal,
-          (req.user as User)._id,
+          (req.user as User)._id
         );
         res.send(ret);
       }
@@ -60,20 +60,20 @@ router
       if (!req.user) res.send(unauthorized);
       else if ((req.user as User).plan === "admin") {
         const ret: Error | Success | undefined = await deleteTimedSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         res.send(ret);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: TimedSqueal | Error = await getTimedSqueal(
-          req.query.id as unknown as mongoose.Types.ObjectId,
+          req.query.id as string
         );
         if (squeal instanceof Error) return squeal;
         else {
           if (
             (squeal as TimedSqueal).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as TimedSqueal).author as string,
+              (squeal as TimedSqueal).author as string
             )
           ) {
             const returnValue: Error | Success | undefined =

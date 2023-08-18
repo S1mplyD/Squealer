@@ -2,7 +2,6 @@ import automatedSquealModel from "../models/automatedSqueal.model";
 import { cannot_create, no_characters, non_existent } from "../../util/errors";
 import {
   AutomatedSqueal,
-  Id,
   Success,
   TimedSqueal,
   Error,
@@ -26,7 +25,7 @@ export async function getAllAutomatedSqueals() {
   else return squeals;
 }
 
-export async function getAutomatedSqueal(id: Id) {
+export async function getAutomatedSqueal(id: string) {
   const squeal: AutomatedSqueal | null = await automatedSquealModel.findById(
     id
   );
@@ -34,7 +33,7 @@ export async function getAutomatedSqueal(id: Id) {
   else return squeal;
 }
 
-export async function getAutomatedGeoSqueal(id: Id) {
+export async function getAutomatedGeoSqueal(id: string) {
   const squeal: AutomatedGeoSqueal | null =
     await automatedSquealGeoModel.findById(id);
   if (!squeal) return non_existent;
@@ -50,8 +49,8 @@ export async function getAutomatedGeoSqueal(id: Id) {
  */
 export async function postAutomatedSqueal(
   squeal: TimedSqueal | TimedSquealGeo,
-  originalSqueal: Id,
-  userId: Id
+  originalSqueal: string,
+  userId: string
 ) {
   const result: [number, number, number] | Error = await getUserCharacter(
     userId

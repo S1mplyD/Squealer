@@ -7,7 +7,7 @@ import {
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import { stopTimer } from "../../util/timers";
-import { Id, TimedSqueal } from "../../util/types";
+import { TimedSqueal } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 
 /**
@@ -24,7 +24,7 @@ export async function getAllTextTimers() {
   }
 }
 
-export async function getTimedSqueal(id: Id) {
+export async function getTimedSqueal(id: string) {
   const timedSqueal: TimedSqueal | null = await timedSquealModel.findById(id);
   if (!timedSqueal) return non_existent;
   else return timedSqueal;
@@ -85,7 +85,7 @@ export async function deleteTimedSqueal(id: string) {
  * @param id id dello squeal
  * @returns Success | Error
  */
-export async function updateCount(id: Id) {
+export async function updateCount(id: string) {
   const update = await timedSquealModel.updateOne(
     { _id: id },
     { $inc: { count: 1 } }

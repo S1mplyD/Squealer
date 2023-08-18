@@ -85,7 +85,7 @@ router
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: Squeal | Error = await getTextSqueal(
-          req.query.id as unknown as mongoose.Types.ObjectId
+          req.query.id as string
         );
         if (squeal instanceof Error) return squeal;
         else {

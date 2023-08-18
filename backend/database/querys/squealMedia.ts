@@ -8,7 +8,7 @@ import {
   cannot_create,
 } from "../../util/errors";
 import { created, removed } from "../../util/success";
-import { Id, SquealMedia } from "../../util/types";
+import { SquealMedia } from "../../util/types";
 import squealMediaModel from "../models/squalMedia.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import fs from "fs";
@@ -30,7 +30,7 @@ export async function getMediaSqueals() {
   }
 }
 
-export async function getMediaSqueal(id: mongoose.Types.ObjectId) {
+export async function getMediaSqueal(id: string) {
   const squeal: SquealMedia | null = await squealMediaModel.findById(id);
   if (!squeal) return non_existent;
   else return squeal;
@@ -76,7 +76,7 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
             if (i === j.name) {
-              const id: Id = newSqueal._id;
+              const id: string = newSqueal._id;
               const ret: any = await addSquealToChannel(j.name, id);
               return ret;
             }

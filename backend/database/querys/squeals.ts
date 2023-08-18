@@ -8,7 +8,6 @@ import {
   SquealMedia,
   Error,
   Success,
-  Id,
   TimedSquealGeo,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
@@ -68,7 +67,7 @@ export async function getAllTimedSqueals() {
 }
 
 export async function getSquealById(
-  id: Id
+  id: string
 ): Promise<
   Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo | Error
 > {
@@ -106,7 +105,7 @@ export async function getTextSqueals() {
   }
 }
 
-export async function getTextSqueal(id: Id) {
+export async function getTextSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findById(id);
   if (!squeal) return non_existent;
   else return squeal;
@@ -137,7 +136,7 @@ export async function postTextSqueal(squeal: Squeal) {
         for (let i of newSqueal.channels) {
           for (let j of channels) {
             if (i === j.name) {
-              const id: Id = newSqueal._id;
+              const id: string = newSqueal._id;
               const ret: Error | Success = await addSquealToChannel(j.name, id);
               return ret;
             }
