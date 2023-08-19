@@ -14,6 +14,7 @@ interface Analytics {
   // numero di reazioni negative in una determinata data
   // negativeReactions[0] sarà il numero di reazioni negative nella data dates[0]
   negativeReactions?: number[];
+  author: string;
 }
 
 interface AnalyticsDocument extends Document, Analytics {}
@@ -24,6 +25,7 @@ const analyticsSchema = new Schema<AnalyticsDocument>({
   visuals: { type: [Number] },
   positiveReactions: { type: [Number] },
   negativeReactions: { type: [Number] },
+  author: { type: String, required: true },
 });
 
 const analyticsDataModel = model<AnalyticsDocument>(

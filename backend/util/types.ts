@@ -171,4 +171,5 @@ export type Analytic = {
   visuals: number[];
   positiveReactions: number[];
   negativeReactions: number[];
+  author: string;
 };
