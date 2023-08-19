@@ -93,3 +93,7 @@ export const browser_not_supported: Error = {
   message: ErrorDescriptions.browser_not_supported,
   code: ErrorCodes.browser_not_supported,
 };
+
+export function catchError(error: any) {
+  return { errorName: error.name, errorDescription: error.message };
+}
