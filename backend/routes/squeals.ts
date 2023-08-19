@@ -18,7 +18,7 @@ import {
   User,
   Success,
 } from "../util/types";
-import { non_existent, unauthorized } from "../util/errors";
+import { catchError, non_existent, unauthorized } from "../util/errors";
 import mongoose from "mongoose";
 
 export const router = express.Router();
@@ -38,7 +38,7 @@ router
       if (squeals === undefined) return non_existent;
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -53,7 +53,7 @@ router
       const squeals: any = await getTextSqueals();
       res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -67,7 +67,7 @@ router
         res.send(ret);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -102,7 +102,7 @@ router
         }
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -121,7 +121,7 @@ router
       if (squeals === undefined) res.send(non_existent);
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -140,6 +140,6 @@ router
       if (squeals === undefined) res.send(non_existent);
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

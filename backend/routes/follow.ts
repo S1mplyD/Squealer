@@ -5,7 +5,8 @@ import {
   getAllFollowing,
   unfollowUser,
 } from "../API/follow";
-import { Error, Id, Success } from "../util/types";
+import { Error, Success } from "../util/types";
+import { catchError } from "../util/errors";
 
 export const router = express.Router();
 
@@ -15,11 +16,11 @@ export const router = express.Router();
 router.route("/followers").get(async (req, res) => {
   try {
     const followers: number | Error = await getAllFollowers(
-      req.query.userId as unknown as Id,
+      req.query.userId as string
     );
     return followers;
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -29,11 +30,11 @@ router.route("/followers").get(async (req, res) => {
 router.route("/following").get(async (req, res) => {
   try {
     const following: number | Error = await getAllFollowing(
-      req.query.userId as unknown as Id,
+      req.query.userId as string
     );
     return following;
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -44,11 +45,11 @@ router.route("/follow").post(async (req, res) => {
   try {
     const update: Error | Success = await followUser(
       req.body.userId,
-      req.body.followId,
+      req.body.followId
     );
     return update;
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -59,10 +60,10 @@ router.route("/unfollow").post(async (req, res) => {
   try {
     const update: Error | Success = await unfollowUser(
       req.body.userId,
-      req.body.followId,
+      req.body.followId
     );
     return update;
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });

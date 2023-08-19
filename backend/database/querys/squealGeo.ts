@@ -10,13 +10,9 @@ import { addSquealToChannel, getAllChannels } from "./channels";
  * @returns error o geo squeals
  */
 export async function getGeoSqueals() {
-  try {
-    const squeals: any[] = await squealGeoModel.find();
-    if (squeals.length < 1) return non_existent;
-    else return squeals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const squeals: any[] = await squealGeoModel.find();
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
 }
 
 export async function getGeoSqueal(id: string) {
@@ -31,44 +27,37 @@ export async function getGeoSqueal(id: string) {
  * @returns errore o successo
  */
 export async function postGeoSqueal(squeal: SquealGeo, author: string) {
-  try {
-    const channels: Channel[] | Error = await getAllChannels();
-    if (channels instanceof Error) {
-      return non_existent;
-    } else {
-      const newSqueal: SquealGeo = await squealGeoModel.create({
-        lat: squeal.lat,
-        lng: squeal.lng,
-        recipients: squeal.recipients,
-        date: new Date(),
-        category: squeal.category,
-        channels: squeal.channels,
-        author: author,
-      });
+  const channels: Channel[] | Error = await getAllChannels();
+  if (channels instanceof Error) {
+    return non_existent;
+  } else {
+    const newSqueal: SquealGeo = await squealGeoModel.create({
+      lat: squeal.lat,
+      lng: squeal.lng,
+      recipients: squeal.recipients,
+      date: new Date(),
+      category: squeal.category,
+      channels: squeal.channels,
+      author: author,
+    });
 
-      if (!newSqueal) return cannot_create;
-      else {
-        if (newSqueal.channels!.length < 1) {
-          return created;
-        } else {
-          for (let i of newSqueal.channels!) {
-            for (let j of channels as Channel[]) {
-              if (i === j.name) {
-                const id: string = newSqueal._id;
-                const ret: Error | Success = await addSquealToChannel(
-                  j.name,
-                  id
-                );
-                return ret;
-              }
+    if (!newSqueal) return cannot_create;
+    else {
+      if (newSqueal.channels!.length < 1) {
+        return created;
+      } else {
+        for (let i of newSqueal.channels!) {
+          for (let j of channels as Channel[]) {
+            if (i === j.name) {
+              const id: string = newSqueal._id;
+              const ret: Error | Success = await addSquealToChannel(j.name, id);
+              return ret;
             }
           }
-          return created;
         }
+        return created;
       }
     }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -78,14 +67,10 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
  * @returns errori eventuali
  */
 export async function deleteGeoSqueal(id: string) {
-  try {
-    const deleted: any = await squealGeoModel.deleteOne(
-      { _id: id },
-      { returnDocument: "after" }
-    );
-    if (deleted.deletedCount < 1) return cannot_delete;
-    else return removed;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const deleted: any = await squealGeoModel.deleteOne(
+    { _id: id },
+    { returnDocument: "after" }
+  );
+  if (deleted.deletedCount < 1) return cannot_delete;
+  else return removed;
 }

@@ -16,13 +16,9 @@ const publicUploadPath = resolve(__dirname, "../../..", "public");
  * Ritorna tutti gli utenti
  */
 export async function getAllUsers() {
-  try {
-    const users: User[] | null = await userModel.find();
-    if (users.length < 1) return non_existent;
-    else return users;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const users: User[] | null = await userModel.find();
+  if (users.length < 1) return non_existent;
+  else return users;
 }
 
 /**
@@ -50,18 +46,14 @@ export async function createDefaultUser(
   mail: string,
   password: string
 ) {
-  try {
-    const doc = await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      password: password,
-    });
-    if (!doc) return cannot_create;
-    else return doc;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const doc = await userModel.create({
+    name: name,
+    username: username,
+    mail: mail,
+    password: password,
+  });
+  if (!doc) return cannot_create;
+  else return doc;
 }
 
 /**
@@ -81,22 +73,18 @@ export async function createUserUsingGoogle(
   profilePicture: string,
   createdAt: Date
 ) {
-  try {
-    const newUser = await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      serviceId: serviceId,
-      profilePicture: profilePicture,
-      followersCount: 0,
-      followingCount: 0,
-      createdAt: createdAt,
-    });
-    if (!newUser) return cannot_create;
-    else return newUser;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const newUser = await userModel.create({
+    name: name,
+    username: username,
+    mail: mail,
+    serviceId: serviceId,
+    profilePicture: profilePicture,
+    followersCount: 0,
+    followingCount: 0,
+    createdAt: createdAt,
+  });
+  if (!newUser) return cannot_create;
+  else return newUser;
 }
 
 /**
@@ -127,16 +115,12 @@ export async function updateUser(id: string, user: User) {
  * @returns Errore o Successo
  */
 export async function updateProfilePicture(id: string, filename: string) {
-  try {
-    const user = await userModel.updateOne(
-      { _id: id },
-      { profilepicture: filename }
-    );
-    if (user.modifiedCount < 1) return cannot_update;
-    else return updated;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const user = await userModel.updateOne(
+    { _id: id },
+    { profilepicture: filename }
+  );
+  if (user.modifiedCount < 1) return cannot_update;
+  else return updated;
 }
 
 /**
@@ -144,22 +128,18 @@ export async function updateProfilePicture(id: string, filename: string) {
  * @param id id dell'utente
  */
 export async function deleteProfilePicture(id: string) {
-  try {
-    const user = await userModel.findOne({ _id: id });
-    if (!user) return non_existent;
-    else {
-      fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
-        if (err) return cannot_delete;
-        else {
-          await user?.updateOne(
-            { profilePicture: "default.png" },
-            { returnDocument: "after" }
-          );
-        }
-      });
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+  const user = await userModel.findOne({ _id: id });
+  if (!user) return non_existent;
+  else {
+    fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
+      if (err) return cannot_delete;
+      else {
+        await user?.updateOne(
+          { profilePicture: "default.png" },
+          { returnDocument: "after" }
+        );
+      }
+    });
   }
 }
 
@@ -175,24 +155,20 @@ export async function deleteAccount(
   password: string,
   isAdmin: boolean
 ) {
-  try {
-    const profilepicture = await userModel.findOne({ mail: mail });
-    fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
-      if (err) console.log(err);
+  const profilepicture = await userModel.findOne({ mail: mail });
+  fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
+    if (err) console.log(err);
+  });
+  if (isAdmin) {
+    const user = await userModel.deleteOne({ mail: mail });
+    if (user.deletedCount < 1) return cannot_delete;
+    else return removed;
+  } else {
+    const user = await userModel.deleteOne({
+      $and: [{ mail: mail }, { password: password }],
     });
-    if (isAdmin) {
-      const user = await userModel.deleteOne({ mail: mail });
-      if (user.deletedCount < 1) return cannot_delete;
-      else return removed;
-    } else {
-      const user = await userModel.deleteOne({
-        $and: [{ mail: mail }, { password: password }],
-      });
-      if (user.deletedCount < 1) return cannot_delete;
-      else return removed;
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    if (user.deletedCount < 1) return cannot_delete;
+    else return removed;
   }
 }
 
@@ -202,16 +178,12 @@ export async function deleteAccount(
  * @param token token di conferma
  */
 export async function updateResetToken(mail: string, token: string) {
-  try {
-    const result = await userModel.updateOne(
-      { mail: mail },
-      { resetToken: token }
-    );
-    if (result.modifiedCount < 1) return cannot_update;
-    else return updated;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const result = await userModel.updateOne(
+    { mail: mail },
+    { resetToken: token }
+  );
+  if (result.modifiedCount < 1) return cannot_update;
+  else return updated;
 }
 
 /**
@@ -220,17 +192,13 @@ export async function updateResetToken(mail: string, token: string) {
  * @param password nuova password dell'utente
  */
 export async function updatePassword(mail: string, password: string) {
-  try {
-    const newDoc = await userModel
-      .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
-      .lean();
-    if (!newDoc) return non_existent;
-    else {
-      if (newDoc.password !== password) return updated;
-      else return cannot_update;
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+  const newDoc = await userModel
+    .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
+    .lean();
+  if (!newDoc) return non_existent;
+  else {
+    if (newDoc.password !== password) return updated;
+    else return cannot_update;
   }
 }
 

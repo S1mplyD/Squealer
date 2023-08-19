@@ -15,7 +15,12 @@ import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
 import { Success, logged_in, sent, signed_up } from "../util/success";
-import { cannot_send, cannot_update, non_existent } from "../util/errors";
+import {
+  cannot_send,
+  cannot_update,
+  catchError,
+  non_existent,
+} from "../util/errors";
 import { Error, User } from "../util/types";
 config();
 
@@ -160,7 +165,7 @@ router.get("/logout", (req, res, next) => {
       res.status(200).redirect("/");
     });
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 router

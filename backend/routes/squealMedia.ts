@@ -6,7 +6,7 @@ import {
   postMediaSqueal,
 } from "../database/querys/squealMedia";
 import { Error, SquealMedia, Success, User } from "../util/types";
-import { unauthorized } from "../util/errors";
+import { catchError, unauthorized } from "../util/errors";
 import mongoose from "mongoose";
 
 export const router = express.Router();
@@ -23,7 +23,7 @@ router
         await getMediaSqueals();
       res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -40,7 +40,7 @@ router
         res.send(newSqueal);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -75,6 +75,6 @@ router
         }
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

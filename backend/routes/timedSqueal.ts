@@ -8,7 +8,7 @@ import {
 } from "../database/querys/timedSqueal";
 import { startTimer } from "../util/timers";
 import { Success } from "../util/success";
-import { unauthorized } from "../util/errors";
+import { catchError, unauthorized } from "../util/errors";
 import mongoose from "mongoose";
 
 export const router = express.Router();
@@ -25,7 +25,7 @@ router
         await getAllTextTimers();
       res.send(timedSqueals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -48,7 +48,7 @@ router
         res.send(ret);
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -83,6 +83,6 @@ router
         }
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

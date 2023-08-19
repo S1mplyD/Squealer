@@ -16,6 +16,7 @@ import {
 import {
   cannot_delete,
   cannot_update,
+  catchError,
   non_existent,
   unauthorized,
 } from "../util/errors";
@@ -34,7 +35,7 @@ router.route("/").get(async (req, res) => {
       else res.send(users);
     } else res.send(unauthorized);
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -47,7 +48,7 @@ router
         res.send(user);
       } else res.send(unauthorized);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   .patch(async (req, res) => {
@@ -70,7 +71,7 @@ router
         }
       } else res.send(unauthorized);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   .delete(async (req, res) => {
@@ -97,7 +98,7 @@ router
         }
       } else res.send(unauthorized);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -131,7 +132,7 @@ router
         }
       } else res.send(unauthorized);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   .delete(async (req, res) => {
@@ -151,7 +152,7 @@ router
         }
       } else res.send(unauthorized);
     } catch (error: any) {
-      console.log({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -164,7 +165,7 @@ router.route("/revokePermissions").post(async (req, res) => {
       res.send(update);
     } else res.send(unauthorized);
   } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -177,7 +178,7 @@ router.route("/grantPermissions").post(async (req, res) => {
       res.send(update);
     } else res.send(unauthorized);
   } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -188,7 +189,7 @@ router.route("/ban").post(async (req, res) => {
       res.send(banned);
     } else res.send(unauthorized);
   } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -199,7 +200,7 @@ router.route("/unban").post(async (req, res) => {
       res.send(unban);
     } else res.send(unauthorized);
   } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 
@@ -214,6 +215,6 @@ router.route("/block").post(async (req, res) => {
       else res.send(updated);
     } else res.send(unauthorized);
   } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });

@@ -6,7 +6,7 @@ import {
   postGeoSqueal,
 } from "../database/querys/squealGeo";
 import { Error, SquealGeo, Success, User } from "../util/types";
-import { unauthorized } from "../util/errors";
+import { catchError, unauthorized } from "../util/errors";
 import mongoose from "mongoose";
 
 export const router = express.Router();
@@ -22,7 +22,7 @@ router
       const squeals: SquealGeo[] | Error | undefined = await getGeoSqueals();
       res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -39,7 +39,7 @@ router
         res.send(ret);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -78,7 +78,7 @@ router
         }
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -97,6 +97,6 @@ router.route("/smm").post(async (req, res) => {
       );
     } else res.send(unauthorized);
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });

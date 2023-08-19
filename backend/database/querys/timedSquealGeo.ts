@@ -14,13 +14,9 @@ import timedSquealGeoModel from "../models/timedSquealGeo.model";
  * @returns squeals or Error
  */
 export async function getAllGeoTimers() {
-  try {
-    const timedSqueals: TimedSquealGeo[] = await timedSquealGeoModel.find();
-    if (timedSqueals.length < 1) return non_existent;
-    else return timedSqueals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const timedSqueals: TimedSquealGeo[] = await timedSquealGeoModel.find();
+  if (timedSqueals.length < 1) return non_existent;
+  else return timedSqueals;
 }
 
 /**
@@ -44,22 +40,18 @@ export async function postTimedSquealGeo(
   squeal: TimedSquealGeo,
   author: string
 ) {
-  try {
-    const newSqueal: any = await timedSquealGeoModel.create({
-      lat: squeal.lat,
-      lng: squeal.lng,
-      recipients: squeal.recipients,
-      author: author,
-      date: new Date(),
-      channels: squeal.channels,
-      time: squeal.time,
-    });
+  const newSqueal: any = await timedSquealGeoModel.create({
+    lat: squeal.lat,
+    lng: squeal.lng,
+    recipients: squeal.recipients,
+    author: author,
+    date: new Date(),
+    channels: squeal.channels,
+    time: squeal.time,
+  });
 
-    if (!newSqueal) return cannot_create;
-    else return newSqueal;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  if (!newSqueal) return cannot_create;
+  else return newSqueal;
 }
 
 /**
@@ -68,25 +60,21 @@ export async function postTimedSquealGeo(
  * @returns Error | Success
  */
 export async function deleteTimedSquealGeo(id: string) {
-  try {
-    const squeal: TimedSquealGeo | null = (await timedSquealGeoModel.findById(
-      id
-    )) as TimedSquealGeo;
-    if (squeal === null) {
-      return non_existent;
-    } else {
-      await stopTimer(squeal);
-      const deleted: any = await timedSquealGeoModel.deleteOne(
-        { _id: id },
-        {
-          returnDocument: "after",
-        }
-      );
-      if (deleted.deletedCount < 1) return cannot_delete;
-      else return removed;
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+  const squeal: TimedSquealGeo | null = (await timedSquealGeoModel.findById(
+    id
+  )) as TimedSquealGeo;
+  if (squeal === null) {
+    return non_existent;
+  } else {
+    await stopTimer(squeal);
+    const deleted: any = await timedSquealGeoModel.deleteOne(
+      { _id: id },
+      {
+        returnDocument: "after",
+      }
+    );
+    if (deleted.deletedCount < 1) return cannot_delete;
+    else return removed;
   }
 }
 

@@ -5,7 +5,12 @@ import {
   createChannel,
   deleteChannel,
 } from "../database/querys/channels";
-import { ErrorCodes, ErrorDescriptions, unauthorized } from "../util/errors";
+import {
+  ErrorCodes,
+  ErrorDescriptions,
+  catchError,
+  unauthorized,
+} from "../util/errors";
 import { Success, User, Error } from "../util/types";
 import { plans } from "../util/constants";
 
@@ -24,7 +29,7 @@ router
         res.send(channels);
       });
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -43,7 +48,7 @@ router
         res.send(unauthorized);
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -62,7 +67,7 @@ router
         res.send(unauthorized);
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -83,6 +88,6 @@ router
         res.send(returnValue);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

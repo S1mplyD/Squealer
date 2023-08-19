@@ -27,30 +27,26 @@ import { getMediaSqueal } from "./squealMedia";
  * @returns tutti gli squeals
  */
 export async function getAllSqueals() {
-  try {
-    const squealsText: Squeal[] = await squealModel.find();
-    const squealsGeo: SquealGeo[] = await squealGeoModel.find();
-    const squealsMedia: SquealMedia[] = await squealMediaModel.find();
-    const timedSqueal: TimedSqueal[] = await timedSquealModel.find();
-    const timedGeoSqueal: TimedSquealGeo[] = await timedSquealGeoModel.find();
-    const squeals: (
-      | Squeal
-      | SquealGeo
-      | SquealMedia
-      | TimedSqueal
-      | TimedSquealGeo
-    )[] = [
-      ...squealsText,
-      ...squealsGeo,
-      ...squealsMedia,
-      ...timedSqueal,
-      ...timedGeoSqueal,
-    ];
-    if (squeals.length < 1) return non_existent;
-    else return squeals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const squealsText: Squeal[] = await squealModel.find();
+  const squealsGeo: SquealGeo[] = await squealGeoModel.find();
+  const squealsMedia: SquealMedia[] = await squealMediaModel.find();
+  const timedSqueal: TimedSqueal[] = await timedSquealModel.find();
+  const timedGeoSqueal: TimedSquealGeo[] = await timedSquealGeoModel.find();
+  const squeals: (
+    | Squeal
+    | SquealGeo
+    | SquealMedia
+    | TimedSqueal
+    | TimedSquealGeo
+  )[] = [
+    ...squealsText,
+    ...squealsGeo,
+    ...squealsMedia,
+    ...timedSqueal,
+    ...timedGeoSqueal,
+  ];
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
 }
 
 export async function getAllTimedSqueals() {
@@ -96,13 +92,9 @@ export async function getSquealById(
  * @returns error o gli squeal text
  */
 export async function getTextSqueals() {
-  try {
-    const squeals: any[] = await squealModel.find();
-    if (squeals.length < 1) return non_existent;
-    else return squeals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const squeals: any[] = await squealModel.find();
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
 }
 
 export async function getTextSqueal(id: string) {
@@ -117,36 +109,32 @@ export async function getTextSqueal(id: string) {
  * @returns eventuali errori
  */
 export async function postTextSqueal(squeal: Squeal) {
-  try {
-    const channels: any = await getAllChannels();
+  const channels: any = await getAllChannels();
 
-    const newSqueal: any = await squealModel.create({
-      body: squeal.body,
-      recipients: squeal.recipients,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-    });
+  const newSqueal: any = await squealModel.create({
+    body: squeal.body,
+    recipients: squeal.recipients,
+    date: new Date(),
+    category: squeal.category,
+    channels: squeal.channels,
+  });
 
-    if (!newSqueal) return cannot_create;
-    else {
-      if (newSqueal.channels.length < 1) {
-        return created;
-      } else {
-        for (let i of newSqueal.channels) {
-          for (let j of channels) {
-            if (i === j.name) {
-              const id: string = newSqueal._id;
-              const ret: Error | Success = await addSquealToChannel(j.name, id);
-              return ret;
-            }
+  if (!newSqueal) return cannot_create;
+  else {
+    if (newSqueal.channels.length < 1) {
+      return created;
+    } else {
+      for (let i of newSqueal.channels) {
+        for (let j of channels) {
+          if (i === j.name) {
+            const id: string = newSqueal._id;
+            const ret: Error | Success = await addSquealToChannel(j.name, id);
+            return ret;
           }
         }
-        return created;
       }
+      return created;
     }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -156,16 +144,12 @@ export async function postTextSqueal(squeal: Squeal) {
  * @returns errori eventuali
  */
 export async function deleteTextSqueal(id: string) {
-  try {
-    const deleted: any = await squealModel.deleteOne(
-      { _id: id },
-      { returnDocument: "after" }
-    );
-    if (deleted.deletedCount < 1) return cannot_delete;
-    else return removed;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const deleted: any = await squealModel.deleteOne(
+    { _id: id },
+    { returnDocument: "after" }
+  );
+  if (deleted.deletedCount < 1) return cannot_delete;
+  else return removed;
 }
 
 /**
@@ -174,30 +158,26 @@ export async function deleteTextSqueal(id: string) {
  * @returns squeals appartenenti ai destinatari scelti
  */
 export async function getSquealsByRecipients(recipient: string) {
-  try {
-    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
-      (await getAllSqueals()) as (
-        | Squeal
-        | SquealGeo
-        | SquealMedia
-        | TimedSqueal
-      )[];
-    if (squeals instanceof Error) return squeals;
-    else {
-      let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
-      //Controllo che il destinatario ricercato sia presente in uno squeal
-      for (let i of squeals) {
-        for (let j of i.recipients) {
-          if (j === recipient) {
-            squealArray.push(i);
-          }
+  const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
+    (await getAllSqueals()) as (
+      | Squeal
+      | SquealGeo
+      | SquealMedia
+      | TimedSqueal
+    )[];
+  if (squeals instanceof Error) return squeals;
+  else {
+    let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
+    //Controllo che il destinatario ricercato sia presente in uno squeal
+    for (let i of squeals) {
+      for (let j of i.recipients) {
+        if (j === recipient) {
+          squealArray.push(i);
         }
       }
-      if (squealArray.length < 1) return non_existent;
-      else return squealArray;
     }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    if (squealArray.length < 1) return non_existent;
+    else return squealArray;
   }
 }
 
@@ -207,31 +187,27 @@ export async function getSquealsByRecipients(recipient: string) {
  * @returns squeals appartenenti al canale scelto
  */
 export async function getSquealsByChannel(channel: string) {
-  try {
-    const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
-      (await getAllSqueals()) as (
-        | Squeal
-        | SquealGeo
-        | SquealMedia
-        | TimedSqueal
-      )[];
-    if (squeals instanceof Error) return squeals;
-    else {
-      let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
-      //Controllo che il destinatario ricercato sia presente in uno squeal
-      for (let i of squeals) {
-        if (i.channels) {
-          for (let j of i.channels) {
-            if (j === channel) {
-              squealArray.push(i);
-            }
+  const squeals: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] =
+    (await getAllSqueals()) as (
+      | Squeal
+      | SquealGeo
+      | SquealMedia
+      | TimedSqueal
+    )[];
+  if (squeals instanceof Error) return squeals;
+  else {
+    let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
+    //Controllo che il destinatario ricercato sia presente in uno squeal
+    for (let i of squeals) {
+      if (i.channels) {
+        for (let j of i.channels) {
+          if (j === channel) {
+            squealArray.push(i);
           }
         }
       }
-      if (squealArray.length < 1) return non_existent;
-      else return squealArray;
     }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    if (squealArray.length < 1) return non_existent;
+    else return squealArray;
   }
 }

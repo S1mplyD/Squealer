@@ -21,13 +21,9 @@ const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
  * @returns un array di media squeals o un errore
  */
 export async function getMediaSqueals() {
-  try {
-    const squeals: SquealMedia[] = await squealMediaModel.find();
-    if (squeals.length < 1) return non_existent;
-    else return squeals;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const squeals: SquealMedia[] = await squealMediaModel.find();
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
 }
 
 export async function getMediaSqueal(id: string) {
@@ -43,50 +39,46 @@ export async function getMediaSqueal(id: string) {
  * @returns ritorna successo o errore
  */
 export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
-  try {
-    const channels: any = await getAllChannels();
-    var type: string | undefined = filename.split(".").pop();
+  const channels: any = await getAllChannels();
+  var type: string | undefined = filename.split(".").pop();
 
-    if (typeof type === "undefined") {
-      return not_recived;
+  if (typeof type === "undefined") {
+    return not_recived;
+  } else {
+    if (imagetypes.includes(type)) {
+      type = "image";
+    } else if (videotypes.includes(type)) {
+      type = "video";
     } else {
-      if (imagetypes.includes(type)) {
-        type = "image";
-      } else if (videotypes.includes(type)) {
-        type = "video";
-      } else {
-        return not_supported;
-      }
+      return not_supported;
     }
+  }
 
-    const newSqueal: any = await squealMediaModel.create({
-      body: filename,
-      type: type,
-      recipients: squeal.recipients,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-    });
+  const newSqueal: any = await squealMediaModel.create({
+    body: filename,
+    type: type,
+    recipients: squeal.recipients,
+    date: new Date(),
+    category: squeal.category,
+    channels: squeal.channels,
+  });
 
-    if (!newSqueal) return cannot_create;
-    else {
-      if (newSqueal.channels.length < 1) {
-        return created;
-      } else {
-        for (let i of newSqueal.channels) {
-          for (let j of channels) {
-            if (i === j.name) {
-              const id: string = newSqueal._id;
-              const ret: any = await addSquealToChannel(j.name, id);
-              return ret;
-            }
+  if (!newSqueal) return cannot_create;
+  else {
+    if (newSqueal.channels.length < 1) {
+      return created;
+    } else {
+      for (let i of newSqueal.channels) {
+        for (let j of channels) {
+          if (i === j.name) {
+            const id: string = newSqueal._id;
+            const ret: any = await addSquealToChannel(j.name, id);
+            return ret;
           }
         }
-        return created;
       }
+      return created;
     }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -96,20 +88,16 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
  * @returns errori eventuali
  */
 export async function deleteMediaSqueal(id: string) {
-  try {
-    const file = await squealMediaModel.findById(id);
-    await fs.unlink(resolve(publicUploadPath, file?.body!), (err) => {
-      if (err) {
-        return cannot_delete;
-      }
-    });
-    const deleted: any = await squealMediaModel.deleteOne(
-      { _id: id },
-      { returnDocument: "after" }
-    );
-    if (deleted.deletedCount < 1) return cannot_delete;
-    else return removed;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const file = await squealMediaModel.findById(id);
+  await fs.unlink(resolve(publicUploadPath, file?.body!), (err) => {
+    if (err) {
+      return cannot_delete;
+    }
+  });
+  const deleted: any = await squealMediaModel.deleteOne(
+    { _id: id },
+    { returnDocument: "after" }
+  );
+  if (deleted.deletedCount < 1) return cannot_delete;
+  else return removed;
 }
