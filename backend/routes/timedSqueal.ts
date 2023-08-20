@@ -20,9 +20,11 @@ router
    */
   .get(async (req, res) => {
     try {
-      const timedSqueals: TimedSqueal[] | SquealerError | undefined =
-        await getAllTextTimers();
-      res.send(timedSqueals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const timedSqueals: TimedSqueal[] | SquealerError | undefined =
+          await getAllTextTimers();
+        res.send(timedSqueals);
+      } else res.send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -33,7 +35,12 @@ router
    */
   .post(async (req, res) => {
     try {
-      if (!req.user) res.send(unauthorized);
+      if (
+        !req.user ||
+        (req.user as User).status === "ban" ||
+        (req.user as User).status === "block"
+      )
+        res.send(unauthorized);
       else {
         const squeal: TimedSqueal = req.body;
         const newSqueal: TimedSqueal = await postTimedSqueal(

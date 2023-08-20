@@ -18,9 +18,10 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals: SquealGeo[] | SquealerError | undefined =
-        await getGeoSqueals();
-      res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals: SquealGeo[] | SquealerError = await getGeoSqueals();
+        res.send(squeals);
+      } else res.send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -31,7 +32,11 @@ router
    */
   .post(async (req, res) => {
     try {
-      if (req.user) {
+      if (
+        req.user &&
+        ((req.user as User).status !== "ban" ||
+          (req.user as User).status !== "block")
+      ) {
         const ret: any = await postGeoSqueal(
           req.body,
           (req.user as User).username
@@ -80,22 +85,3 @@ router
       catchError(error);
     }
   });
-
-/**
- * POST
- * chiamata per permettere al social media manager di postare a nome di un account gestito
- */
-router.route("/smm").post(async (req, res) => {
-  try {
-    if (
-      (req.user as User).managedAccounts.includes(req.query.username as string)
-    ) {
-      const returnValue = await postGeoSqueal(
-        req.body as SquealGeo,
-        req.query.username as string
-      );
-    } else res.send(unauthorized);
-  } catch (error: any) {
-    catchError(error);
-  }
-});

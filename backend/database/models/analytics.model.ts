@@ -14,7 +14,7 @@ interface Analytics {
   // numero di reazioni negative in una determinata data
   // negativeReactions[0] sarà il numero di reazioni negative nella data dates[0]
   negativeReactions?: number[];
-  author: string;
+  author: string; //id dell'autore dello squeal
 }
 
 interface AnalyticsDocument extends Document, Analytics {}

@@ -21,9 +21,11 @@ router
    */
   .get(async (req, res) => {
     try {
-      const timedSquealGeos: TimedSquealGeo[] | SquealerError | undefined =
-        await getAllGeoTimers();
-      res.send(timedSquealGeos);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const timedSquealGeos: TimedSquealGeo[] | SquealerError =
+          await getAllGeoTimers();
+        res.send(timedSquealGeos);
+      }
     } catch (error: any) {
       catchError(error);
     }
@@ -34,7 +36,12 @@ router
    */
   .post(async (req, res) => {
     try {
-      if (!req.user) res.send(unauthorized);
+      if (
+        !req.user ||
+        (req.user as User).status === "ban" ||
+        (req.user as User).status === "block"
+      )
+        res.send(unauthorized);
       else {
         const squeal: TimedSquealGeo = req.body;
         const newSqueal: TimedSquealGeo = await postTimedSquealGeo(
