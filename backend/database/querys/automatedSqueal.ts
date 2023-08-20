@@ -1,21 +1,25 @@
 import automatedSquealModel from "../models/automatedSqueal.model";
-import { cannot_create, no_characters, non_existent } from "../../util/errors";
+import {
+  SquealerError,
+  cannot_create,
+  no_characters,
+  non_existent,
+} from "../../util/errors";
 import {
   AutomatedSqueal,
   Success,
   TimedSqueal,
-  Error,
   TimedSquealGeo,
   AutomatedGeoSqueal,
 } from "../../util/types";
 import { updateCount } from "./timedSqueal";
-import { getUserCharacter, updateDailyCharacters } from "../../util/characters";
+import { getUserCharacter, updateDailyCharacters } from "../../API/characters";
 import { geoCharacters } from "../../util/constants";
 import automatedSquealGeoModel from "../models/automatedSquealGeo";
 
 /**
  * funzione che ritorna tutti gli squeal automatizzati
- * @returns Error | (...AutomatedSqueal,...AutomatedGeoSqueal)[]
+ * @returns SquealerError | (...AutomatedSqueal,...AutomatedGeoSqueal)[]
  */
 export async function getAllAutomatedSqueals() {
   const squealstext: AutomatedSqueal[] = await automatedSquealModel.find();
@@ -45,18 +49,17 @@ export async function getAutomatedGeoSqueal(id: string) {
  * @param squeal TimedSqueal da postare in automatico
  * @param originalSqueal Id dello squeal originale
  * @param userId id utente
- * @returns Error | AutomatedSqueal
+ * @returns SquealerError | AutomatedSqueal
  */
 export async function postAutomatedSqueal(
   squeal: TimedSqueal | TimedSquealGeo,
   originalSqueal: string,
   userId: string
 ) {
-  const result: [number, number, number] | Error = await getUserCharacter(
-    userId
-  );
+  const result: [number, number, number] | SquealerError =
+    await getUserCharacter(userId);
 
-  if (result instanceof Error) return result;
+  if (result instanceof SquealerError) return result;
   else {
     const [dailyCharacters, weeklyCharacters, monthlyCharacters] = result as [
       number,
@@ -76,13 +79,11 @@ export async function postAutomatedSqueal(
         });
         if (!newSqueal) return cannot_create;
         else {
-          const updateCharacter: Error | Success = await updateDailyCharacters(
-            userId,
-            newSqueal.body.length
-          );
-          if (updateCharacter instanceof Error) return updateCharacter;
-          const count: Error | Success = await updateCount(squeal._id);
-          if (count instanceof Error) {
+          const updateCharacter: SquealerError | Success =
+            await updateDailyCharacters(userId, newSqueal.body.length);
+          if (updateCharacter instanceof SquealerError) return updateCharacter;
+          const count: SquealerError | Success = await updateCount(squeal._id);
+          if (count instanceof SquealerError) {
             return count;
           } else {
             return newSqueal;
@@ -104,13 +105,11 @@ export async function postAutomatedSqueal(
           });
         if (!newSqueal) return cannot_create;
         else {
-          const updateCharacter: Error | Success = await updateDailyCharacters(
-            userId,
-            geoCharacters
-          );
-          if (updateCharacter instanceof Error) return updateCharacter;
-          const count: Error | Success = await updateCount(squeal._id);
-          if (count instanceof Error) {
+          const updateCharacter: SquealerError | Success =
+            await updateDailyCharacters(userId, geoCharacters);
+          if (updateCharacter instanceof SquealerError) return updateCharacter;
+          const count: SquealerError | Success = await updateCount(squeal._id);
+          if (count instanceof SquealerError) {
             return count;
           } else {
             return newSqueal;

@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import {
   cannot_create,
   cannot_delete,
@@ -6,12 +5,12 @@ import {
   non_existent,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
-import { stopTimer } from "../../util/timers";
+import { stopTimer } from "../../API/timers";
 import { TimedSquealGeo } from "../../util/types";
 import timedSquealGeoModel from "../models/timedSquealGeo.model";
 /**
  * funzione che ritorna tutti gli squeal temporizzati
- * @returns squeals or Error
+ * @returns squeals or SquealerError
  */
 export async function getAllGeoTimers() {
   const timedSqueals: TimedSquealGeo[] = await timedSquealGeoModel.find();
@@ -22,7 +21,7 @@ export async function getAllGeoTimers() {
 /**
  * funzione che ritorna un timed geo squeal dato il suo id
  * @param id id dello squeal
- * @returns Error | TimedSquealGeo
+ * @returns SquealerError | TimedSquealGeo
  */
 export async function getTimedSquealGeo(id: string) {
   const timedSqueal: TimedSquealGeo | null = await timedSquealGeoModel.findById(
@@ -57,7 +56,7 @@ export async function postTimedSquealGeo(
 /**
  * funzione che cancella uno squeal temporizzato
  * @param id id dello squeal temporizzato
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
 export async function deleteTimedSquealGeo(id: string) {
   const squeal: TimedSquealGeo | null = (await timedSquealGeoModel.findById(
@@ -81,7 +80,7 @@ export async function deleteTimedSquealGeo(id: string) {
 /**
  * funzione che aggiorna il conteggio dei post automatici
  * @param id id dello squeal
- * @returns Success | Error
+ * @returns Success | SquealerError
  */
 export async function updateCount(id: string) {
   const update = await timedSquealGeoModel.updateOne(

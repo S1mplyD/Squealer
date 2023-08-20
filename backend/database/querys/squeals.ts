@@ -6,12 +6,16 @@ import {
   TimedSqueal,
   SquealGeo,
   SquealMedia,
-  Error,
   Success,
   TimedSquealGeo,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
-import { non_existent, cannot_create, cannot_delete } from "../../util/errors";
+import {
+  non_existent,
+  cannot_create,
+  cannot_delete,
+  SquealerError,
+} from "../../util/errors";
 import { created, removed } from "../../util/success";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import timedSquealGeoModel from "../models/timedSquealGeo.model";
@@ -50,9 +54,9 @@ export async function getAllSqueals() {
 }
 
 export async function getAllTimedSqueals() {
-  const timedTextSqueals: TimedSqueal[] | Error | undefined =
+  const timedTextSqueals: TimedSqueal[] | SquealerError | undefined =
     await timedSquealGeoModel.find();
-  const timedGeoSqueals: TimedSquealGeo[] | Error | undefined =
+  const timedGeoSqueals: TimedSquealGeo[] | SquealerError | undefined =
     await timedSquealGeoModel.find();
   const squeals: (TimedSqueal | TimedSquealGeo)[] = [
     ...timedGeoSqueals,
@@ -65,22 +69,27 @@ export async function getAllTimedSqueals() {
 export async function getSquealById(
   id: string
 ): Promise<
-  Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo | Error
+  | Squeal
+  | SquealGeo
+  | SquealMedia
+  | TimedSqueal
+  | TimedSquealGeo
+  | SquealerError
 > {
   const textSqueal = await getTextSqueal(id);
-  if (!(textSqueal instanceof Error)) return textSqueal;
+  if (!(textSqueal instanceof SquealerError)) return textSqueal;
 
   const geoSqueal = await getGeoSqueal(id);
-  if (!(geoSqueal instanceof Error)) return geoSqueal;
+  if (!(geoSqueal instanceof SquealerError)) return geoSqueal;
 
   const mediaSqueal = await getMediaSqueal(id);
-  if (!(mediaSqueal instanceof Error)) return mediaSqueal;
+  if (!(mediaSqueal instanceof SquealerError)) return mediaSqueal;
 
   const timedTextSqueal = await getTimedSqueal(id);
-  if (!(timedTextSqueal instanceof Error)) return timedTextSqueal;
+  if (!(timedTextSqueal instanceof SquealerError)) return timedTextSqueal;
 
   const timedGeoSqueal = await getTimedSquealGeo(id);
-  if (!(timedGeoSqueal instanceof Error)) return timedGeoSqueal;
+  if (!(timedGeoSqueal instanceof SquealerError)) return timedGeoSqueal;
 
   return non_existent;
 }
@@ -128,7 +137,10 @@ export async function postTextSqueal(squeal: Squeal) {
         for (let j of channels) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: Error | Success = await addSquealToChannel(j.name, id);
+            const ret: SquealerError | Success = await addSquealToChannel(
+              j.name,
+              id
+            );
             return ret;
           }
         }
@@ -165,7 +177,7 @@ export async function getSquealsByRecipients(recipient: string) {
       | SquealMedia
       | TimedSqueal
     )[];
-  if (squeals instanceof Error) return squeals;
+  if (squeals instanceof SquealerError) return squeals;
   else {
     let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
     //Controllo che il destinatario ricercato sia presente in uno squeal
@@ -194,7 +206,7 @@ export async function getSquealsByChannel(channel: string) {
       | SquealMedia
       | TimedSqueal
     )[];
-  if (squeals instanceof Error) return squeals;
+  if (squeals instanceof SquealerError) return squeals;
   else {
     let squealArray: (Squeal | SquealGeo | SquealMedia | TimedSqueal)[] = [];
     //Controllo che il destinatario ricercato sia presente in uno squeal

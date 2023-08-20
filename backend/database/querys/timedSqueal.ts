@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import {
   cannot_create,
   cannot_delete,
@@ -6,13 +5,13 @@ import {
   non_existent,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
-import { stopTimer } from "../../util/timers";
+import { stopTimer } from "../../API/timers";
 import { TimedSqueal } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 
 /**
  * funzione che ritorna tutti gli squeal temporizzati
- * @returns squeals or Error
+ * @returns TimedSqueal[] | SquealerError
  */
 export async function getAllTextTimers() {
   const timedSqueals: TimedSqueal[] = await timedSquealModel.find();
@@ -71,7 +70,7 @@ export async function deleteTimedSqueal(id: string) {
 /**
  * funzione che aggiorna il conteggio dei post automatici
  * @param id id dello squeal
- * @returns Success | Error
+ * @returns Success | SquealerError
  */
 export async function updateCount(id: string) {
   const update = await timedSquealModel.updateOne(

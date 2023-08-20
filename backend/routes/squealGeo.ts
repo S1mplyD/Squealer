@@ -5,9 +5,8 @@ import {
   getGeoSqueals,
   postGeoSqueal,
 } from "../database/querys/squealGeo";
-import { Error, SquealGeo, Success, User } from "../util/types";
-import { catchError, unauthorized } from "../util/errors";
-import mongoose from "mongoose";
+import { SquealGeo, Success, User } from "../util/types";
+import { SquealerError, catchError, unauthorized } from "../util/errors";
 
 export const router = express.Router();
 
@@ -19,7 +18,8 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals: SquealGeo[] | Error | undefined = await getGeoSqueals();
+      const squeals: SquealGeo[] | SquealerError | undefined =
+        await getGeoSqueals();
       res.send(squeals);
     } catch (error: any) {
       catchError(error);
@@ -53,16 +53,15 @@ router
       // Controllo se l'utente è admin
       // Se è admin posso cancellare qualsiasi squeal
       else if ((req.user as User).plan == "admin") {
-        const returnValue: Error | Success | undefined = await deleteGeoSqueal(
-          req.query.id as string
-        );
+        const returnValue: SquealerError | Success | undefined =
+          await deleteGeoSqueal(req.query.id as string);
         res.send(returnValue);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
-        const squeal: SquealGeo | Error = await getGeoSqueal(
+        const squeal: SquealGeo | SquealerError = await getGeoSqueal(
           req.query.id as string
         );
-        if (squeal instanceof Error) return squeal;
+        if (squeal instanceof SquealerError) return squeal;
         else {
           //Controllo se l'utente è il creatore dello squeal oppure se gestisce l'account del creatore dello squeal
           if (
@@ -71,7 +70,7 @@ router
               (squeal as SquealGeo).author as string
             )
           ) {
-            const returnValue: Error | Success | undefined =
+            const returnValue: SquealerError | Success | undefined =
               await deleteGeoSqueal(req.query.id as string);
             res.send(returnValue);
           } else res.send(unauthorized);

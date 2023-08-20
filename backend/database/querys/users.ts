@@ -24,7 +24,7 @@ export async function getAllUsers() {
 /**
  * funzione che ritorna un utente
  * @param id id dell'utente
- * @returns Error | User
+ * @returns SquealerError | User
  */
 export async function getUser(id: string) {
   const user: User | null = await userModel.findOne({ _id: id });
@@ -39,7 +39,6 @@ export async function getUser(id: string) {
  * @param mail : mail dell'utente
  * @param password : password dell'utente (cifrata)
  */
-//TODO add created at and followers fields
 export async function createDefaultUser(
   name: string,
   username: string,
@@ -51,6 +50,9 @@ export async function createDefaultUser(
     username: username,
     mail: mail,
     password: password,
+    createdAt: new Date(),
+    followersCount: 0,
+    followingCount: 0,
   });
   if (!doc) return cannot_create;
   else return doc;
@@ -91,13 +93,13 @@ export async function createUserUsingGoogle(
  * Aggiorna i dettagli di un utente
  * @param user oggetto contenente i dettagli di un utente
  */
-//TODO aggiungere campi aggiornabili
 export async function updateUser(id: string, user: User) {
   const update = await userModel.updateOne(
-    { _id: user._id },
+    { _id: id },
     {
       name: user.name,
       username: user.username,
+      mail: user.mail,
     }
   );
   if (update.modifiedCount < 1) return cannot_update;
@@ -105,8 +107,6 @@ export async function updateUser(id: string, user: User) {
     return updated;
   }
 }
-
-//TODO update password
 
 /**
  * funzione che aggiorna il path all'immagine profilo dell'utente
@@ -148,7 +148,7 @@ export async function deleteProfilePicture(id: string) {
  * @param mail mail dell'utente
  * @param password password dell'utente (cifrata)
  * @param isAdmin indica se l'utente è admin o no
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
 export async function deleteAccount(
   mail: string,
@@ -205,7 +205,7 @@ export async function updatePassword(mail: string, password: string) {
 /**
  * funzione che fornisce i permessi da admin ad un utente
  * @param userId {Id} id dell'utente
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
 export async function grantPermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "admin" });
@@ -216,7 +216,7 @@ export async function grantPermissions(userId: string) {
 /**
  * funzione che revoca i permessi da admin ad un utente
  * @param userId {Id} id dell'utente
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
 export async function revokePermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "base" });

@@ -10,7 +10,7 @@ import channelsModel from "../models/channels.model";
 
 /**
  * funzione che ritorna tutti i canali
- * @returns Error o tutti i canali
+ * @returns SquealerError | Channel[]
  */
 export async function getAllChannels() {
   const channels: Channel[] = await channelsModel.find();
@@ -24,7 +24,7 @@ export async function getAllChannels() {
 /**
  * funzione che crea un canale
  * @param channelName nome del canale da creare
- * @returns Error o Success
+ * @returns SquealerError | Success
  * TESTATA
  */
 export async function createChannel(channelName: string) {
@@ -37,7 +37,7 @@ export async function createChannel(channelName: string) {
  * funzione che aggiunge uno squeal ad un canale
  * @param channelName nome del canale
  * @param squealId id dello squeal da aggiungere al canale
- * @returns Error non existent, Error cannot update o Success
+ * @returns SquealerError | Success
  */
 export async function addSquealToChannel(
   channelName: string,
@@ -58,7 +58,7 @@ export async function addSquealToChannel(
 /**
  * funzione che elimina un canale
  * @param name nome del canale
- * @returns Error o Success
+ * @returns SquealerError | Success
  * TESTATA
  */
 export async function deleteChannel(name: string) {

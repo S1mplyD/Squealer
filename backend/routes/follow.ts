@@ -5,8 +5,8 @@ import {
   getAllFollowing,
   unfollowUser,
 } from "../API/follow";
-import { Error, Success } from "../util/types";
-import { catchError } from "../util/errors";
+import { Success } from "../util/types";
+import { SquealerError, catchError } from "../util/errors";
 
 export const router = express.Router();
 
@@ -15,7 +15,7 @@ export const router = express.Router();
  */
 router.route("/followers").get(async (req, res) => {
   try {
-    const followers: number | Error = await getAllFollowers(
+    const followers: number | SquealerError = await getAllFollowers(
       req.query.userId as string
     );
     return followers;
@@ -29,7 +29,7 @@ router.route("/followers").get(async (req, res) => {
  */
 router.route("/following").get(async (req, res) => {
   try {
-    const following: number | Error = await getAllFollowing(
+    const following: number | SquealerError = await getAllFollowing(
       req.query.userId as string
     );
     return following;
@@ -43,7 +43,7 @@ router.route("/following").get(async (req, res) => {
  */
 router.route("/follow").post(async (req, res) => {
   try {
-    const update: Error | Success = await followUser(
+    const update: SquealerError | Success = await followUser(
       req.body.userId,
       req.body.followId
     );
@@ -58,7 +58,7 @@ router.route("/follow").post(async (req, res) => {
  */
 router.route("/unfollow").post(async (req, res) => {
   try {
-    const update: Error | Success = await unfollowUser(
+    const update: SquealerError | Success = await unfollowUser(
       req.body.userId,
       req.body.followId
     );
