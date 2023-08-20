@@ -6,22 +6,23 @@ import mongoose from "mongoose";
 import passport from "passport";
 import path from "path";
 import { router as authRoute } from "./routes/authentication";
-import { startAllTimer } from "./util/timers";
+import { startAllTimer } from "./API/timers";
 import { router as channelRoute } from "./routes/channels";
 import { router as squealsRoute } from "./routes/squeals";
 import { router as squealMediaRoute } from "./routes/squealMedia";
 import { router as squealGeoRoute } from "./routes/squealGeo";
 import { router as squealTimedRoute } from "./routes/timedSqueal";
 import { router as mediaRoute } from "./routes/media";
-import { Error } from "./util/types";
+import { router as userRoute } from "./routes/users";
 import fs from "fs";
+import { updateAnalyticTimer } from "./database/querys/analytics";
+import { SquealerError } from "./util/errors";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
 const app = express();
 const uri: string = process.env.MONGO_TEST!;
 const port: any = process.env.PORT || 3000;
-
 app.use(cors());
 app.use(express.json());
 
@@ -31,7 +32,7 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  }),
+  })
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
@@ -46,8 +47,20 @@ fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+//IMMAGINI PUBBLICHE
 app.use(express.static(path.join(__dirname, "public")));
 
+// pagina principale APP
+// app.use(
+//   "/",
+//   express.static(path.join(__dirname, "frontend/squealer-fo/build")),
+// );
+
+//TEST
+app.use("/", express.static(path.join(__dirname, "../frontend")));
+
+// ENDPOINT DELLE API
 app.use("/api/auth", authRoute);
 app.use("/api/channels", channelRoute);
 app.use("/api/squeals", squealsRoute);
@@ -55,12 +68,19 @@ app.use("/api/squeals/media", squealMediaRoute);
 app.use("/api/squeals/geo", squealGeoRoute);
 app.use("/api/squeals/timed", squealTimedRoute);
 app.use("/api/media", mediaRoute);
+app.use("/api/users", userRoute);
+
+// Funzione che ricarica il file statico della pagina corrente
+// app.get("*", (req, res) => {
+//   res.sendFile(__dirname + "/frontend/squealer-fo/dist/index.html");
+// });
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
-  console.log("connected to mongoose");
-  const ret: Error | undefined = await startAllTimer();
+  console.log("[CONNECTED TO MONGOOSE]");
+  const ret: SquealerError | undefined = await startAllTimer();
   console.log(ret);
+  const analyticsRet = await updateAnalyticTimer();
 });
 
 app.listen(port, () => {
