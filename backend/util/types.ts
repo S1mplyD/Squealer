@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-import { ErrorCodes, ErrorDescriptions } from "./errors";
 import { SuccessCode, SuccessDescription } from "./success";
 
 // nuovo tipo Squeal
@@ -146,12 +144,15 @@ export type Channel = {
   _id: string; // mongodb id
   name: string; // nome del canale
   squeals: string[]; // id degli squeals appartenenti al canale
+  allowedRead: string[];
+  allowedWrite: string[];
+  type: string;
 };
 
-export type Error = {
-  message: ErrorDescriptions;
-  code: ErrorCodes;
-};
+// export type Error = {
+//   message: ErrorDescriptions;
+//   code: ErrorCodes;
+// };
 
 export type Success = {
   message: SuccessDescription;
