@@ -8,18 +8,21 @@ import {
   getTextSqueal,
 } from "../database/querys/squeals";
 import express from "express";
-import { startTimer } from "../util/timers";
+import { startTimer } from "../API/timers";
 import {
   TimedSqueal,
-  Error,
   Squeal,
   SquealGeo,
   SquealMedia,
   User,
   Success,
 } from "../util/types";
-import { non_existent, unauthorized } from "../util/errors";
-import mongoose from "mongoose";
+import {
+  SquealerError,
+  catchError,
+  non_existent,
+  unauthorized,
+} from "../util/errors";
 
 export const router = express.Router();
 
@@ -32,13 +35,13 @@ router
   .get(async (req, res) => {
     try {
       const squeals:
-        | Error
+        | SquealerError
         | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
         | undefined = await getAllSqueals();
       if (squeals === undefined) return non_existent;
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -53,7 +56,7 @@ router
       const squeals: any = await getTextSqueals();
       res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -63,11 +66,13 @@ router
   .post(async (req, res) => {
     try {
       if (req.user) {
-        const ret: Error | Success | undefined = await postTextSqueal(req.body);
+        const ret: SquealerError | Success | undefined = await postTextSqueal(
+          req.body
+        );
         res.send(ret);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -78,16 +83,16 @@ router
     try {
       if (!req.user) res.send(unauthorized);
       else if ((req.user as User).plan === "admin") {
-        const ret: Error | Success | undefined = await deleteTextSqueal(
+        const ret: SquealerError | Success | undefined = await deleteTextSqueal(
           req.query.id as string
         );
         res.send(ret);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
-        const squeal: Squeal | Error = await getTextSqueal(
-          req.query.id as unknown as mongoose.Types.ObjectId
+        const squeal: Squeal | SquealerError = await getTextSqueal(
+          req.query.id as string
         );
-        if (squeal instanceof Error) return squeal;
+        if (squeal instanceof SquealerError) return squeal;
         else {
           if (
             (squeal as Squeal).author === (req.user as User).username ||
@@ -95,14 +100,14 @@ router
               (squeal as Squeal).author as string
             )
           ) {
-            const returnValue: Error | Success | undefined =
+            const returnValue: SquealerError | Success | undefined =
               await deleteTextSqueal(req.query.id as string);
             res.send(returnValue);
           } else res.send(unauthorized);
         }
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -117,11 +122,13 @@ router
       const squeals:
         | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
         | undefined
-        | Error = await getSquealsByRecipients(req.query.recipient as string);
+        | SquealerError = await getSquealsByRecipients(
+        req.query.recipient as string
+      );
       if (squeals === undefined) res.send(non_existent);
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -136,10 +143,12 @@ router
       const squeals:
         | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
         | undefined
-        | Error = await getSquealsByChannel(req.query.channel as string);
+        | SquealerError = await getSquealsByChannel(
+        req.query.channel as string
+      );
       if (squeals === undefined) res.send(non_existent);
       else res.send(squeals);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

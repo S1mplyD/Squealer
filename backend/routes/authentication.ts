@@ -15,8 +15,14 @@ import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
 import { Success, logged_in, sent, signed_up } from "../util/success";
-import { cannot_send, cannot_update, non_existent } from "../util/errors";
-import { Error, User } from "../util/types";
+import {
+  SquealerError,
+  cannot_send,
+  cannot_update,
+  catchError,
+  non_existent,
+} from "../util/errors";
+import { User } from "../util/types";
 config();
 
 export const router = express.Router();
@@ -160,7 +166,7 @@ router.get("/logout", (req, res, next) => {
       res.status(200).redirect("/");
     });
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
 router
@@ -173,12 +179,10 @@ router
     const token: string = generate();
 
     const returnValue = await sendMail(token, mail);
-    const queryResult: Error | Success | undefined = await updateResetToken(
-      mail,
-      token
-    );
+    const queryResult: SquealerError | Success | undefined =
+      await updateResetToken(mail, token);
     if (queryResult === undefined) return cannot_update;
-    else if (returnValue instanceof Error) return returnValue;
+    else if (returnValue instanceof SquealerError) return returnValue;
     else res.send(sent);
   })
   /**
@@ -191,7 +195,7 @@ router
     const password: any = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      const ret: Error | Success | undefined = await updatePassword(
+      const ret: SquealerError | Success | undefined = await updatePassword(
         mail,
         encryptedPassword
       );

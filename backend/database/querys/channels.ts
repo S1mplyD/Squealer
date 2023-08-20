@@ -1,26 +1,16 @@
 import {
-  Error,
-  ErrorCodes,
-  ErrorDescriptions,
   cannot_create,
   cannot_delete,
   cannot_update,
   non_existent,
 } from "../../util/errors";
-import {
-  Success,
-  SuccessCode,
-  SuccessDescription,
-  created,
-  removed,
-  updated,
-} from "../../util/success";
-import { Channel, Id } from "../../util/types";
+import { created, removed, updated } from "../../util/success";
+import { Channel } from "../../util/types";
 import channelsModel from "../models/channels.model";
 
 /**
  * funzione che ritorna tutti i canali
- * @returns Error o tutti i canali
+ * @returns SquealerError | Channel[]
  */
 export async function getAllChannels() {
   const channels: Channel[] = await channelsModel.find();
@@ -34,7 +24,7 @@ export async function getAllChannels() {
 /**
  * funzione che crea un canale
  * @param channelName nome del canale da creare
- * @returns Error o Success
+ * @returns SquealerError | Success
  * TESTATA
  */
 export async function createChannel(channelName: string) {
@@ -47,9 +37,12 @@ export async function createChannel(channelName: string) {
  * funzione che aggiunge uno squeal ad un canale
  * @param channelName nome del canale
  * @param squealId id dello squeal da aggiungere al canale
- * @returns Error non existent, Error cannot update o Success
+ * @returns SquealerError | Success
  */
-export async function addSquealToChannel(channelName: string, squealId: Id) {
+export async function addSquealToChannel(
+  channelName: string,
+  squealId: string
+) {
   const updatedDoc: any = await channelsModel.findOneAndUpdate(
     { name: channelName },
     { $push: { squeals: squealId } },
@@ -65,7 +58,7 @@ export async function addSquealToChannel(channelName: string, squealId: Id) {
 /**
  * funzione che elimina un canale
  * @param name nome del canale
- * @returns Error o Success
+ * @returns SquealerError | Success
  * TESTATA
  */
 export async function deleteChannel(name: string) {

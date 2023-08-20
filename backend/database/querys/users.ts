@@ -5,7 +5,7 @@ import {
   non_existent,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
-import { Id, User } from "../../util/types";
+import { User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
 import { resolve } from "path";
@@ -16,21 +16,17 @@ const publicUploadPath = resolve(__dirname, "../../..", "public");
  * Ritorna tutti gli utenti
  */
 export async function getAllUsers() {
-  try {
-    const users: User[] | null = await userModel.find();
-    if (users.length < 1) return non_existent;
-    else return users;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const users: User[] | null = await userModel.find();
+  if (users.length < 1) return non_existent;
+  else return users;
 }
 
 /**
  * funzione che ritorna un utente
  * @param id id dell'utente
- * @returns Error | User
+ * @returns SquealerError | User
  */
-export async function getUser(id: Id) {
+export async function getUser(id: string) {
   const user: User | null = await userModel.findOne({ _id: id });
   if (!user) return non_existent;
   else return user;
@@ -43,25 +39,23 @@ export async function getUser(id: Id) {
  * @param mail : mail dell'utente
  * @param password : password dell'utente (cifrata)
  */
-//TODO add created at and followers fields
 export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
   password: string
 ) {
-  try {
-    const doc = await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      password: password,
-    });
-    if (!doc) return cannot_create;
-    else return doc;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const doc = await userModel.create({
+    name: name,
+    username: username,
+    mail: mail,
+    password: password,
+    createdAt: new Date(),
+    followersCount: 0,
+    followingCount: 0,
+  });
+  if (!doc) return cannot_create;
+  else return doc;
 }
 
 /**
@@ -81,35 +75,31 @@ export async function createUserUsingGoogle(
   profilePicture: string,
   createdAt: Date
 ) {
-  try {
-    const newUser = await userModel.create({
-      name: name,
-      username: username,
-      mail: mail,
-      serviceId: serviceId,
-      profilePicture: profilePicture,
-      followersCount: 0,
-      followingCount: 0,
-      createdAt: createdAt,
-    });
-    if (!newUser) return cannot_create;
-    else return newUser;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const newUser = await userModel.create({
+    name: name,
+    username: username,
+    mail: mail,
+    serviceId: serviceId,
+    profilePicture: profilePicture,
+    followersCount: 0,
+    followingCount: 0,
+    createdAt: createdAt,
+  });
+  if (!newUser) return cannot_create;
+  else return newUser;
 }
 
 /**
  * Aggiorna i dettagli di un utente
  * @param user oggetto contenente i dettagli di un utente
  */
-//TODO aggiungere campi aggiornabili
-export async function updateUser(id: Id, user: User) {
+export async function updateUser(id: string, user: User) {
   const update = await userModel.updateOne(
-    { _id: user._id },
+    { _id: id },
     {
       name: user.name,
       username: user.username,
+      mail: user.mail,
     }
   );
   if (update.modifiedCount < 1) return cannot_update;
@@ -118,8 +108,6 @@ export async function updateUser(id: Id, user: User) {
   }
 }
 
-//TODO update password
-
 /**
  * funzione che aggiorna il path all'immagine profilo dell'utente
  * @param id id dell'utente
@@ -127,16 +115,12 @@ export async function updateUser(id: Id, user: User) {
  * @returns Errore o Successo
  */
 export async function updateProfilePicture(id: string, filename: string) {
-  try {
-    const user = await userModel.updateOne(
-      { _id: id },
-      { profilepicture: filename }
-    );
-    if (user.modifiedCount < 1) return cannot_update;
-    else return updated;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const user = await userModel.updateOne(
+    { _id: id },
+    { profilepicture: filename }
+  );
+  if (user.modifiedCount < 1) return cannot_update;
+  else return updated;
 }
 
 /**
@@ -144,20 +128,18 @@ export async function updateProfilePicture(id: string, filename: string) {
  * @param id id dell'utente
  */
 export async function deleteProfilePicture(id: string) {
-  try {
-    const user = await userModel.findById({ _id: id });
+  const user = await userModel.findOne({ _id: id });
+  if (!user) return non_existent;
+  else {
     fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
       if (err) return cannot_delete;
       else {
-        const result = await user?.updateOne(
+        await user?.updateOne(
           { profilePicture: "default.png" },
           { returnDocument: "after" }
         );
-        console.log(result);
       }
     });
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
   }
 }
 
@@ -165,30 +147,28 @@ export async function deleteProfilePicture(id: string) {
  * cancella l'account dell'utente
  * @param mail mail dell'utente
  * @param password password dell'utente (cifrata)
+ * @param isAdmin indica se l'utente è admin o no
+ * @returns SquealerError | Success
  */
 export async function deleteAccount(
   mail: string,
   password: string,
   isAdmin: boolean
 ) {
-  try {
-    const profilepicture = await userModel.findOne({ mail: mail });
-    fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
-      if (err) console.log(err);
+  const profilepicture = await userModel.findOne({ mail: mail });
+  fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
+    if (err) console.log(err);
+  });
+  if (isAdmin) {
+    const user = await userModel.deleteOne({ mail: mail });
+    if (user.deletedCount < 1) return cannot_delete;
+    else return removed;
+  } else {
+    const user = await userModel.deleteOne({
+      $and: [{ mail: mail }, { password: password }],
     });
-    if (isAdmin) {
-      const user = await userModel.deleteOne({ mail: mail });
-      if (user.deletedCount < 1) return cannot_delete;
-      else return removed;
-    } else {
-      const user = await userModel.deleteOne({
-        $and: [{ mail: mail }, { password: password }],
-      });
-      if (user.deletedCount < 1) return cannot_delete;
-      else return removed;
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+    if (user.deletedCount < 1) return cannot_delete;
+    else return removed;
   }
 }
 
@@ -198,16 +178,12 @@ export async function deleteAccount(
  * @param token token di conferma
  */
 export async function updateResetToken(mail: string, token: string) {
-  try {
-    const result = await userModel.updateOne(
-      { mail: mail },
-      { resetToken: token }
-    );
-    if (result.modifiedCount < 1) return cannot_update;
-    else return updated;
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
-  }
+  const result = await userModel.updateOne(
+    { mail: mail },
+    { resetToken: token }
+  );
+  if (result.modifiedCount < 1) return cannot_update;
+  else return updated;
 }
 
 /**
@@ -216,26 +192,22 @@ export async function updateResetToken(mail: string, token: string) {
  * @param password nuova password dell'utente
  */
 export async function updatePassword(mail: string, password: string) {
-  try {
-    const newDoc = await userModel
-      .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
-      .lean();
-    if (!newDoc) return non_existent;
-    else {
-      if (newDoc.password !== password) return updated;
-      else return cannot_update;
-    }
-  } catch (error: any) {
-    console.log({ errorName: error.name, errorDescription: error.message });
+  const newDoc = await userModel
+    .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
+    .lean();
+  if (!newDoc) return non_existent;
+  else {
+    if (newDoc.password !== password) return updated;
+    else return cannot_update;
   }
 }
 
 /**
  * funzione che fornisce i permessi da admin ad un utente
  * @param userId {Id} id dell'utente
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
-export async function grantPermissions(userId: Id) {
+export async function grantPermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "admin" });
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -244,23 +216,30 @@ export async function grantPermissions(userId: Id) {
 /**
  * funzione che revoca i permessi da admin ad un utente
  * @param userId {Id} id dell'utente
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
-export async function revokePermissions(userId: Id) {
+export async function revokePermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "base" });
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
 }
 
 //TODO test
-export async function ban(id: Id) {
+export async function ban(id: string) {
   const update = await userModel.updateOne({ _id: id }, { status: "ban" });
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
 }
 
 //TODO test
-export async function b1ock(id: Id, time: number) {
+export async function unbanUser(id: string) {
+  const update = await userModel.updateOne({ _id: id }, { status: "normal" });
+  if (update.modifiedCount < 1) return cannot_update;
+  else return updated;
+}
+
+//TODO test
+export async function blockUser(id: string, time: number) {
   const update = await userModel.updateOne(
     { _id: id },
     { status: "block", blockedFor: time }

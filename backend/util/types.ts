@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { ErrorCodes, ErrorDescriptions } from "./errors";
 import { SuccessCode, SuccessDescription } from "./success";
-export type Id = mongoose.Types.ObjectId;
 
 // nuovo tipo Squeal
 export type Squeal = {
@@ -16,7 +15,7 @@ export type Squeal = {
   //Non visualizzabili
   criticalMass: number | undefined; //Massa critica (0,25 x visual)
   visual: number | undefined; //Visualizzazioni di account registrati e non
-  _id: Id;
+  _id: string;
 };
 
 export type SquealGeo = {
@@ -31,7 +30,7 @@ export type SquealGeo = {
   author: string;
   criticalMass?: number;
   visual?: number;
-  _id: Id;
+  _id: string;
 };
 
 export type SquealMedia = {
@@ -46,7 +45,7 @@ export type SquealMedia = {
   author: string;
   criticalMass?: number;
   visual?: number;
-  _id: Id;
+  _id: string;
 };
 
 // nuovo tipo per squeal temporizzati
@@ -64,7 +63,7 @@ export type TimedSqueal = {
   visual: number | undefined; //Visualizzazioni di account registrati e non
   time: number | undefined; //tempo per i messaggi automatici (in ms)
   count: number | undefined;
-  _id: Id;
+  _id: string;
 };
 
 export type TimedSquealGeo = {
@@ -83,7 +82,7 @@ export type TimedSquealGeo = {
   visual?: number;
   time?: number;
   count?: number;
-  _id: Id;
+  _id: string;
 };
 
 //tipo per squeal di testo automatico
@@ -99,7 +98,7 @@ export type AutomatedSqueal = {
   criticalMass?: number;
   visual: number;
   originalSqueal: string;
-  _id: Id;
+  _id: string;
 };
 
 // tipo per squeal geo automatici
@@ -116,16 +115,16 @@ export type AutomatedGeoSqueal = {
   criticalMass?: number;
   visual: number;
   originalSqueal: string;
-  _id: Id;
+  _id: string;
 };
 
 // nuovo tipo utente
 export type User = {
-  _id: Id; // mongodb id
+  _id: string; // mongodb id
   name: string; //Nome completo (nome e cognome)
   username: string; // Username dell'utente
   mail: string; // Mail dell'utente
-  serviceId: number | undefined; //Id del servizio di login usato (E.s.: Google)
+  serviceId: number | undefined; // id del servizio di login usato (E.s.: Google)
   password: string | undefined;
   profilePicture: string | undefined; // Immagine profilo
   dailyCharacters: number; //Caratteri giornalieri
@@ -162,5 +161,15 @@ export type Success = {
 // nuovo tipo per intervalli
 export type Interval = {
   timeout: NodeJS.Timeout;
-  id: Id; //id squeal
+  id: string; //id squeal
+};
+
+export type Analytic = {
+  _id: string;
+  squealId: string;
+  dates: Date[];
+  visuals: number[];
+  positiveReactions: number[];
+  negativeReactions: number[];
+  author: string;
 };

@@ -5,8 +5,14 @@ import {
   createChannel,
   deleteChannel,
 } from "../database/querys/channels";
-import { ErrorCodes, ErrorDescriptions, unauthorized } from "../util/errors";
-import { Success, User, Error } from "../util/types";
+import {
+  ErrorCodes,
+  ErrorDescriptions,
+  SquealerError,
+  catchError,
+  unauthorized,
+} from "../util/errors";
+import { Success, User } from "../util/types";
 import { plans } from "../util/constants";
 
 export const router = express.Router();
@@ -24,7 +30,7 @@ router
         res.send(channels);
       });
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -35,7 +41,7 @@ router
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const returnValue: Error | Success = await createChannel(
+        const returnValue: SquealerError | Success = await createChannel(
           req.query.name as string
         );
         res.send(returnValue);
@@ -43,7 +49,7 @@ router
         res.send(unauthorized);
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   })
   /**
@@ -54,7 +60,7 @@ router
   .delete(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const returnValue: Error | Success = await deleteChannel(
+        const returnValue: SquealerError | Success = await deleteChannel(
           req.query.name as string
         );
         res.send(returnValue);
@@ -62,7 +68,7 @@ router
         res.send(unauthorized);
       }
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });
 
@@ -76,13 +82,13 @@ router
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const returnValue: Error | Success = await addSquealToChannel(
+        const returnValue: SquealerError | Success = await addSquealToChannel(
           req.body.channelName!,
           req.body.squealId!
         );
         res.send(returnValue);
       } else res.send(unauthorized);
     } catch (error: any) {
-      res.send({ errorName: error.name, errorDescription: error.message });
+      catchError(error);
     }
   });

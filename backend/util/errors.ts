@@ -1,8 +1,21 @@
-export interface Error {
+//   code: ErrorCodes;
+// }
+// export class MyError extends Error {
+//   message: string;
+//   code: number;
+//   constructor(message: string, code: number) {
+//     super(message);
+//     this.code = code;
+//   }
+// }
+
+export class SquealerError {
   message: ErrorDescriptions;
   code: ErrorCodes;
+  constructor(message: ErrorDescriptions, code: ErrorCodes) {
+    (this.message = message), (this.code = code);
+  }
 }
-
 // enum per il codice degli errori
 export enum ErrorCodes {
   cannot_create = 10,
@@ -34,62 +47,66 @@ export enum ErrorDescriptions {
   browser_not_supported = "Browser is not supportes",
 }
 
-export const cannot_create: Error = {
-  message: ErrorDescriptions.cannot_create,
-  code: ErrorCodes.cannot_create,
-};
+export const cannot_create = new SquealerError(
+  ErrorDescriptions.cannot_create,
+  ErrorCodes.cannot_create
+);
 
-export const non_existent: Error = {
-  message: ErrorDescriptions.non_existent,
-  code: ErrorCodes.non_existent,
-};
+export const non_existent = new SquealerError(
+  ErrorDescriptions.non_existent,
+  ErrorCodes.non_existent
+);
 
-export const cannot_update: Error = {
-  message: ErrorDescriptions.cannot_update,
-  code: ErrorCodes.cannot_update,
-};
+export const cannot_update = new SquealerError(
+  ErrorDescriptions.cannot_update,
+  ErrorCodes.cannot_update
+);
 
-export const no_timers: Error = {
-  message: ErrorDescriptions.no_timers,
-  code: ErrorCodes.no_timers,
-};
+export const no_timers = new SquealerError(
+  ErrorDescriptions.no_timers,
+  ErrorCodes.no_timers
+);
 
-export const cannot_delete: Error = {
-  message: ErrorDescriptions.cannot_delete,
-  code: ErrorCodes.cannot_delete,
-};
+export const cannot_delete = new SquealerError(
+  ErrorDescriptions.cannot_delete,
+  ErrorCodes.cannot_delete
+);
 
-export const not_supported: Error = {
-  message: ErrorDescriptions.not_supported,
-  code: ErrorCodes.not_supported,
-};
+export const not_supported = new SquealerError(
+  ErrorDescriptions.not_supported,
+  ErrorCodes.not_supported
+);
 
-export const not_recived: Error = {
-  message: ErrorDescriptions.not_recived,
-  code: ErrorCodes.not_recived,
-};
+export const not_recived = new SquealerError(
+  ErrorDescriptions.not_recived,
+  ErrorCodes.not_recived
+);
 
-export const unauthorized: Error = {
-  message: ErrorDescriptions.unauthorized,
-  code: ErrorCodes.unauthorized,
-};
+export const unauthorized = new SquealerError(
+  ErrorDescriptions.unauthorized,
+  ErrorCodes.unauthorized
+);
 
-export const cannot_send: Error = {
-  message: ErrorDescriptions.cannot_send,
-  code: ErrorCodes.cannot_send,
-};
+export const cannot_send = new SquealerError(
+  ErrorDescriptions.cannot_send,
+  ErrorCodes.cannot_send
+);
 
-export const no_characters: Error = {
-  message: ErrorDescriptions.no_characters,
-  code: ErrorCodes.no_characters,
-};
+export const no_characters = new SquealerError(
+  ErrorDescriptions.no_characters,
+  ErrorCodes.no_characters
+);
 
-export const cannot_get_location: Error = {
-  message: ErrorDescriptions.cannot_get_location,
-  code: ErrorCodes.cannot_get_location,
-};
+export const cannot_get_location = new SquealerError(
+  ErrorDescriptions.cannot_get_location,
+  ErrorCodes.cannot_get_location
+);
 
-export const browser_not_supported: Error = {
-  message: ErrorDescriptions.browser_not_supported,
-  code: ErrorCodes.browser_not_supported,
-};
+export const browser_not_supported = new SquealerError(
+  ErrorDescriptions.browser_not_supported,
+  ErrorCodes.browser_not_supported
+);
+
+export function catchError(error: any) {
+  return { errorName: error.name, errorDescription: error.message };
+}

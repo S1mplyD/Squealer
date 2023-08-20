@@ -1,7 +1,7 @@
 import multer from "multer";
 import express from "express";
 import { resolve } from "path";
-import { unauthorized } from "../util/errors";
+import { catchError, unauthorized } from "../util/errors";
 
 const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
@@ -38,6 +38,6 @@ router.route("/").post(upload.single("file"), (req, res) => {
     if (req.user) res.send(req.file?.filename);
     else res.send(unauthorized);
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    catchError(error);
   }
 });
