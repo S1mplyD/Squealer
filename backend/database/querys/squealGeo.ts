@@ -14,7 +14,7 @@ import { addSquealToChannel, getAllChannels } from "./channels";
  * @returns error o geo squeals
  */
 export async function getGeoSqueals() {
-  const squeals: any[] = await squealGeoModel.find();
+  const squeals: SquealGeo[] = await squealGeoModel.find();
   if (squeals.length < 1) return non_existent;
   else return squeals;
 }
