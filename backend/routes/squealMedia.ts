@@ -7,7 +7,6 @@ import {
 } from "../database/querys/squealMedia";
 import { SquealMedia, Success, User } from "../util/types";
 import { SquealerError, catchError, unauthorized } from "../util/errors";
-import mongoose from "mongoose";
 
 export const router = express.Router();
 
@@ -19,9 +18,11 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals: SquealMedia[] | SquealerError | undefined =
-        await getMediaSqueals();
-      res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals: SquealMedia[] | SquealerError | undefined =
+          await getMediaSqueals();
+        res.send(squeals);
+      }
     } catch (error: any) {
       catchError(error);
     }
@@ -32,10 +33,15 @@ router
    */
   .post(async (req, res) => {
     try {
-      if (req.user) {
+      if (
+        req.user &&
+        ((req.user as User).status !== "ban" ||
+          (req.user as User).status !== "block")
+      ) {
         const newSqueal: any = await postMediaSqueal(
           req.body,
-          req.query.filename as string
+          req.query.filename as string,
+          (req.user as User).username as string
         );
         res.send(newSqueal);
       } else res.send(unauthorized);

@@ -8,7 +8,6 @@ import {
   getTextSqueal,
 } from "../database/querys/squeals";
 import express from "express";
-import { startTimer } from "../API/timers";
 import {
   TimedSqueal,
   Squeal,
@@ -16,6 +15,7 @@ import {
   SquealMedia,
   User,
   Success,
+  TimedSquealGeo,
 } from "../util/types";
 import {
   SquealerError,
@@ -34,12 +34,13 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals:
-        | SquealerError
-        | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
-        | undefined = await getAllSqueals();
-      if (squeals === undefined) return non_existent;
-      else res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals:
+          | SquealerError
+          | (Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo)[]
+          | undefined = await getAllSqueals();
+        res.send(squeals);
+      }
     } catch (error: any) {
       catchError(error);
     }
@@ -53,8 +54,10 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals: any = await getTextSqueals();
-      res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals: any = await getTextSqueals();
+        res.send(squeals);
+      }
     } catch (error: any) {
       catchError(error);
     }
@@ -65,7 +68,11 @@ router
    */
   .post(async (req, res) => {
     try {
-      if (req.user) {
+      if (
+        req.user &&
+        ((req.user as User).status !== "ban" ||
+          (req.user as User).status !== "block")
+      ) {
         const ret: SquealerError | Success | undefined = await postTextSqueal(
           req.body
         );
@@ -119,14 +126,16 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals:
-        | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
-        | undefined
-        | SquealerError = await getSquealsByRecipients(
-        req.query.recipient as string
-      );
-      if (squeals === undefined) res.send(non_existent);
-      else res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals:
+          | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
+          | undefined
+          | SquealerError = await getSquealsByRecipients(
+          req.query.recipient as string
+        );
+        if (squeals === undefined) res.send(non_existent);
+        else res.send(squeals);
+      } else res.send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -140,14 +149,16 @@ router
    */
   .get(async (req, res) => {
     try {
-      const squeals:
-        | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
-        | undefined
-        | SquealerError = await getSquealsByChannel(
-        req.query.channel as string
-      );
-      if (squeals === undefined) res.send(non_existent);
-      else res.send(squeals);
+      if (!req.user || (req.user as User).status !== "ban") {
+        const squeals:
+          | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
+          | undefined
+          | SquealerError = await getSquealsByChannel(
+          req.query.channel as string
+        );
+        if (squeals === undefined) res.send(non_existent);
+        else res.send(squeals);
+      } else res.send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }

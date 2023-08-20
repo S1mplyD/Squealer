@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { imagetypes, videotypes } from "../../util/constants";
 import {
   cannot_delete,
@@ -38,7 +37,11 @@ export async function getMediaSqueal(id: string) {
  * @param filename {string} nome del file (utilizzare la chiamata di caricamento e poi mettere in "filename" il valore di ritorno)
  * @returns ritorna successo o errore
  */
-export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
+export async function postMediaSqueal(
+  squeal: SquealMedia,
+  filename: string,
+  username: string
+) {
   const channels: any = await getAllChannels();
   var type: string | undefined = filename.split(".").pop();
 
@@ -61,6 +64,7 @@ export async function postMediaSqueal(squeal: SquealMedia, filename: string) {
     date: new Date(),
     category: squeal.category,
     channels: squeal.channels,
+    author: username,
   });
 
   if (!newSqueal) return cannot_create;

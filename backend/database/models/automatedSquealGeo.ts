@@ -38,8 +38,7 @@ const automatedSquealGeoSchema = new Schema<AutomatedSquealGeoDocument>({
 
 const automatedSquealGeoModel = model<AutomatedSquealGeoDocument>(
   "automatedSquealGeoData",
-  automatedSquealGeoSchema,
+  automatedSquealGeoSchema
 );
 
-//TODO
 export default automatedSquealGeoModel;

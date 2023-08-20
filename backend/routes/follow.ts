@@ -5,8 +5,8 @@ import {
   getAllFollowing,
   unfollowUser,
 } from "../API/follow";
-import { Success } from "../util/types";
-import { SquealerError, catchError } from "../util/errors";
+import { Success, User } from "../util/types";
+import { SquealerError, catchError, unauthorized } from "../util/errors";
 
 export const router = express.Router();
 
@@ -15,10 +15,12 @@ export const router = express.Router();
  */
 router.route("/followers").get(async (req, res) => {
   try {
-    const followers: number | SquealerError = await getAllFollowers(
-      req.query.userId as string
-    );
-    return followers;
+    if (req.user) {
+      const followers: number | SquealerError = await getAllFollowers(
+        req.query.userId as string
+      );
+      res.send(followers);
+    } else res.send(unauthorized);
   } catch (error: any) {
     catchError(error);
   }
@@ -29,10 +31,12 @@ router.route("/followers").get(async (req, res) => {
  */
 router.route("/following").get(async (req, res) => {
   try {
-    const following: number | SquealerError = await getAllFollowing(
-      req.query.userId as string
-    );
-    return following;
+    if (req.user) {
+      const following: number | SquealerError = await getAllFollowing(
+        req.query.userId as string
+      );
+      res.send(following);
+    } else res.send(unauthorized);
   } catch (error: any) {
     catchError(error);
   }
@@ -43,11 +47,17 @@ router.route("/following").get(async (req, res) => {
  */
 router.route("/follow").post(async (req, res) => {
   try {
-    const update: SquealerError | Success = await followUser(
-      req.body.userId,
-      req.body.followId
-    );
-    return update;
+    if (
+      req.user &&
+      ((req.user as User).status !== "ban" ||
+        (req.user as User).status !== "block")
+    ) {
+      const update: SquealerError | Success = await followUser(
+        (req.user as User)._id,
+        req.query.followId as string
+      );
+      res.send(update);
+    } else res.send(unauthorized);
   } catch (error: any) {
     catchError(error);
   }
@@ -58,11 +68,17 @@ router.route("/follow").post(async (req, res) => {
  */
 router.route("/unfollow").post(async (req, res) => {
   try {
-    const update: SquealerError | Success = await unfollowUser(
-      req.body.userId,
-      req.body.followId
-    );
-    return update;
+    if (
+      req.user &&
+      ((req.user as User).status !== "ban" ||
+        (req.user as User).status !== "block")
+    ) {
+      const update: SquealerError | Success = await unfollowUser(
+        req.body.userId,
+        req.body.followId
+      );
+      res.send(update);
+    } else res.send(unauthorized);
   } catch (error: any) {
     catchError(error);
   }
