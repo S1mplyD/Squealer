@@ -17,5 +17,3 @@ export interface User {
   followersCount: number;
   followingCount: number;
 }
-
-

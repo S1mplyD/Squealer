@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import passport from "passport";
 import path from "path";
 import { router as authRoute } from "./routes/authentication";
-import { startAllTimer } from "./util/timers";
+import { startAllTimer } from "./API/timers";
 import { router as channelRoute } from "./routes/channels";
 import { router as squealsRoute } from "./routes/squeals";
 import { router as squealMediaRoute } from "./routes/squealMedia";
