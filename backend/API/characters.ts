@@ -5,19 +5,19 @@ import {
   defaultCharactersJournalist,
   defaultCharactersProfessional,
   defaultCharactersVerified,
-} from "./constants";
-import { cannot_update, non_existent } from "./errors";
-import { updated } from "./success";
-import { Error, User } from "./types";
+} from "../util/constants";
+import { SquealerError, cannot_update, non_existent } from "../util/errors";
+import { updated } from "../util/success";
+import { User } from "../util/types";
 
 /**
  * funzione che ritorna i caratteri di un utente
  * @param id id utente
- * @returns Error | characters
+ * @returns SquealerError | characters
  */
 export async function getUserCharacter(id: string) {
-  const user: User | Error = await getUser(id);
-  if (user instanceof Error) return non_existent;
+  const user: User | SquealerError = await getUser(id);
+  if (user instanceof SquealerError) return non_existent;
   else {
     const characters: [number, number, number] = [
       (user as User).dailyCharacters,
@@ -32,7 +32,7 @@ export async function getUserCharacter(id: string) {
  * funzione che aggiorna i caratteri giornalieri
  * @param id id utente
  * @param usedCharacters caratteri utilizzati in uno squeal
- * @returns Error | Success
+ * @returns SquealerError | Success
  */
 export async function updateDailyCharacters(
   id: string,
@@ -51,19 +51,18 @@ export async function updateDailyCharacters(
 }
 
 /**
- * funzione che resetta i caratteri giornalieri, settimanali e mensili dell'utente
+ * funzione che resetta i caratteri giornalieri
  * @param id id utente
- * @returns Success | Error
+ * @returns Success | SquealerError
  */
 export async function resetCharactersDaily(id: string) {
-  const characters: Error | [number, number, number] = await getUserCharacter(
-    id
-  );
-  if (characters instanceof Error) {
+  const characters: SquealerError | [number, number, number] =
+    await getUserCharacter(id);
+  if (characters instanceof SquealerError) {
     return characters;
   }
   const [daily, weekly, monthly] = characters as [number, number, number];
-  const user: User | Error = await getUser(id);
+  const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
     (user as User).plan
   );
@@ -79,16 +78,19 @@ export async function resetCharactersDaily(id: string) {
   }
 }
 
-//TODO return values
+/**
+ * funzione che aggiorna i caratteri settimanali di un utente
+ * @param id id utente
+ * @returns SquealerError | Success
+ */
 export async function resetCharactersWeekly(id: string) {
-  const characters: Error | [number, number, number] = await getUserCharacter(
-    id
-  );
-  if (characters instanceof Error) {
-    return characters;
+  const characters: SquealerError | [number, number, number] =
+    await getUserCharacter(id);
+  if (characters instanceof SquealerError) {
+    return non_existent;
   }
   const [daily, weekly, monthly] = characters as [number, number, number];
-  const user: User | Error = await getUser(id);
+  const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
     (user as User).plan
   );
@@ -100,18 +102,23 @@ export async function resetCharactersWeekly(id: string) {
         monthlyCharacters: monthly - weekly,
       }
     );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
   }
 }
 
-//TODO return values
+/**
+ * funzione che aggiora i caratteri mensili di un utente
+ * @param id id utente
+ * @returns SquealerError | Success
+ */
 export async function resetCharactersMonthly(id: string) {
-  const characters: Error | [number, number, number] = await getUserCharacter(
-    id
-  );
-  if (characters instanceof Error) {
-    return characters;
+  const characters: SquealerError | [number, number, number] =
+    await getUserCharacter(id);
+  if (characters instanceof SquealerError) {
+    return non_existent;
   }
-  const user: User | Error = await getUser(id);
+  const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
     (user as User).plan
   );
@@ -122,6 +129,8 @@ export async function resetCharactersMonthly(id: string) {
         monthlyCharacters: defaultCharacters[2],
       }
     );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
   }
 }
 
