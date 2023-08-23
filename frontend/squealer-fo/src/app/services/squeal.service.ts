@@ -85,4 +85,9 @@ export class SquealService {
   assignProfileImage(squeal: Squeal, url: string): void {
     squeal.profileImage = url;
   }
+
+  addASqueal(): void {
+
+  }
+
  }

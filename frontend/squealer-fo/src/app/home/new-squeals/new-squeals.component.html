@@ -1,15 +1,17 @@
-
 <div class="feed-container">
   <h2>Squealer Feed</h2>
 
   <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
-    <mat-form-field class="full-width" appearance="outline" color="primary">
-      <mat-label color="primary">What are you thinking?</mat-label>
-      <input color="primary" matInput [(ngModel)]="newSqueal.content"/>
-    </mat-form-field>
-    <div class="button-group">
-      <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
-      <button mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button"><a class="button-href" href="/backoffice">Go to Backoffice</a></button>
+    <div *ngIf="isPopupOpen" class="popup">
+        <mat-form-field class="full-width" appearance="outline" color="primary">
+          <mat-label color="primary">What are you thinking?</mat-label>
+          <input color="primary" matInput [(ngModel)]="newSqueal.content"/>
+        </mat-form-field>
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
+          <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
+          <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
+        </div>
     </div>
   </div>
 
@@ -17,7 +19,7 @@
     <button mat-raised-button color="primary" [routerLink]="['/authentication']">Login</button>
     <p *ngIf="!isLoggedIn">Please login to add a post.</p>
   </div>
-
+  <br>
 
   <div class="posts">
     <div *ngFor="let squeal of squeals">
@@ -37,6 +39,10 @@
       </mat-card>
     </div>
   </div>
+
+  <button mat-raised-button color="primary" class="floating-button" (click)="openPopup()" *ngIf="!isPopupOpen">
+    <mat-icon>exposure_plus_1</mat-icon>
+  </button>
 
 
 </div>

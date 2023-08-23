@@ -20,6 +20,7 @@ import { AccountListComponent } from './followed-accounts/account-list.component
 import { UserPageComponent } from './user-page/user-page.component';
 import { AuthComponent } from './authentication/auth.component';
 import { HttpClientModule } from '@angular/common/http'
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { HttpClientModule } from '@angular/common/http'
     FormsModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatDialogModule,
     HttpClientModule
   ],
   providers: [DatePipe],

@@ -4,6 +4,7 @@ import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
 import { User } from 'app/interfaces/account.interface';
 import { AccountService } from 'app/services/account.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-new-squeal',
@@ -20,6 +21,7 @@ export class NewSquealsComponent implements OnInit {
   username: string = '';
   plan: string | null = '';
   isPostFormOpen: boolean = false;
+  isPopupOpen = false;
 
   constructor(
     private squealService: SquealService,
@@ -46,6 +48,16 @@ export class NewSquealsComponent implements OnInit {
       this.username = localStorage.getItem('username') + '';
     }
 
+  }
+
+
+
+  openPopup(): void {
+    this.isPopupOpen = true;
+  }
+
+  closePopup(): void {
+    this.isPopupOpen = false;
   }
 
   formatDate(date: Date): string | null{

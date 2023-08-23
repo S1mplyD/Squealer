@@ -52,13 +52,14 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, "public")));
 
 // pagina principale APP
-// app.use(
-//   "/",
-//   express.static(path.join(__dirname, "frontend/squealer-fo/build")),
-// );
+app.use("/", express.static(path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")));
 
 //TEST
-app.use("/", express.static(path.join(__dirname, "../frontend")));
+//app.use("/", express.static(path.join(__dirname, "../frontend/src")));
+
+
+//BACKOFFICE
+app.use("/backoffice", express.static(path.join(__dirname, "../frontend/squealer-bo")));
 
 // ENDPOINT DELLE API
 app.use("/api/auth", authRoute);
