@@ -40,18 +40,10 @@ export class UserPageComponent implements OnInit {
   }
 
   getRecentPosts() {
-    this.recentPosts = this.squealService.getTweetsForUsers(this.userName);
+    this.squealService.getSquealsForUsers(this.userName).subscribe(res => this.recentPosts = res);
   }
 
   getTaggedAnswers() {
-    this.taggedPosts = this.squealService.getAnswersForUsers(this.userName);
-    this.answerers = this.accountService.getAccounts();
-    for (let tp of this.taggedPosts) {
-      for (const answerer of this.answerers) {
-        if (tp.username == answerer.username) {
-          tp.profileImage = answerer.profilePicture;
-        }
-      }
-    }
+   // Da implementare
   }
 }

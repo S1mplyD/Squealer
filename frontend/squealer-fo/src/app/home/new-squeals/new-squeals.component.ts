@@ -15,7 +15,12 @@ export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
   accounts: User[] = [];
 
-  newSqueal: Squeal = { id: 0, profileImage: undefined, username: '', content: '', timestamp: new Date() };
+  newSqueal: Squeal = {
+    author: '', body: '',
+    date: new Date(),
+    recipients: [],
+    category: ''
+  };
 
   isLoggedIn: boolean = false;
   username: string = '';
@@ -29,15 +34,8 @@ export class NewSquealsComponent implements OnInit {
     private accountService: AccountService) {}
 
   ngOnInit(): void {
-    this.squeals = this.squealService.getTweets();
+    this.squealService.getAllTextSqueals().subscribe(res=> this.squeals = res);
     this.accounts = this.accountService.getAccounts();
-    for (let tp of this.squeals) {
-      for (const acc of this.accounts) {
-        if (tp.username == acc.username) {
-          tp.profileImage = acc.profilePicture;
-        }
-      }
-    }
     this.plan = localStorage.getItem('plan');
     if (localStorage.getItem('isLoggedIn') === 'false') {
       this.isLoggedIn = false;
@@ -70,28 +68,22 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { id: 0, profileImage: undefined, username: '', content: '', timestamp: new Date() };
+    this.newSqueal = {  author: '', body: '', date: new Date(),  recipients: [], category: '' };
   }
 
   addPost(): void {
     const newId = this.squeals.length + 1;
     const newSqueal: Squeal = {
-      id: newId,
-      profileImage: undefined,
-      username: this.username,
-      content: this.newSqueal.content,
-      timestamp: new Date()
+      author: this.username,
+      body: this.newSqueal.body,
+      date: new Date(),
+      recipients: [],
+      category: ''
     };
 
     this.squeals.unshift(newSqueal); // Add the new post at the beginning of the array
-    this.newSqueal.content = ''; // Clear the form field
+    this.newSqueal.body = ''; // Clear the form field
     this.isPostFormOpen = false;
-    for (let tp of this.squeals) {
-      for (const acc of this.accounts) {
-        if (tp.username == acc.username) {
-          tp.profileImage = acc.profilePicture;
-        }
-      }
-    }
+
   }
 }

@@ -28,12 +28,12 @@
                 <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
                 <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
               </div>
-              <mat-card-title class="squealTitle">@{{ post.username }}</mat-card-title>
+              <mat-card-title class="squealTitle">@{{ post.author }}</mat-card-title>
               <br>
-              <mat-card-subtitle class="squealText">{{ formatDate(post.timestamp) }}</mat-card-subtitle>
+              <mat-card-subtitle class="squealText">{{ formatDate(post.date) }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <h2 class="squealText">{{ post.content }}</h2>
+              <h2 class="squealText">{{ post.body }}</h2>
             </mat-card-content>
           </mat-card>
         </div>
@@ -46,15 +46,15 @@
           <mat-card id="squeal">
             <mat-card-header>
               <div mat-card-avatar class="profile-image">
-                <img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" />
-                <img *ngIf="!answer?.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.username + ', but it seems to not be working properly...'" />
+                <!--<img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.author" />
+                <img *ngIf="!answer?.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" /> -->
               </div>
-              <mat-card-title class="squealTitle">@{{ answer.username }}</mat-card-title>
+              <mat-card-title class="squealTitle">@{{ answer.author }}</mat-card-title>
               <br>
-              <mat-card-subtitle class="squealText">{{ formatDate(answer.timestamp) }}</mat-card-subtitle>
+              <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <h2 class="squealText">{{ answer.content }}</h2>
+              <h2 class="squealText">{{ answer.body }}</h2>
             </mat-card-content>
           </mat-card>
         </div>
