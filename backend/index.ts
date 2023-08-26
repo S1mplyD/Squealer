@@ -81,7 +81,7 @@ app.use("/api/media", squealMediaRoute);
 app.use("/api/geo", squealGeoRoute);
 app.use("/api/timed", squealTimedRoute);
 app.use("/api/timedgeo", TimedGeoRoute);
-app.use("/api/media", mediaRoute);
+app.use("/api/mediaupload", mediaRoute);
 app.use("/api/users", userRoute);
 app.use("/api/analytics", analyticsRoute);
 app.use("/api/follow", followRoute);
