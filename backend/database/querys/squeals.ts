@@ -142,7 +142,10 @@ export async function getSquealById(
  * @returns error o gli squeal text
  */
 export async function getTextSqueals() {
-  const squeals: any[] = await squealModel.find();
+  const squeals: Squeal[] | null = await squealModel.find();
+  console.log(squeals);
+
+  if (!squeals) return non_existent;
   if (squeals.length < 1) return non_existent;
   else return squeals;
 }

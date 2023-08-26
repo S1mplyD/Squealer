@@ -163,7 +163,7 @@ export type Success = {
 // nuovo tipo per intervalli
 export type Interval = {
   timeout: NodeJS.Timeout;
-  id: string; //id squeal
+  id: string; //id squeal o utente
 };
 
 export type Analytic = {
