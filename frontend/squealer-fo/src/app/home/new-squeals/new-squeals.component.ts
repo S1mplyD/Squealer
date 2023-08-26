@@ -35,7 +35,8 @@ export class NewSquealsComponent implements OnInit {
     private userService: UsersService) {}
 
   ngOnInit(): void {
-    this.squealService.getAllTextSqueals().pipe(takeUntil(this._unsubscribeAll)).
+    this.squealService.getAllTextSqueals()
+    .pipe(takeUntil(this._unsubscribeAll)).
     subscribe((res) => {
       this.squeals = res;
     });

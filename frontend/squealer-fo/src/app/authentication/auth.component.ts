@@ -3,6 +3,7 @@ import { AuthService } from 'app/services/auth.service'; // Your authentication 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from 'app/interfaces/account.interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-auth',
@@ -29,7 +30,7 @@ export class AuthComponent {
   loginForm: FormGroup;
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
-
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -55,6 +56,7 @@ export class AuthComponent {
 
   loginWithGoogle() {
     this.authService.loginWithGoogle()
+    .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
       localStorage.setItem('plan', acc.plan);
@@ -67,7 +69,9 @@ export class AuthComponent {
   loginWithEmail() {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
-    this.authService.loginWithEmail(email, password).subscribe((acc) => {
+    this.authService.loginWithEmail(email, password)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((acc) => {
       this.user = acc;
       localStorage.setItem('plan', acc.plan);
       localStorage.setItem('username', acc.username);
@@ -82,11 +86,13 @@ export class AuthComponent {
     const password = this.signupForm.value.password;
     const username = this.signupForm.value.username;
     const name = this.signupForm.value.name;
-    this.authService.signUp(email, password, username, name).subscribe((acc) => {
+    this.authService.signUp(email, password, username, name)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((acc) => {
       this.user = acc;
-      localStorage.setItem('plan', acc.plan);
-      localStorage.setItem('username', acc.username);
     });
+    localStorage.setItem('plan', this.user.plan);
+    localStorage.setItem('username', this.user.username);
     localStorage.setItem('isLoggedIn', 'true');
     this.router.navigateByUrl('');
   }

@@ -61,10 +61,6 @@ app.use(
     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
   )
 );
-// app.use(
-//   "/",
-//   express.static(path.join(__dirname, "frontend/squealer-fo/build")),
-// );
 
 //TEST
 //app.use("/", express.static(path.join(__dirname, "../frontend/src")));
@@ -72,12 +68,6 @@ app.use(
 
 //BACKOFFICE
 app.use("/backoffice", express.static(path.join(__dirname, "../frontend/squealer-bo")));
-
-//BACKOFFICE
-app.use(
-  "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo"))
-);
 
 // ENDPOINT DELLE API
 app.use("/api/auth", authRoute);
