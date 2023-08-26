@@ -8,6 +8,7 @@ import {
   SquealMedia,
   Success,
   TimedSquealGeo,
+  User,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import {
@@ -53,6 +54,46 @@ export async function getAllSqueals() {
   else return squeals;
 }
 
+/**
+ * funzione che ritorna tutti gli squeals postati da un utente
+ * @param username username dell'utente
+ * @returns (Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo)[] | SquealerError
+ */
+export async function getAllUserSqueals(username: string) {
+  const squealsText: Squeal[] = await squealModel.find({ author: username });
+  const squealsGeo: SquealGeo[] = await squealGeoModel.find({
+    author: username,
+  });
+  const squealsMedia: SquealMedia[] = await squealMediaModel.find({
+    author: username,
+  });
+  const timedSqueal: TimedSqueal[] = await timedSquealModel.find({
+    author: username,
+  });
+  const timedGeoSqueal: TimedSquealGeo[] = await timedSquealGeoModel.find({
+    author: username,
+  });
+  const squeals: (
+    | Squeal
+    | SquealGeo
+    | SquealMedia
+    | TimedSqueal
+    | TimedSquealGeo
+  )[] = [
+    ...squealsText,
+    ...squealsGeo,
+    ...squealsMedia,
+    ...timedSqueal,
+    ...timedGeoSqueal,
+  ];
+  if (squeals.length < 1) return non_existent;
+  else return squeals;
+}
+
+/**
+ * funzione che ritorna tutti gli squeals temporizzati
+ * @returns SquealerError | (TimedSqueal | TimedSquealGeo)[]
+ */
 export async function getAllTimedSqueals() {
   const timedTextSqueals: TimedSqueal[] | SquealerError | undefined =
     await timedSquealGeoModel.find();
@@ -117,7 +158,7 @@ export async function getTextSqueal(id: string) {
  * @param squeal oggetto contenente i parametri dello squeal
  * @returns eventuali errori
  */
-export async function postTextSqueal(squeal: Squeal) {
+export async function postTextSqueal(squeal: Squeal, user: User) {
   const channels: any = await getAllChannels();
 
   const newSqueal: any = await squealModel.create({
@@ -126,6 +167,7 @@ export async function postTextSqueal(squeal: Squeal) {
     date: new Date(),
     category: squeal.category,
     channels: squeal.channels,
+    author: user.username,
   });
 
   if (!newSqueal) return cannot_create;
@@ -137,10 +179,8 @@ export async function postTextSqueal(squeal: Squeal) {
         for (let j of channels) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: SquealerError | Success = await addSquealToChannel(
-              j.name,
-              id
-            );
+            const ret: SquealerError | Success | undefined =
+              await addSquealToChannel(j.name, id, user);
             return ret;
           }
         }
