@@ -4,7 +4,6 @@ import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
 import { User } from 'app/interfaces/account.interface';
 import { UsersService } from 'app/services/users.service';
-import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({

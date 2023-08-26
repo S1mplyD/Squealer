@@ -7,6 +7,7 @@ import { ComponentCacheService } from "app/services/component-cache.service";
   styleUrls: ['./home.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
+
 export class HomeComponent implements OnInit, OnDestroy {
   selectedIndex = 0;
   parameters = {
