@@ -37,10 +37,7 @@ router
         ((req.user as User).status !== "ban" ||
           (req.user as User).status !== "block")
       ) {
-        const ret: any = await postGeoSqueal(
-          req.body,
-          (req.user as User).username
-        );
+        const ret: any = await postGeoSqueal(req.body, req.user as User);
         res.send(ret);
       } else res.send(unauthorized);
     } catch (error: any) {

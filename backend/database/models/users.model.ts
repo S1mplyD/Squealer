@@ -14,8 +14,8 @@ interface User {
   SMM?: string;
   managedAccounts?: string[];
   resetToken: string;
-  followersCount: number;
-  followingCount: number;
+  followers?: string[];
+  following?: string[];
   createdAt: Date;
   status: string;
   blockedFor: number;
@@ -37,8 +37,8 @@ const userSchema = new Schema<UserDocument>({
   SMM: { type: String }, // SMM dell´account, modificabile solo se l'account è professional
   managedAccounts: { type: [String] }, //Account gestiti da un SMM, modificabile se il plan è pro (usermane)
   resetToken: { type: String, default: "" },
-  followersCount: { type: Number, defualt: 0, required: true },
-  followingCount: { type: Number, defualt: 0, required: true },
+  followers: { type: [String] },
+  following: { type: [String] },
   createdAt: { type: Date, required: true },
   status: { type: String, default: "normal" }, //normal, ban, block
   blockedFor: { type: Number },

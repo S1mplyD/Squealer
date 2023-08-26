@@ -12,6 +12,7 @@ import {
   updateProfilePicture,
   updateUser,
   blockUser,
+  getUserByUsername,
 } from "../database/querys/users";
 import {
   SquealerError,
@@ -28,64 +29,19 @@ export const router = express.Router();
  * GET
  * funzione che ritorna tutti gli utenti
  */
-router.route("/").get(async (req, res) => {
-  try {
-    if (!req.user || (req.user as User).status !== "ban") {
-      const users: User[] | SquealerError | undefined = await getAllUsers();
-      if (users === undefined) res.send(non_existent);
-      else res.send(users);
-    } else res.send(unauthorized);
-  } catch (error: any) {
-    catchError(error);
-  }
-});
-
 router
-  .route("/:id")
-  /**
-   * GET
-   * chiamata che ritorna un utente
-   */
+  .route("/")
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const user: User | SquealerError = await getUser(
-          req.params.id as string
-        );
-        res.send(user);
+        const users: User[] | SquealerError | undefined = await getAllUsers();
+        if (users === undefined) res.send(non_existent);
+        else res.send(users);
       } else res.send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
   })
-  /**
-   * PATCH
-   * chiamata per modificare le informazioni di un utente
-   */
-  .patch(async (req, res) => {
-    try {
-      if ((req.user as User).status !== "ban") {
-        if ((req.user as User).plan === "admin") {
-          const update: SquealerError | Success = await updateUser(
-            req.params.id as string,
-            req.body
-          );
-          res.send(update);
-        } else {
-          if ((req.user as User)._id === req.query.id) {
-            const update: SquealerError | Success = await updateUser(
-              req.query.id as string,
-              req.body
-            );
-            res.send(update);
-          } else res.send(unauthorized);
-        }
-      } else res.send(unauthorized);
-    } catch (error: any) {
-      catchError(error);
-    }
-  })
-
   /**
    * DELETE
    * chiamata per eliminare permanentemente un account
@@ -113,6 +69,71 @@ router
     }
   });
 
+// router
+//   .route("/:username")
+//   /**
+//    * GET
+//    * chiamata che ritorna un utente
+//    */
+//   .get(async (req, res) => {
+//     try {
+//       if (!req.user || (req.user as User).status !== "ban") {
+//         const user: User | SquealerError = await getUserByUsername(
+//           req.params.username as string
+//         );
+//         res.send(user);
+//       } else res.send(unauthorized);
+//     } catch (error: any) {
+//       catchError(error);
+//     }
+//   });
+
+router
+  .route("/:username")
+  /**
+   * GET
+   * chiamata che ritorna un utente
+   */
+  .get(async (req, res) => {
+    try {
+      if (!req.user || (req.user as User).status !== "ban") {
+        const user: User | SquealerError = await getUserByUsername(
+          req.params.username as string
+        );
+        res.send(user);
+      } else res.send(unauthorized);
+    } catch (error: any) {
+      catchError(error);
+    }
+  })
+  /**
+   * PATCH
+   * chiamata per modificare le informazioni di un utente
+   */
+  .patch(async (req, res) => {
+    try {
+      if ((req.user as User).status !== "ban") {
+        if ((req.user as User).plan === "admin") {
+          const update: SquealerError | User = await updateUser(
+            req.params.username as string,
+            req.body
+          );
+          res.send(update);
+        } else {
+          if ((req.user as User)._id === req.query.id) {
+            const update: SquealerError | User = await updateUser(
+              req.query.username as string,
+              req.body
+            );
+            res.send(update);
+          } else res.send(unauthorized);
+        }
+      } else res.send(unauthorized);
+    } catch (error: any) {
+      catchError(error);
+    }
+  });
+
 router
   .route("/:id/profilePicture")
   /**
@@ -131,7 +152,7 @@ router
           if (!update) res.send(cannot_update);
           else res.send(update);
         } else {
-          if (req.params.id === ((req.user as User)._id as unknown as string)) {
+          if (req.params.id === (req.user as User)._id) {
             const update: SquealerError | Success | undefined =
               await updateProfilePicture(
                 req.params.id,

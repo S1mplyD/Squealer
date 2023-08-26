@@ -9,7 +9,6 @@ import {
 import { startTimer } from "../API/timers";
 import { Success } from "../util/success";
 import { SquealerError, catchError, unauthorized } from "../util/errors";
-import mongoose from "mongoose";
 
 export const router = express.Router();
 

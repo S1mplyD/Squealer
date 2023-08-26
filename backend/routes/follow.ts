@@ -11,12 +11,12 @@ import { SquealerError, catchError, unauthorized } from "../util/errors";
 export const router = express.Router();
 
 /**
- * chiamata che ritorna tutti i followers di un utente
+ * chiamata che ritorna il numero di followers di un utente
  */
 router.route("/followers").get(async (req, res) => {
   try {
     if (req.user) {
-      const followers: number | SquealerError = await getAllFollowers(
+      const followers: User[] | SquealerError = await getAllFollowers(
         req.query.userId as string
       );
       res.send(followers);
@@ -32,7 +32,7 @@ router.route("/followers").get(async (req, res) => {
 router.route("/following").get(async (req, res) => {
   try {
     if (req.user) {
-      const following: number | SquealerError = await getAllFollowing(
+      const following: User[] | SquealerError = await getAllFollowing(
         req.query.userId as string
       );
       res.send(following);
@@ -45,6 +45,7 @@ router.route("/following").get(async (req, res) => {
 /**
  * chiamata per seguire un utente
  */
+//TODO fixme
 router.route("/follow").post(async (req, res) => {
   try {
     if (
@@ -66,6 +67,7 @@ router.route("/follow").post(async (req, res) => {
 /**
  * chiamata per smettere di seguire un utente
  */
+//TODO fixme
 router.route("/unfollow").post(async (req, res) => {
   try {
     if (

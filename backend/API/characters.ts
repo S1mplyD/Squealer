@@ -75,6 +75,8 @@ export async function resetCharactersDaily(id: string) {
         monthlyCharacters: monthly - daily,
       }
     );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
   }
 }
 

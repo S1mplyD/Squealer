@@ -30,7 +30,6 @@ export const router = express.Router();
 /**
  * Autenticazione tramite google
  */
-//TODO testare funzione
 passport.use(
   new GoogleStrategy.Strategy(
     {

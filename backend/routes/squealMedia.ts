@@ -22,7 +22,7 @@ router
         const squeals: SquealMedia[] | SquealerError | undefined =
           await getMediaSqueals();
         res.send(squeals);
-      }
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -41,7 +41,7 @@ router
         const newSqueal: any = await postMediaSqueal(
           req.body,
           req.query.filename as string,
-          (req.user as User).username as string
+          req.user as User
         );
         res.send(newSqueal);
       } else res.send(unauthorized);
