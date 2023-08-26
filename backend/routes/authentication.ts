@@ -3,7 +3,6 @@ import LocalStrategy from "passport-local";
 import passport = require("passport");
 import userModel from "../database/models/users.model";
 import {
-  getAllUsers,
   createDefaultUser,
   updatePassword,
   updateResetToken,
@@ -14,15 +13,8 @@ import bcrypt from "bcryptjs";
 import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
-import { Success, logged_in, sent, signed_up } from "../util/success";
-import {
-  SquealerError,
-  cannot_send,
-  cannot_update,
-  catchError,
-  non_existent,
-} from "../util/errors";
-import { User } from "../util/types";
+import { Success, sent } from "../util/success";
+import { SquealerError, cannot_update, catchError } from "../util/errors";
 config();
 
 export const router = express.Router();
@@ -138,7 +130,7 @@ router.post("/login", passport.authenticate("local"), function (req, res) {
 });
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
-  if (req.user) res.send(signed_up);
+  if (req.user) res.send(req.user);
 });
 
 passport.deserializeUser((id, done) => {
