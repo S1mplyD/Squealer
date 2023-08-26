@@ -6,6 +6,7 @@ interface Channel {
   type: string;
   allowedRead: string[];
   allowedWrite: string[];
+  channelAdmins: string[];
 }
 
 interface ChannelDocument extends Channel, Document {}
@@ -17,6 +18,7 @@ const channelsSchema = new Schema<ChannelDocument>({
   type: { type: String, required: true },
   allowedRead: { type: [String] }, //id degli utenti che possono accedere al canale
   allowedWrite: { type: [String] },
+  channelAdmins: { type: [String], required: true }, //id degli admin del canale
 });
 
 const channelsModel = model<ChannelDocument>("channelsData", channelsSchema);
