@@ -1,4 +1,5 @@
 import {
+  SquealerError,
   cannot_create,
   cannot_delete,
   cannot_update,
@@ -28,6 +29,17 @@ export async function getAllUsers() {
  */
 export async function getUser(id: string) {
   const user: User | null = await userModel.findOne({ _id: id });
+  if (!user) return non_existent;
+  else return user;
+}
+
+/**
+ * funzione che ritorna un utente
+ * @param username username dell'utente
+ * @returns SquealerError | User
+ */
+export async function getUserByUsername(username: string) {
+  const user: User | null = await userModel.findOne({ username: username });
   if (!user) return non_existent;
   else return user;
 }
@@ -93,18 +105,21 @@ export async function createUserUsingGoogle(
  * Aggiorna i dettagli di un utente
  * @param user oggetto contenente i dettagli di un utente
  */
-export async function updateUser(id: string, user: User) {
+export async function updateUser(username: string, user: User) {
+  const oldUser: User | SquealerError = await getUserByUsername(username);
   const update = await userModel.updateOne(
-    { _id: id },
+    { username: username },
     {
       name: user.name,
       username: user.username,
       mail: user.mail,
-    }
+    },
+    { returnDocument: "after" }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
-    return updated;
+    const newUser = await getUser((oldUser as User)._id);
+    return newUser;
   }
 }
 
