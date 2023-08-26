@@ -5,7 +5,7 @@ import {
   non_existent,
 } from "../../util/errors";
 import { created, removed } from "../../util/success";
-import { Channel, SquealGeo, Success } from "../../util/types";
+import { Channel, SquealGeo, Success, User } from "../../util/types";
 import squealGeoModel from "../models/squealGeo.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
 
@@ -30,7 +30,7 @@ export async function getGeoSqueal(id: string) {
  * @param squeal corpo del geo squeal da creare
  * @returns errore o successo
  */
-export async function postGeoSqueal(squeal: SquealGeo, author: string) {
+export async function postGeoSqueal(squeal: SquealGeo, user: User) {
   const channels: Channel[] | SquealerError = await getAllChannels();
   if (channels instanceof SquealerError) {
     return non_existent;
@@ -42,7 +42,7 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
       date: new Date(),
       category: squeal.category,
       channels: squeal.channels,
-      author: author,
+      author: user.username,
     });
 
     if (!newSqueal) return cannot_create;
@@ -54,10 +54,8 @@ export async function postGeoSqueal(squeal: SquealGeo, author: string) {
           for (let j of channels as Channel[]) {
             if (i === j.name) {
               const id: string = newSqueal._id;
-              const ret: SquealerError | Success = await addSquealToChannel(
-                j.name,
-                id
-              );
+              const ret: SquealerError | Success | undefined =
+                await addSquealToChannel(j.name, id, user);
               return ret;
             }
           }

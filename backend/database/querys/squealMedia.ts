@@ -7,7 +7,7 @@ import {
   cannot_create,
 } from "../../util/errors";
 import { created, removed } from "../../util/success";
-import { SquealMedia } from "../../util/types";
+import { SquealMedia, User } from "../../util/types";
 import squealMediaModel from "../models/squalMedia.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import fs from "fs";
@@ -40,7 +40,7 @@ export async function getMediaSqueal(id: string) {
 export async function postMediaSqueal(
   squeal: SquealMedia,
   filename: string,
-  username: string
+  user: User
 ) {
   const channels: any = await getAllChannels();
   var type: string | undefined = filename.split(".").pop();
@@ -64,7 +64,7 @@ export async function postMediaSqueal(
     date: new Date(),
     category: squeal.category,
     channels: squeal.channels,
-    author: username,
+    author: user.username,
   });
 
   if (!newSqueal) return cannot_create;
@@ -76,7 +76,7 @@ export async function postMediaSqueal(
         for (let j of channels) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: any = await addSquealToChannel(j.name, id);
+            const ret: any = await addSquealToChannel(j.name, id, user);
             return ret;
           }
         }
