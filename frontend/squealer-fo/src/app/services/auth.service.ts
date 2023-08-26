@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User } from 'app/interfaces/account.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -12,25 +13,34 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  loginWithGoogle(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/google`, {});
+  loginWithGoogle(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/google`, {});
   }
 
-  loginWithEmail(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password });
+  loginWithEmail(username: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/login`, { username, password });
   }
 
-  signUp(mail: string, password: string, name: string, username: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { mail, password, name, username });
+  signUp(mail: string, password: string, name: string, username: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, { mail, password, name, username });
   }
 
-
-  recoverPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/forgotPassword`, { email });
-
+  tokenRecoverPassword(email: string): void {
+    const params = {
+      'mail': email + ''
+    }
+    this.http.get(`${this.apiUrl}/forgotPassword`, { params: params });
   }
 
-  logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {});
+  recoverPassword(email: string): Observable<number> {
+    const params = {
+      'mail': email + ''
+    }
+    return this.http.post<number>(`${this.apiUrl}/forgotPassword`, { params: params });
   }
+
+  logout(): void {
+    this.http.get(`${this.apiUrl}/logout`);
+  }
+
 }

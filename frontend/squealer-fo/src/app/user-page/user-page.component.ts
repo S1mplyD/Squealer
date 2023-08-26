@@ -4,7 +4,8 @@ import { User } from 'app/interfaces/account.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { Squeal } from 'app/interfaces/squeal.interface';
 import { ActivatedRoute } from '@angular/router';
-import { AccountService } from 'app/services/account.service';
+import { UsersService } from 'app/services/users.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-user-page',
@@ -17,12 +18,12 @@ export class UserPageComponent implements OnInit {
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
   userName!: string;
-
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,
     private datePipe: DatePipe,
     public activeRoute: ActivatedRoute,
-    private accountService: AccountService) {}
+    private usersService: UsersService) {}
 
   ngOnInit() {
     this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
@@ -36,7 +37,11 @@ export class UserPageComponent implements OnInit {
   }
 
   getAccountData() {
-    this.account = this.accountService.getSpecificAccount(this.userName);
+    this.usersService.getUserByUsername(this.userName)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      this.account = res;
+    });
   }
 
   getRecentPosts() {

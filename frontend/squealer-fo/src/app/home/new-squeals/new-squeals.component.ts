@@ -3,8 +3,9 @@ import { Squeal } from 'app/interfaces/squeal.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { DatePipe } from '@angular/common';
 import { User } from 'app/interfaces/account.interface';
-import { AccountService } from 'app/services/account.service';
+import { UsersService } from 'app/services/users.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-new-squeal',
@@ -27,15 +28,22 @@ export class NewSquealsComponent implements OnInit {
   plan: string | null = '';
   isPostFormOpen: boolean = false;
   isPopupOpen = false;
-
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,
     private datePipe: DatePipe,
-    private accountService: AccountService) {}
+    private userService: UsersService) {}
 
   ngOnInit(): void {
-    this.squealService.getAllTextSqueals().subscribe(res=> this.squeals = res);
-    this.accounts = this.accountService.getAccounts();
+    this.squealService.getAllTextSqueals().pipe(takeUntil(this._unsubscribeAll)).
+    subscribe((res) => {
+      this.squeals = res;
+    });
+    this.userService.getAllUsers()
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      this.accounts = res;
+    });
     this.plan = localStorage.getItem('plan');
     if (localStorage.getItem('isLoggedIn') === 'false') {
       this.isLoggedIn = false;
