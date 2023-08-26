@@ -5,7 +5,6 @@ import { getTimedSquealGeo } from "../database/querys/timedSquealGeo";
 import { no_timers, cannot_create, SquealerError } from "../util/errors";
 import { created } from "../util/success";
 import { Interval, TimedSqueal, Success, TimedSquealGeo } from "../util/types";
-import mongoose from "mongoose";
 
 var intervals: Array<Interval> = [];
 
