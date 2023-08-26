@@ -132,8 +132,8 @@ export type User = {
   SMM: string | undefined; // SMM dell´account, modificabile solo se l'account è professional
   managedAccounts: string[]; //Account gestiti da un SMM, modificabile se il plan è pro (username)
   resetToken: string;
-  followersCount: number;
-  followingCount: number;
+  followers?: string[];
+  following?: string[];
   createdAt: Date;
   status: string;
   blockedFor: number;
@@ -147,6 +147,7 @@ export type Channel = {
   allowedRead: string[];
   allowedWrite: string[];
   type: string;
+  channelAdmins: string[];
 };
 
 // export type Error = {
