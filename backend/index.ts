@@ -17,6 +17,7 @@ import { router as userRoute } from "./routes/users";
 import { router as analyticsRoute } from "./routes/analytics";
 import { router as followRoute } from "./routes/follow";
 import { router as TimedGeoRoute } from "./routes/timedSquealGeo";
+import { router as TextSquealRoute } from "./routes/squealsText";
 import fs from "fs";
 import { updateAnalyticTimer } from "./database/querys/analytics";
 import { SquealerError } from "./util/errors";
@@ -61,10 +62,6 @@ app.use(
     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
   )
 );
-// app.use(
-//   "/",
-//   express.static(path.join(__dirname, "frontend/squealer-fo/build")),
-// );
 
 //TEST
 app.use("/", express.static(path.join(__dirname, "../frontend")));
@@ -79,10 +76,11 @@ app.use(
 app.use("/api/auth", authRoute);
 app.use("/api/channels", channelRoute);
 app.use("/api/squeals", squealsRoute);
-app.use("/api/squeals/media", squealMediaRoute);
-app.use("/api/squeals/geo", squealGeoRoute);
-app.use("/api/squeals/timed", squealTimedRoute);
-app.use("/api/squeals/timedgeo", TimedGeoRoute);
+app.use("/api/text", TextSquealRoute);
+app.use("/api/media", squealMediaRoute);
+app.use("/api/geo", squealGeoRoute);
+app.use("/api/timed", squealTimedRoute);
+app.use("/api/timedgeo", TimedGeoRoute);
 app.use("/api/media", mediaRoute);
 app.use("/api/users", userRoute);
 app.use("/api/analytics", analyticsRoute);
