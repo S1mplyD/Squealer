@@ -11,9 +11,9 @@
         <p style="color: white;">@{{ account?.username }}</p>
       </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content>
-      <p><mat-icon>people_outline</mat-icon>&nbsp; Followers: {{ account?.followersCount }}</p>
-      <p><mat-icon>people</mat-icon>&nbsp; Following: {{ account?.followingCount }}</p>
+    <mat-card-content *ngIf="account?.followers && account?.following">
+      <p><mat-icon>people_outline</mat-icon>&nbsp; Followers: {{ account?.followers?.length }}</p>
+      <p><mat-icon>people</mat-icon>&nbsp; Following: {{ account?.following?.length }}</p>
       <p><mat-icon>cake</mat-icon>&nbsp; Joined: {{ formatDate(account?.createdAt) }}</p>
     </mat-card-content>
    </mat-card>

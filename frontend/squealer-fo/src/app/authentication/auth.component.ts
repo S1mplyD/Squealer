@@ -14,7 +14,6 @@ export class AuthComponent {
   isLoggedIn = false;
   userName: string = '';
   user: User = {
-    id: 0,
     name: '',
     username: '',
     mail: '',
@@ -24,9 +23,10 @@ export class AuthComponent {
     plan: '',
     resetToken: '',
     createdAt: new Date(),
-    followersCount: 0,
-    followingCount: 0
+    status: '',
+    blockedFor: 0
   };
+
   loginForm: FormGroup;
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
@@ -91,6 +91,7 @@ export class AuthComponent {
     .subscribe((acc) => {
       this.user = acc;
     });
+    console.log(this.user);
     localStorage.setItem('plan', this.user.plan);
     localStorage.setItem('username', this.user.username);
     localStorage.setItem('isLoggedIn', 'true');

@@ -1,6 +1,5 @@
 export interface User {
-  id: number;
- name: string;
+  name: string;
   username: string;
   mail: string;
   serviceId?: number;
@@ -13,7 +12,9 @@ export interface User {
   SMM?: string;
   managedAccounts?: string[];
   resetToken: string;
+  followers?: string[];
+  following?: string[];
   createdAt: Date;
-  followersCount: number;
-  followingCount: number;
+  status: string;
+  blockedFor: number;
 }

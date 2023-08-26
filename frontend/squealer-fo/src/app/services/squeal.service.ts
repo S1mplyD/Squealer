@@ -11,6 +11,7 @@ import { User } from 'app/interfaces/account.interface';
 export class SquealService {
 
   private apiUrl = 'http://localhost:3000/api/squeals'; // Replace with your authentication API URL
+  private newApiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {
   }
@@ -28,62 +29,62 @@ export class SquealService {
 
   getAllTextSqueals(): Observable<Squeal[]> {
     // Sort tweets by timestamp in descending order
-    return this.http.get<Squeal[]>(`${this.apiUrl}/text`);
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/text`);
   }
 
   getSquealsForUsers(username: string): Observable<Squeal[]> {
-    return this.http.get<Squeal[]>(`${this.apiUrl}/text/${username}`);
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/text/${username}`);
   }
 
   addTextSqueal(squeal: Squeal): void {
-    this.http.post(`${this.apiUrl}/text`, { squeal });
+    this.http.post(`${this.newApiUrl}/text`, { squeal });
   }
   deleteTextSqueal(id: string): void {
-    this.http.delete(`${this.apiUrl}/text`, {params: {'id': id + ''}});
+    this.http.delete(`${this.newApiUrl}/text`, {params: {'id': id + ''}});
   }
 
   getAllMediaSqueals(): Observable<SquealMedia[]> {
     // Sort tweets by timestamp in descending order
-    return this.http.get<SquealMedia[]>(`${this.apiUrl}/media`);
+    return this.http.get<SquealMedia[]>(`${this.newApiUrl}/media`);
   }
   getMediaSquealsForUsers(username: string): Observable<SquealMedia[]> {
-    return this.http.get<SquealMedia[]>(`${this.apiUrl}/media/${username}`);
+    return this.http.get<SquealMedia[]>(`${this.newApiUrl}/media/${username}`);
   }
 
   addMediaSqueal(squeal: SquealMedia): void {
-    this.http.post(`${this.apiUrl}/media`, { squeal });
+    this.http.post(`${this.newApiUrl}/media`, { squeal });
   }
   deleteMediaSqueal(id: string): void {
-    this.http.delete(`${this.apiUrl}/media`, {params: {'id': id + ''}});
+    this.http.delete(`${this.newApiUrl}/media`, {params: {'id': id + ''}});
   }
 
   getAllGeoSqueals(): Observable<SquealGeo[]> {
     // Sort tweets by timestamp in descending order
-    return this.http.get<SquealGeo[]>(`${this.apiUrl}/geo`);
+    return this.http.get<SquealGeo[]>(`${this.newApiUrl}/geo`);
   }
 
   getGeoSquealsForUsers(username: string): Observable<SquealGeo[]> {
-    return this.http.get<SquealGeo[]>(`${this.apiUrl}/geo/${username}`);
+    return this.http.get<SquealGeo[]>(`${this.newApiUrl}/geo/${username}`);
   }
 
   addGeoSqueal(squeal: SquealGeo): void {
-    this.http.post(`${this.apiUrl}/geo`, { squeal });
+    this.http.post(`${this.newApiUrl}/geo`, { squeal });
   }
 
   deleteGeoSqueal(id: string): void {
-    this.http.delete(`${this.apiUrl}/geo`, {params: {'id': id + ''}});
+    this.http.delete(`${this.newApiUrl}/geo`, {params: {'id': id + ''}});
   }
 
   getAllTimedSqueals(): Observable<any[]>  {
-    return this.http.get<any[]>(`${this.apiUrl}/timed`);
+    return this.http.get<any[]>(`${this.newApiUrl}/timed`);
   }
 
   createTimedSqueals(squeal: any): void {
-    this.http.post(`${this.apiUrl}/timed`, { squeal });
+    this.http.post(`${this.newApiUrl}/timed`, { squeal });
   }
 
   deleteTimedSqueals(id: string): void {
-    this.http.delete(`${this.apiUrl}/timed`, {params: {'id': id + ''}});
+    this.http.delete(`${this.newApiUrl}/timed`, {params: {'id': id + ''}});
   }
 
  }
