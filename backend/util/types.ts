@@ -166,6 +166,12 @@ export type Interval = {
   id: string; //id squeal o utente
 };
 
+// nuovo tipo per intervalli
+export type Timeout = {
+  timeout: NodeJS.Timeout;
+  username: string; //id squeal o utente
+};
+
 export type Analytic = {
   _id: string;
   squealId: string;
