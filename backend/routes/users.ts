@@ -13,6 +13,7 @@ import {
   updateUser,
   blockUser,
   getUserByUsername,
+  unblockUser,
 } from "../database/querys/users";
 import {
   SquealerError,
@@ -286,3 +287,17 @@ router
       catchError(error);
     }
   });
+
+router.route("/unblock").post(async (req, res) => {
+  try {
+    if ((req.user as User).plan === "admin") {
+      const update: SquealerError | Success = await unblockUser(
+        req.query.username as string
+      );
+      if (update instanceof SquealerError) {
+      }
+    } else res.sendStatus(401);
+  } catch (error) {
+    catchError(error);
+  }
+});

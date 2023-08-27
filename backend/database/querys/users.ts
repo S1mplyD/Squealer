@@ -6,12 +6,14 @@ import {
   non_existent,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
-import { User } from "../../util/types";
+import { Timeout, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
 import { resolve } from "path";
 
 const publicUploadPath = resolve(__dirname, "../../..", "public");
+
+var intervals: Array<Timeout> = [];
 
 /**
  * Ritorna tutti gli utenti
@@ -254,20 +256,53 @@ export async function unbanUser(id: string) {
 }
 
 //TODO test
-export async function blockUser(id: string, time: number) {
+export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
-    { _id: id },
+    { username: username },
     { status: "block", blockedFor: time }
   );
+  let timeout;
   if (update.modifiedCount < 1) return cannot_update;
   else {
-    setTimeout(async () => {
+    timeout = setTimeout(async () => {
       const update = await userModel.updateOne(
-        { _id: id },
+        { username: username },
         { status: "normal", blockedFor: 0 }
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
     }, time);
+    const newTimeout: Timeout = {
+      timeout: timeout,
+      username: username,
+    };
+    intervals.push(newTimeout);
   }
+}
+
+export async function unblockUser(username: string) {
+  const update = await userModel.updateOne(
+    { username: username },
+    { status: "normal", blockedFor: 0 }
+  );
+  if (update.modifiedCount < 1) return cannot_update;
+  else {
+    stopTimer(username);
+    return updated;
+  }
+}
+
+async function findInterval(username) {
+  const ret: Timeout | undefined = intervals.find(
+    (el) => el.username === username
+  );
+  return ret?.timeout as NodeJS.Timeout;
+}
+
+async function stopTimer(username) {
+  clearInterval(await findInterval(username));
+  const newIntervals = intervals.filter(
+    (interval) => interval.username !== username
+  );
+  intervals = newIntervals;
 }
