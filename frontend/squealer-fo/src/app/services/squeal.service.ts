@@ -36,11 +36,11 @@ export class SquealService {
     return this.http.get<Squeal[]>(`${this.newApiUrl}/text/${username}`);
   }
 
-  addTextSqueal(squeal: Squeal): void {
-    this.http.post(`${this.newApiUrl}/text`, { squeal });
+  addTextSqueal(squeal: Squeal): Observable<Squeal[]> {
+    return this.http.post<Squeal[]>(`${this.newApiUrl}/text`, { squeal });
   }
-  deleteTextSqueal(id: string): void {
-    this.http.delete(`${this.newApiUrl}/text`, {params: {'id': id + ''}});
+  deleteTextSqueal(id: string): Observable<Squeal[]> {
+    return this.http.delete<Squeal[]>(`${this.newApiUrl}/text`, {params: {'id': id + ''}});
   }
 
   getAllMediaSqueals(): Observable<SquealMedia[]> {

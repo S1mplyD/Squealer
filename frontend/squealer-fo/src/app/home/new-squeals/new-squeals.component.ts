@@ -56,8 +56,6 @@ export class NewSquealsComponent implements OnInit {
 
   }
 
-
-
   openPopup(): void {
     this.isPopupOpen = true;
   }
@@ -80,7 +78,6 @@ export class NewSquealsComponent implements OnInit {
   }
 
   addPost(): void {
-    const newId = this.squeals.length + 1;
     const newSqueal: Squeal = {
       author: this.username,
       body: this.newSqueal.body,
@@ -88,10 +85,10 @@ export class NewSquealsComponent implements OnInit {
       recipients: [],
       category: ''
     };
-
-    this.squeals.unshift(newSqueal); // Add the new post at the beginning of the array
+    this.squealService.addTextSqueal(newSqueal)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe(res => this.squeals = res);
     this.newSqueal.body = ''; // Clear the form field
     this.isPostFormOpen = false;
-
   }
 }
