@@ -4,13 +4,13 @@ interface Squeal {
   body: string;
   recipients: string[];
   date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
+  positiveReactions: number;
+  negativeReactions: number;
   category: string;
-  channels?: string[];
+  channels: string[];
   author: string;
-  criticalMass?: number;
-  visual?: number;
+  criticalMass: number;
+  visual: number;
 }
 
 interface SquealDocument extends Squeal, Document {}

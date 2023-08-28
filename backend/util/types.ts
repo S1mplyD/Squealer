@@ -5,14 +5,14 @@ export type Squeal = {
   body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
   recipients: string[]; //Destinatari (individuo, canale o keyword)
   date: Date; //Data e ora messaggio (creata in automatico)
-  positiveReactions: number | undefined;
-  negativeReactions: number | undefined;
+  positiveReactions: number;
+  negativeReactions: number;
   category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
-  channels: string[] | undefined; //Canali a cui è stato aggiunto dalla redazione
+  channels: string[]; //Canali a cui è stato aggiunto dalla redazione
   author: string;
   //Non visualizzabili
-  criticalMass: number | undefined; //Massa critica (0,25 x visual)
-  visual: number | undefined; //Visualizzazioni di account registrati e non
+  criticalMass: number; //Massa critica (0,25 x visual)
+  visual: number; //Visualizzazioni di account registrati e non
   _id: string;
 };
 
@@ -48,19 +48,18 @@ export type SquealMedia = {
 
 // nuovo tipo per squeal temporizzati
 export type TimedSqueal = {
-  body: string; //Corpo del messaggio (testo)
-  recipients: string[]; //Destinatari (individuo, canale o keyword)
-  date: Date; //Data e ora messaggio
-  positiveReactions: number | undefined;
-  negativeReactions: number | undefined;
-  category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
-  channels: string[] | undefined; //Canali a cui è stato aggiunto dalla redazione
+  body: string;
+  recipients: string[];
+  date: Date;
+  positiveReactions?: number;
+  negativeReactions?: number;
+  category: string;
+  channels?: string[];
   author: string;
-  //Non visualizzabili
-  criticalMass: number | undefined; //Massa critica (0,25 x visual)
-  visual: number | undefined; //Visualizzazioni di account registrati e non
-  time: number | undefined; //tempo per i messaggi automatici (in ms)
-  count: number | undefined;
+  criticalMass?: number;
+  visual: number;
+  time?: number;
+  count?: number;
   _id: string;
 };
 
