@@ -21,10 +21,12 @@ router
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const timedSqueals: TimedSqueal[] | SquealerError | undefined =
+        const timedSqueals: TimedSqueal[] | SquealerError =
           await getAllTextTimers();
-        res.send(timedSqueals);
-      } else res.send(unauthorized);
+        if (timedSqueals instanceof SquealerError)
+          res.status(404).send(timedSqueals);
+        else res.status(200).send(timedSqueals);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -40,18 +42,22 @@ router
         (req.user as User).status === "ban" ||
         (req.user as User).status === "block"
       )
-        res.send(unauthorized);
+        res.status(401).send(unauthorized);
       else {
         const squeal: TimedSqueal = req.body;
-        const newSqueal: TimedSqueal = await postTimedSqueal(
+        const newSqueal: TimedSqueal | SquealerError = await postTimedSqueal(
           squeal,
           (req.user as User).username
         );
-        const ret: SquealerError | Success = await startTimer(
-          newSqueal,
-          (req.user as User)._id
-        );
-        res.send(ret);
+        if (newSqueal instanceof SquealerError) res.status(500).send(newSqueal);
+        else {
+          const ret: SquealerError | Success = await startTimer(
+            newSqueal,
+            (req.user as User)._id
+          );
+          if (ret instanceof SquealerError) res.status(404).send(ret);
+          res.status(201).send(ret);
+        }
       }
     } catch (error: any) {
       catchError(error);
@@ -63,11 +69,12 @@ router
    */
   .delete(async (req, res) => {
     try {
-      if (!req.user) res.send(unauthorized);
+      if (!req.user) res.status(401).send(unauthorized);
       else if ((req.user as User).plan === "admin") {
-        const ret: SquealerError | Success | undefined =
-          await deleteTimedSqueal(req.query.id as string);
-        res.send(ret);
+        const ret: SquealerError | Success = await deleteTimedSqueal(
+          req.query.id as string
+        );
+        if (ret instanceof SquealerError) res.status(500).send(ret);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: TimedSqueal | SquealerError = await getTimedSqueal(
@@ -81,10 +88,12 @@ router
               (squeal as TimedSqueal).author as string
             )
           ) {
-            const returnValue: SquealerError | Success | undefined =
+            const returnValue: SquealerError | Success =
               await deleteTimedSqueal(req.query.id as string);
-            res.send(returnValue);
-          } else res.send(unauthorized);
+            if (returnValue instanceof SquealerError)
+              res.status(500).send(returnValue);
+            else res.status(200).send(returnValue);
+          } else res.status(401).send(unauthorized);
         }
       }
     } catch (error: any) {

@@ -19,9 +19,9 @@ router
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const squeals: SquealMedia[] | SquealerError | undefined =
-          await getMediaSqueals();
-        res.send(squeals);
+        const squeals: SquealMedia[] | SquealerError = await getMediaSqueals();
+        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        else res.status(200).send(squeals);
       } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
@@ -38,13 +38,19 @@ router
         ((req.user as User).status !== "ban" ||
           (req.user as User).status !== "block")
       ) {
-        const newSqueal: any = await postMediaSqueal(
-          req.body,
-          req.query.filename as string,
-          req.user as User
-        );
-        res.send(newSqueal);
-      } else res.send(unauthorized);
+        const newSqueal: SquealerError | Success | undefined =
+          await postMediaSqueal(
+            req.body,
+            req.query.filename as string,
+            req.user as User
+          );
+        if (newSqueal instanceof SquealerError) {
+          if (newSqueal.code === 20) res.status(404).send(newSqueal);
+          else if (newSqueal.code === 30) res.status(415).send(newSqueal);
+          else res.status(500).send(newSqueal);
+        } else if (newSqueal === undefined) res.sendStatus(500);
+        else res.status(200).send(newSqueal);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -55,17 +61,19 @@ router
    */
   .delete(async (req, res) => {
     try {
-      if (!req.user) res.send(unauthorized);
+      if (!req.user) res.status(401).send(unauthorized);
       else if ((req.user as User).plan === "admin") {
-        const ret: SquealerError | Success | undefined =
-          await deleteMediaSqueal(req.query.id as string);
-        res.send(ret);
+        const ret: SquealerError | Success = await deleteMediaSqueal(
+          req.query.id as string
+        );
+        if (ret instanceof SquealerError) res.status(500).send(ret);
+        else res.status(200).send(ret);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: SquealMedia | SquealerError = await getMediaSqueal(
           req.query.id as string
         );
-        if (squeal instanceof SquealerError) return squeal;
+        if (squeal instanceof SquealerError) res.status(404).send(squeal);
         else {
           if (
             (squeal as SquealMedia).author === (req.user as User).username ||
@@ -73,10 +81,12 @@ router
               (squeal as SquealMedia).author as string
             )
           ) {
-            const returnValue: SquealerError | Success | undefined =
+            const returnValue: SquealerError | Success =
               await deleteMediaSqueal(req.query.id as string);
-            res.send(returnValue);
-          } else res.send(unauthorized);
+            if (returnValue instanceof SquealerError)
+              res.status(500).send(returnValue);
+            else res.status(200).send(returnValue);
+          } else res.status(401).send(unauthorized);
         }
       }
     } catch (error: any) {

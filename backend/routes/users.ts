@@ -35,10 +35,10 @@ router
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const users: User[] | SquealerError | undefined = await getAllUsers();
-        if (users === undefined) res.send(non_existent);
-        else res.send(users);
-      } else res.send(unauthorized);
+        const users: User[] | SquealerError = await getAllUsers();
+        if (users instanceof SquealerError) res.status(404).send(non_existent);
+        else res.status(200).send(users);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -52,42 +52,29 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const deleted: SquealerError | Success | undefined =
-            await deleteAccount(req.body.mail, "", true);
-          if (deleted !== undefined) res.send(deleted);
-          else res.send(cannot_delete);
+          const deleted: SquealerError | Success = await deleteAccount(
+            req.body.mail,
+            "",
+            true,
+          );
+          if (deleted instanceof SquealerError) res.status(500).send(deleted);
+          else res.status(200).send(cannot_delete);
         } else {
           if ((req.user as User)._id === req.query.id) {
-            const deleted: SquealerError | Success | undefined =
-              await deleteAccount(req.body.mail, req.body.password, false);
-            if (deleted !== undefined) res.send(deleted);
-            else res.send(cannot_delete);
-          } else res.send(unauthorized);
+            const deleted: SquealerError | Success = await deleteAccount(
+              req.body.mail,
+              req.body.password,
+              false,
+            );
+            if (deleted instanceof SquealerError) res.status(500).send(deleted);
+            else res.status(200).send(cannot_delete);
+          } else res.status(401).send(unauthorized);
         }
-      } else res.send(unauthorized);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
   });
-
-// router
-//   .route("/:username")
-//   /**
-//    * GET
-//    * chiamata che ritorna un utente
-//    */
-//   .get(async (req, res) => {
-//     try {
-//       if (!req.user || (req.user as User).status !== "ban") {
-//         const user: User | SquealerError = await getUserByUsername(
-//           req.params.username as string
-//         );
-//         res.send(user);
-//       } else res.send(unauthorized);
-//     } catch (error: any) {
-//       catchError(error);
-//     }
-//   });
 
 router
   .route("/:username")
@@ -99,10 +86,11 @@ router
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const user: User | SquealerError = await getUserByUsername(
-          req.params.username as string
+          req.params.username as string,
         );
-        res.send(user);
-      } else res.send(unauthorized);
+        if (user instanceof SquealerError) res.status(404).send(user);
+        else res.status(200).send(user);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -117,17 +105,19 @@ router
         if ((req.user as User).plan === "admin") {
           const update: SquealerError | User = await updateUser(
             req.params.username as string,
-            req.body
+            req.body,
           );
-          res.send(update);
+          if (update instanceof SquealerError) res.status(500).send(update);
+          else res.status(200).send(update);
         } else {
           if ((req.user as User)._id === req.query.id) {
             const update: SquealerError | User = await updateUser(
               req.query.username as string,
-              req.body
+              req.body,
             );
-            res.send(update);
-          } else res.send(unauthorized);
+            if (update instanceof SquealerError) res.status(500).send(update);
+            else res.status(200).send(update);
+          } else res.status(401).send(unauthorized);
         }
       } else res.send(unauthorized);
     } catch (error: any) {
@@ -145,25 +135,25 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const update: SquealerError | Success | undefined =
-            await updateProfilePicture(
-              req.params.id,
-              req.query.filename as string
-            );
-          if (!update) res.send(cannot_update);
-          else res.send(update);
+          const update: SquealerError | Success = await updateProfilePicture(
+            req.params.id,
+            req.query.filename as string,
+          );
+          if (update instanceof SquealerError)
+            res.status(500).send(cannot_update);
+          else res.status(200).send(update);
         } else {
           if (req.params.id === (req.user as User)._id) {
-            const update: SquealerError | Success | undefined =
-              await updateProfilePicture(
-                req.params.id,
-                req.query.filename as string
-              );
-            if (!update) res.send(cannot_update);
-            else res.send(update);
-          } else res.send(unauthorized);
+            const update: SquealerError | Success = await updateProfilePicture(
+              req.params.id,
+              req.query.filename as string,
+            );
+            if (update instanceof SquealerError)
+              res.status(500).send(cannot_update);
+            else res.status(200).send(update);
+          } else res.status(401).send(unauthorized);
         }
-      } else res.send(unauthorized);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -176,18 +166,24 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const deleted = await deleteProfilePicture(req.params.id);
+          const deleted: SquealerError | undefined = await deleteProfilePicture(
+            req.params.id,
+          );
           //fs.unlink ritorna "undefined" se ha successo
-          if (deleted === undefined) res.send(removed);
-          else res.send(deleted);
+          if (deleted instanceof SquealerError) {
+            if (deleted.code === 11) res.status(500).send(deleted);
+            else res.status(404).send(deleted);
+          } else res.status(200).send(removed);
         } else {
           if (((req.user as User)._id as unknown as string) === req.params.id) {
             const deleted = await deleteProfilePicture(req.params.id);
-            if (deleted === undefined) res.send(removed);
-            else res.send(deleted);
+            if (deleted instanceof SquealerError) {
+              if (deleted.code === 11) res.status(500).send(deleted);
+              else res.status(404).send(deleted);
+            } else res.status(200).send(removed);
           }
         }
-      } else res.send(unauthorized);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -203,10 +199,11 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await revokePermissions(
-          req.query.id as string
+          req.query.id as string,
         );
-        res.send(update);
-      } else res.send(unauthorized);
+        if (update instanceof SquealerError) res.status(500).send(update);
+        else res.status(200).send(update);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -222,10 +219,11 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await grantPermissions(
-          req.query.id as string
+          req.query.id as string,
         );
-        res.send(update);
-      } else res.send(unauthorized);
+        if (update instanceof SquealerError) res.status(500).send(update);
+        else res.status(200).send(update);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -240,9 +238,12 @@ router
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const banned = await ban(req.query.id as string);
-        res.send(banned);
-      } else res.send(unauthorized);
+        const banned: SquealerError | Success = await ban(
+          req.query.id as string,
+        );
+        if (banned instanceof SquealerError) res.status(500).send(banned);
+        else res.status(200).send(banned);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -258,10 +259,11 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const unban: SquealerError | Success = await unbanUser(
-          req.query.id as string
+          req.query.id as string,
         );
-        res.send(unban);
-      } else res.send(unauthorized);
+        if (unban instanceof SquealerError) res.status(500).send(unban);
+        else res.status(200).send(unban);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -278,11 +280,11 @@ router
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | undefined = await blockUser(
           req.query.id as string,
-          req.query.time as unknown as number
+          req.query.time as unknown as number,
         );
-        if (update instanceof SquealerError) res.send(update);
-        else res.send(updated);
-      } else res.send(unauthorized);
+        if (update instanceof SquealerError) res.status(500).send(update);
+        else res.status(200).send(updated);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -292,10 +294,10 @@ router.route("/unblock").post(async (req, res) => {
   try {
     if ((req.user as User).plan === "admin") {
       const update: SquealerError | Success = await unblockUser(
-        req.query.username as string
+        req.query.username as string,
       );
-      if (update instanceof SquealerError) {
-      }
+      if (update instanceof SquealerError) res.status(500).send(update);
+      else res.status(200).send(update);
     } else res.sendStatus(401);
   } catch (error) {
     catchError(error);

@@ -21,9 +21,8 @@ router
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals: Squeal[] | SquealerError = await getTextSqueals();
-        console.log(squeals);
-
-        res.send(squeals);
+        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        else res.status(200).send(squeals);
       } else res.status(401).send(unauthorized);
     } catch (error: any) {
       console.log(catchError(error));
@@ -44,8 +43,10 @@ router
           req.body,
           req.user as User
         );
-        res.send(ret);
-      } else res.send(unauthorized);
+        if (ret instanceof SquealerError) res.status(404).send(ret);
+        else if (ret === undefined) res.sendStatus(500);
+        else res.status(201).send(ret);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -56,18 +57,19 @@ router
    */
   .delete(async (req, res) => {
     try {
-      if (!req.user) res.send(unauthorized);
+      if (!req.user) res.status(401).send(unauthorized);
       else if ((req.user as User).plan === "admin") {
-        const ret: SquealerError | Success | undefined = await deleteTextSqueal(
+        const ret: SquealerError | Success = await deleteTextSqueal(
           req.query.id as string
         );
-        res.send(ret);
+        if (ret instanceof SquealerError) res.status(500).send(ret);
+        else res.status(200).send(ret);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: Squeal | SquealerError = await getTextSqueal(
           req.query.id as string
         );
-        if (squeal instanceof SquealerError) return squeal;
+        if (squeal instanceof SquealerError) res.status(404).send(squeal);
         else {
           if (
             (squeal as Squeal).author === (req.user as User).username ||
@@ -75,10 +77,13 @@ router
               (squeal as Squeal).author as string
             )
           ) {
-            const returnValue: SquealerError | Success | undefined =
-              await deleteTextSqueal(req.query.id as string);
-            res.send(returnValue);
-          } else res.send(unauthorized);
+            const returnValue: SquealerError | Success = await deleteTextSqueal(
+              req.query.id as string
+            );
+            if (returnValue instanceof SquealerError)
+              res.status(500).send(returnValue);
+            else res.status(200).send(returnValue);
+          } else res.status(401).send(unauthorized);
         }
       }
     } catch (error: any) {

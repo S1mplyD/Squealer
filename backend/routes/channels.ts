@@ -37,8 +37,9 @@ router
     try {
       if (req.user && (req.user as User).status !== "ban") {
         const channels: Channel[] | SquealerError = await getAllChannels();
-        res.send(channels);
-      }
+        if (channels instanceof SquealerError) res.status(404).send(channels);
+        else res.status(200).send(channels);
+      } else res.status(401).send(unauthorized);
     } catch (error: any) {
       catchError(error);
     }
@@ -55,7 +56,9 @@ router
           req.query.type as string,
           req.user as User
         );
-        res.send(returnValue);
+        if (returnValue instanceof SquealerError)
+          res.status(500).send(returnValue);
+        else res.status(201).send(returnValue);
       } else if (
         req.user &&
         ((req.user as User).status !== "ban" ||
@@ -66,9 +69,11 @@ router
           req.query.type as string,
           req.user as User
         );
-        res.send(newChannel);
+        if (newChannel instanceof SquealerError)
+          res.status(500).send(newChannel);
+        res.status(201).send(newChannel);
       } else {
-        res.send(unauthorized);
+        res.status(401).send(unauthorized);
       }
     } catch (error: any) {
       catchError(error);
@@ -88,9 +93,11 @@ router
           req.query.name as string,
           req.user as User
         );
-        res.send(returnValue);
+        if (returnValue instanceof SquealerError)
+          res.status(500).send(returnValue);
+        res.status(200).send(returnValue);
       } else {
-        res.send(unauthorized);
+        res.status(401).send(unauthorized);
       }
     } catch (error: any) {
       catchError(error);
@@ -109,8 +116,9 @@ router
         const channel: Channel | SquealerError = await getChannel(
           req.params.name
         );
-        res.send(channel);
-      } else res.send(unauthorized);
+        if (channel instanceof SquealerError) res.status(404).send(channel);
+        else res.status(200).send(channel);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -128,8 +136,10 @@ router
         const userchannel: Channel[] | SquealerError = await getAllUserChannel(
           req.user as User
         );
-        res.send(userchannel);
-      } else res.send(unauthorized);
+        if (userchannel instanceof SquealerError)
+          res.status(404).send(userchannel);
+        else res.status(200).send(userchannel);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -151,10 +161,10 @@ router
           req.body.channelName
         );
         if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
-      }
+          if (retValue.code === 20) res.status(404).send(retValue);
+          else res.status(500).send(retValue);
+        } else res.status(200).send(retValue);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -177,10 +187,10 @@ router
           req.body.channelName
         );
         if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
-      }
+          if (retValue.code === 20) res.status(404).send(retValue);
+          else res.status(500).send(retValue);
+        } else res.status(200).send(retValue);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -197,8 +207,10 @@ router
       if ((req.user as User).status !== "ban") {
         const officialChannels: Channel[] | SquealerError =
           await getAllOfficialChannel();
-        res.send(officialChannels);
-      } else res.send(unauthorized);
+        if (officialChannels instanceof SquealerError)
+          res.status(404).send(officialChannels);
+        else res.status(200).send(officialChannels);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -215,8 +227,10 @@ router
       if ((req.user as User).status !== "ban") {
         const keywordChannel: Channel[] | SquealerError =
           await getAllKeywordChannel();
-        res.send(keywordChannel);
-      } else res.send(unauthorized);
+        if (keywordChannel instanceof SquealerError)
+          res.status(404).send(keywordChannel);
+        else res.status(200).send(keywordChannel);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -233,8 +247,10 @@ router
       if ((req.user as User).status !== "ban") {
         const mentionChannel: Channel[] | SquealerError =
           await getAllMentionChannel();
-        res.send(mentionChannel);
-      } else res.send(unauthorized);
+        if (mentionChannel instanceof SquealerError)
+          res.status(404).send(mentionChannel);
+        else res.status(200).send(mentionChannel);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }
@@ -255,8 +271,9 @@ router
           req.query.name as string,
           (req.user as User)._id
         );
-        res.send(squeals);
-      } else res.send(unauthorized);
+        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        else res.status(200).send(squeals);
+      } else res.status(401).send(unauthorized);
     } catch (error) {
       catchError(error);
     }

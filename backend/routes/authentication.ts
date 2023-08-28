@@ -14,7 +14,12 @@ import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
 import { Success, sent } from "../util/success";
-import { SquealerError, cannot_update, catchError } from "../util/errors";
+import {
+  SquealerError,
+  cannot_login,
+  cannot_update,
+  catchError,
+} from "../util/errors";
 config();
 
 export const router = express.Router();
@@ -96,7 +101,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
-    res.redirect("/");
+    res.status(200).redirect("/");
   }
 );
 
@@ -125,12 +130,13 @@ passport.use(
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(req.user);
-  }
+    res.status(200).send(req.user);
+  } else res.status(500).send(cannot_login);
 });
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
   if (req.user) res.send(req.user);
+  else res.status(500);
 });
 
 passport.deserializeUser((id, done) => {
@@ -172,9 +178,10 @@ router
     const returnValue = await sendMail(token, mail);
     const queryResult: SquealerError | Success | undefined =
       await updateResetToken(mail, token);
-    if (queryResult === undefined) return cannot_update;
-    else if (returnValue instanceof SquealerError) return returnValue;
-    else res.send(sent);
+    if (queryResult === undefined) res.status(500).send(cannot_update);
+    else if (returnValue instanceof SquealerError)
+      res.status(500).send(returnValue);
+    else res.status(200).send(sent);
   })
   /**
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
@@ -191,9 +198,9 @@ router
         encryptedPassword
       );
       if (!ret) {
-        res.send(cannot_update);
+        res.status(500).send(cannot_update);
       } else {
-        res.send(ret);
+        res.status(200).send(ret);
       }
     }
   });
