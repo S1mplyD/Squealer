@@ -5,9 +5,10 @@ import {
   not_recived,
   not_supported,
   cannot_create,
+  SquealerError,
 } from "../../util/errors";
 import { created, removed } from "../../util/success";
-import { SquealMedia, User } from "../../util/types";
+import { Channel, SquealMedia, Success, User } from "../../util/types";
 import squealMediaModel from "../models/squalMedia.model";
 import { addSquealToChannel, getAllChannels } from "./channels";
 import fs from "fs";
@@ -42,10 +43,11 @@ export async function postMediaSqueal(
   filename: string,
   user: User
 ) {
-  const channels: any = await getAllChannels();
+  const channels: SquealerError | Channel[] = await getAllChannels();
+  if (channels instanceof SquealerError) return non_existent;
   var type: string | undefined = filename.split(".").pop();
 
-  if (typeof type === "undefined") {
+  if (type === undefined) {
     return not_recived;
   } else {
     if (imagetypes.includes(type)) {
@@ -57,7 +59,7 @@ export async function postMediaSqueal(
     }
   }
 
-  const newSqueal: any = await squealMediaModel.create({
+  const newSqueal: SquealMedia = await squealMediaModel.create({
     body: filename,
     type: type,
     recipients: squeal.recipients,
@@ -69,14 +71,15 @@ export async function postMediaSqueal(
 
   if (!newSqueal) return cannot_create;
   else {
-    if (newSqueal.channels.length < 1) {
+    if (newSqueal.channels!.length < 1 || !("channels" in newSqueal)) {
       return created;
     } else {
-      for (let i of newSqueal.channels) {
+      for (let i of newSqueal.channels!) {
         for (let j of channels) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: any = await addSquealToChannel(j.name, id, user);
+            const ret: SquealerError | Success | undefined =
+              await addSquealToChannel(j.name, id, user);
             return ret;
           }
         }

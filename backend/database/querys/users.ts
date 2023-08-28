@@ -57,7 +57,7 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string
+  password: string,
 ) {
   const doc = await userModel.create({
     name: name,
@@ -87,7 +87,7 @@ export async function createUserUsingGoogle(
   mail: string,
   serviceId: number,
   profilePicture: string,
-  createdAt: Date
+  createdAt: Date,
 ) {
   const newUser = await userModel.create({
     name: name,
@@ -116,7 +116,7 @@ export async function updateUser(username: string, user: User) {
       username: user.username,
       mail: user.mail,
     },
-    { returnDocument: "after" }
+    { returnDocument: "after" },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
@@ -134,7 +134,7 @@ export async function updateUser(username: string, user: User) {
 export async function updateProfilePicture(id: string, filename: string) {
   const user = await userModel.updateOne(
     { _id: id },
-    { profilepicture: filename }
+    { profilepicture: filename },
   );
   if (user.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -145,15 +145,15 @@ export async function updateProfilePicture(id: string, filename: string) {
  * @param id id dell'utente
  */
 export async function deleteProfilePicture(id: string) {
-  const user = await userModel.findOne({ _id: id });
+  const user: User | null = await userModel.findOne({ _id: id });
   if (!user) return non_existent;
   else {
     fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
       if (err) return cannot_delete;
       else {
-        await user?.updateOne(
+        await userModel.updateOne(
+          { _id: user._id },
           { profilePicture: "default.png" },
-          { returnDocument: "after" }
         );
       }
     });
@@ -170,7 +170,7 @@ export async function deleteProfilePicture(id: string) {
 export async function deleteAccount(
   mail: string,
   password: string,
-  isAdmin: boolean
+  isAdmin: boolean,
 ) {
   const profilepicture = await userModel.findOne({ mail: mail });
   fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
@@ -197,7 +197,7 @@ export async function deleteAccount(
 export async function updateResetToken(mail: string, token: string) {
   const result = await userModel.updateOne(
     { mail: mail },
-    { resetToken: token }
+    { resetToken: token },
   );
   if (result.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -259,7 +259,7 @@ export async function unbanUser(id: string) {
 export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
     { username: username },
-    { status: "block", blockedFor: time }
+    { status: "block", blockedFor: time },
   );
   let timeout;
   if (update.modifiedCount < 1) return cannot_update;
@@ -267,7 +267,7 @@ export async function blockUser(username: string, time: number) {
     timeout = setTimeout(async () => {
       const update = await userModel.updateOne(
         { username: username },
-        { status: "normal", blockedFor: 0 }
+        { status: "normal", blockedFor: 0 },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -283,7 +283,7 @@ export async function blockUser(username: string, time: number) {
 export async function unblockUser(username: string) {
   const update = await userModel.updateOne(
     { username: username },
-    { status: "normal", blockedFor: 0 }
+    { status: "normal", blockedFor: 0 },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
@@ -294,7 +294,7 @@ export async function unblockUser(username: string) {
 
 async function findInterval(username) {
   const ret: Timeout | undefined = intervals.find(
-    (el) => el.username === username
+    (el) => el.username === username,
   );
   return ret?.timeout as NodeJS.Timeout;
 }
@@ -302,7 +302,7 @@ async function findInterval(username) {
 async function stopTimer(username) {
   clearInterval(await findInterval(username));
   const newIntervals = intervals.filter(
-    (interval) => interval.username !== username
+    (interval) => interval.username !== username,
   );
   intervals = newIntervals;
 }

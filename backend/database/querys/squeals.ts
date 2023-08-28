@@ -9,6 +9,7 @@ import {
   Success,
   TimedSquealGeo,
   User,
+  Channel,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import {
@@ -162,9 +163,10 @@ export async function getTextSqueal(id: string) {
  * @returns eventuali errori
  */
 export async function postTextSqueal(squeal: Squeal, user: User) {
-  const channels: any = await getAllChannels();
+  const channels: SquealerError | Channel[] = await getAllChannels();
+  if (channels instanceof SquealerError) return channels;
 
-  const newSqueal: any = await squealModel.create({
+  const newSqueal: Squeal | null = await squealModel.create({
     body: squeal.body,
     recipients: squeal.recipients,
     date: new Date(),
@@ -179,7 +181,7 @@ export async function postTextSqueal(squeal: Squeal, user: User) {
       return created;
     } else {
       for (let i of newSqueal.channels) {
-        for (let j of channels) {
+        for (let j of channels as Channel[]) {
           if (i === j.name) {
             const id: string = newSqueal._id;
             const ret: SquealerError | Success | undefined =
