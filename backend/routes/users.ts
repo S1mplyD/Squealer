@@ -195,7 +195,7 @@ router
    * POST
    * chiamata per revocare i permessi da admin ad un utente
    */
-  .post(async (req, res) => {
+  .patch(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await revokePermissions(
@@ -215,7 +215,7 @@ router
    * POST
    * chiamata per garantire i permessi da admin ad un utente
    */
-  .post(async (req, res) => {
+  .patch(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await grantPermissions(
