@@ -14,6 +14,8 @@ import {
   blockUser,
   getUserByUsername,
   unblockUser,
+  addSMM,
+  removeSMM,
 } from "../database/querys/users";
 import {
   SquealerError,
@@ -185,6 +187,49 @@ router
         }
       } else res.status(401).send(unauthorized);
     } catch (error: any) {
+      catchError(error);
+    }
+  });
+
+router
+  .route("/:username/smm")
+
+  .post(async (req, res) => {
+    try {
+      if (
+        ((req.user as User).status !== "block" ||
+          (req.user as User).status !== "ban") &&
+        (req.user as User).plan === "professional"
+      ) {
+        const update: SquealerError | Success = await addSMM(
+          req.params.username,
+          (req.user as User)._id,
+        );
+        if (update instanceof SquealerError) {
+          if (update === non_existent) res.status(404).send(update);
+          else res.status(500).send(update);
+        } else res.status(200).send(update);
+      } else res.status(401).send(unauthorized);
+    } catch (error) {
+      catchError(error);
+    }
+  })
+
+  .delete(async (req, res) => {
+    try {
+      if (
+        ((req.user as User).status !== "block" ||
+          (req.user as User).status !== "ban") &&
+        (req.user as User).plan === "professional"
+      ) {
+        const update: SquealerError | Success = await removeSMM(
+          (req.user as User)._id,
+        );
+        if (update instanceof SquealerError) {
+          res.status(500).send(update);
+        } else res.status(200).send(update);
+      } else res.status(401).send(unauthorized);
+    } catch (error) {
       catchError(error);
     }
   });
