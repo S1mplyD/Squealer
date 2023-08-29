@@ -46,7 +46,7 @@ passport.use(
               profile._json.email,
               profile.id,
               profile._json.picture,
-              new Date()
+              new Date(),
             );
             if (newUser) return done(null, newUser);
             else return done(null, false);
@@ -54,8 +54,8 @@ passport.use(
             done(null, currentUser);
           }
         });
-    }
-  )
+    },
+  ),
 );
 
 /**
@@ -77,7 +77,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword
+            encryptedPassword,
           );
           if (newUser) {
             return done(null, newUser);
@@ -88,13 +88,16 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+  (req, res) => {
+    if (req.user) res.status(200).send(req.user);
+  },
 );
 
 router.get(
@@ -102,7 +105,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.status(200).redirect("/");
-  }
+  },
 );
 
 /**
@@ -125,7 +128,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  })
+  }),
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
@@ -195,7 +198,7 @@ router
     if (token === user.resetToken) {
       const ret: SquealerError | Success | undefined = await updatePassword(
         mail,
-        encryptedPassword
+        encryptedPassword,
       );
       if (!ret) {
         res.status(500).send(cannot_update);
