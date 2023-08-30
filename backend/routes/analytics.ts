@@ -46,7 +46,7 @@ router
     try {
       if (req.user && (req.user as User).status !== "ban") {
         const analytic: Analytic | SquealerError = await getAnalytic(
-          req.query.id as string
+          req.query.id as string,
         );
         if (analytic instanceof SquealerError) {
           res.status(404).send(analytic);

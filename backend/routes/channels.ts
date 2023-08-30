@@ -23,7 +23,6 @@ import {
   TimedSquealGeo,
   User,
 } from "../util/types";
-import { getAllUserAnalytics } from "../database/querys/analytics";
 
 export const router = express.Router();
 
@@ -54,7 +53,7 @@ router
         const returnValue: SquealerError | Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
-          req.user as User
+          req.user as User,
         );
         if (returnValue instanceof SquealerError)
           res.status(500).send(returnValue);
@@ -67,7 +66,7 @@ router
         const newChannel: SquealerError | Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
-          req.user as User
+          req.user as User,
         );
         if (newChannel instanceof SquealerError)
           res.status(500).send(newChannel);
@@ -91,7 +90,7 @@ router
       ) {
         const returnValue: SquealerError | Success = await deleteChannel(
           req.query.name as string,
-          req.user as User
+          req.user as User,
         );
         if (returnValue instanceof SquealerError)
           res.status(500).send(returnValue);
@@ -114,7 +113,7 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         const channel: Channel | SquealerError = await getChannel(
-          req.params.name
+          req.params.name,
         );
         if (channel instanceof SquealerError) res.status(404).send(channel);
         else res.status(200).send(channel);
@@ -134,7 +133,7 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         const userchannel: Channel[] | SquealerError = await getAllUserChannel(
-          req.user as User
+          req.user as User,
         );
         if (userchannel instanceof SquealerError)
           res.status(404).send(userchannel);
@@ -158,7 +157,7 @@ router
       ) {
         const retValue: SquealerError | Success = await addUserToUserChannel(
           req.body.username,
-          req.body.channelName
+          req.body.channelName,
         );
         if (retValue instanceof SquealerError) {
           if (retValue.code === 20) res.status(404).send(retValue);
@@ -184,7 +183,7 @@ router
       ) {
         const retValue: SquealerError | Success = await removeUserFromChannel(
           req.body.username,
-          req.body.channelName
+          req.body.channelName,
         );
         if (retValue instanceof SquealerError) {
           if (retValue.code === 20) res.status(404).send(retValue);
@@ -269,7 +268,7 @@ router
           | (Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo)[]
           | SquealerError = await getAllSquealsFromChannel(
           req.query.name as string,
-          (req.user as User)._id
+          (req.user as User)._id,
         );
         if (squeals instanceof SquealerError) res.status(404).send(squeals);
         else res.status(200).send(squeals);
