@@ -11,7 +11,6 @@ import {
   Squeal,
   SquealGeo,
   SquealMedia,
-  Success,
   TimedSqueal,
   TimedSquealGeo,
 } from "../../util/types";
@@ -109,7 +108,7 @@ export async function updateAnalyticForEverySqueal() {
                 { positiveReactions: squeal.positiveReactions },
                 { negativeReactions: squeal.negativeReactions },
               ],
-            }
+            },
           );
           if (update.modifiedCount < 1) return cannot_update;
           else return updated;

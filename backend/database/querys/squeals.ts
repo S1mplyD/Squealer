@@ -109,7 +109,7 @@ export async function getAllTimedSqueals() {
 }
 
 export async function getSquealById(
-  id: string
+  id: string,
 ): Promise<
   | Squeal
   | SquealGeo
@@ -184,8 +184,11 @@ export async function postTextSqueal(squeal: Squeal, user: User) {
         for (let j of channels as Channel[]) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: SquealerError | Success | undefined =
-              await addSquealToChannel(j.name, id, user);
+            const ret: SquealerError | Success = await addSquealToChannel(
+              j.name,
+              id,
+              user,
+            );
             return ret;
           }
         }
@@ -203,7 +206,7 @@ export async function postTextSqueal(squeal: Squeal, user: User) {
 export async function deleteTextSqueal(id: string) {
   const deleted: any = await squealModel.deleteOne(
     { _id: id },
-    { returnDocument: "after" }
+    { returnDocument: "after" },
   );
   if (deleted.deletedCount < 1) return cannot_delete;
   else return removed;

@@ -12,6 +12,7 @@ import {
   Squeal,
   SquealGeo,
   SquealMedia,
+  Success,
   TimedSqueal,
   TimedSquealGeo,
   User,
@@ -104,7 +105,7 @@ export async function getAllMentionChannel() {
  */
 export async function getAllSquealsFromChannel(
   channelName: string,
-  userId: string
+  userId: string,
 ) {
   const channel: Channel | SquealerError = await getChannel(channelName);
   if (channel instanceof SquealerError) return non_existent;
@@ -143,7 +144,7 @@ export async function getAllSquealsFromChannel(
 export async function createChannel(
   channelName: string,
   type: string,
-  user: User
+  user: User,
 ) {
   if (type === "userchannel") {
     const newChannel = await channelsModel.create({
@@ -180,7 +181,7 @@ export async function createChannel(
  */
 export async function addUserToUserChannel(
   username: string,
-  channelName: string
+  channelName: string,
 ) {
   const user: User | SquealerError = await getUserByUsername(username);
   if (user instanceof SquealerError) return non_existent;
@@ -188,7 +189,7 @@ export async function addUserToUserChannel(
     const userId = user._id;
     const update = await channelsModel.updateOne(
       { name: channelName, type: "userchannel" },
-      { $push: { allowedRead: userId, allowedWrite: userId } }
+      { $push: { allowedRead: userId, allowedWrite: userId } },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -203,7 +204,7 @@ export async function addUserToUserChannel(
  */
 export async function removeUserFromChannel(
   username: string,
-  channelName: string
+  channelName: string,
 ) {
   const user: User | SquealerError = await getUserByUsername(username);
   if (user instanceof SquealerError) return non_existent;
@@ -211,7 +212,7 @@ export async function removeUserFromChannel(
     const userId = user._id;
     const update = await channelsModel.updateOne(
       { name: channelName },
-      { $pop: { allowedRead: userId, allowedWrite: userId } }
+      { $pop: { allowedRead: userId, allowedWrite: userId } },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -227,11 +228,11 @@ export async function removeUserFromChannel(
  */
 export async function addUserReadToOfficialChannel(
   userId: string,
-  channelName: string
+  channelName: string,
 ) {
   const update = await channelsModel.updateOne(
     { name: channelName },
-    { $push: { allowedRead: userId } }
+    { $push: { allowedRead: userId } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -246,11 +247,11 @@ export async function addUserReadToOfficialChannel(
  */
 export async function addAdminToOfficialChannel(
   adminId: string,
-  channelName: string
+  channelName: string,
 ) {
   const update = await channelsModel.updateOne(
     { name: channelName },
-    { $push: { allowedRead: adminId, allowedWrite: adminId } }
+    { $push: { allowedRead: adminId, allowedWrite: adminId } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -266,7 +267,7 @@ export async function addAdminToOfficialChannel(
 export async function addSquealToChannel(
   channelName: string,
   squealId: string,
-  user: User
+  user: User,
 ) {
   const channel: Channel | SquealerError = await getChannel(channelName);
   if (channel instanceof SquealerError) {
@@ -282,10 +283,16 @@ export async function addSquealToChannel(
       //Se il canale non esiste ma è una keyword creo il canale e poi aggiungo lo squeal
       for (let i of squeal.recipients) {
         if (i.includes("#")) {
-          await createChannel(i, "keyword", user);
-          await addSquealToChannel(i, squeal._id, user);
+          const create: SquealerError | Success = await createChannel(
+            i,
+            "keyword",
+            user,
+          );
+          if (create instanceof SquealerError) return create;
+          else await addSquealToChannel(i, squeal._id, user);
         }
       }
+      return cannot_create;
     }
   } else {
     //canali con richiesta di scrittura
@@ -295,14 +302,14 @@ export async function addSquealToChannel(
     ) {
       const update = await channelsModel.updateOne(
         { name: channelName },
-        { $push: { squeals: squealId } }
+        { $push: { squeals: squealId } },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
     } else {
       const update = await channelsModel.updateOne(
         { name: channelName },
-        { $push: { squeals: squealId } }
+        { $push: { squeals: squealId } },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -320,7 +327,7 @@ export async function deleteChannel(name: string, user: User) {
   if (user.plan === "admin") {
     const deleted: any = await channelsModel.deleteOne(
       { name: name },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     if (deleted.deletedCount == 0) {
       return cannot_delete;
@@ -330,7 +337,7 @@ export async function deleteChannel(name: string, user: User) {
   } else {
     const deleted: any = await channelsModel.deleteOne(
       { $and: [{ name: name }, { channelAdmins: user._id }] },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     if (deleted.deletedCount == 0) {
       return cannot_delete;

@@ -5,7 +5,7 @@ import {
   cannot_update,
   non_existent,
 } from "../../util/errors";
-import { created, removed, updated } from "../../util/success";
+import { removed, updated } from "../../util/success";
 import { Timeout, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
