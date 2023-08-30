@@ -46,7 +46,7 @@ passport.use(
               profile._json.email,
               profile.id,
               profile._json.picture,
-              new Date(),
+              new Date()
             );
             if (newUser) return done(null, newUser);
             else return done(null, false);
@@ -54,8 +54,8 @@ passport.use(
             done(null, currentUser);
           }
         });
-    },
-  ),
+    }
+  )
 );
 
 /**
@@ -77,7 +77,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword,
+            encryptedPassword
           );
           if (newUser) {
             return done(null, newUser);
@@ -88,8 +88,8 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    },
-  ),
+    }
+  )
 );
 
 router.get(
@@ -97,7 +97,7 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] }),
   (req, res) => {
     if (req.user) res.status(200).send(req.user);
-  },
+  }
 );
 
 router.get(
@@ -105,7 +105,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.status(200).redirect("/");
-  },
+  }
 );
 
 /**
@@ -128,13 +128,13 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  }),
+  })
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
     res.status(200).send(req.user);
-  } else res.status(500).send(cannot_login);
+  } else res.sendStatus(500);
 });
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
@@ -181,10 +181,9 @@ router
     const returnValue = await sendMail(token, mail);
     const queryResult: SquealerError | Success | undefined =
       await updateResetToken(mail, token);
-    if (queryResult === undefined) res.status(500).send(cannot_update);
-    else if (returnValue instanceof SquealerError)
-      res.status(500).send(returnValue);
-    else res.status(200).send(sent);
+    if (queryResult === undefined) res.sendStatus(500);
+    else if (returnValue instanceof SquealerError) res.sendStatus(500);
+    else res.status(200);
   })
   /**
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
@@ -196,14 +195,14 @@ router
     const password: any = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      const ret: SquealerError | Success | undefined = await updatePassword(
+      const ret: SquealerError | Success = await updatePassword(
         mail,
-        encryptedPassword,
+        encryptedPassword
       );
-      if (!ret) {
-        res.status(500).send(cannot_update);
+      if (ret instanceof SquealerError) {
+        res.sendStatus(500);
       } else {
-        res.status(200).send(ret);
+        res.status(200);
       }
     }
   });

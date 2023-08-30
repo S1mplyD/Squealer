@@ -17,8 +17,7 @@ router
         if ((req.user as User).plan === "admin") {
           const analytics: Analytic[] | SquealerError =
             await getAllUserAnalytics(req.params.id);
-          if (analytics instanceof SquealerError)
-            res.status(404).send(analytics);
+          if (analytics instanceof SquealerError) res.sendStatus(404);
           else res.status(200).send(analytics);
         } else if (
           (req.user as User)._id === req.params.id ||
@@ -26,11 +25,10 @@ router
         ) {
           const analytics: Analytic[] | SquealerError =
             await getAllUserAnalytics(req.params.id);
-          if (analytics instanceof SquealerError)
-            res.status(404).send(analytics);
+          if (analytics instanceof SquealerError) res.sendStatus(404);
           else res.status(200).send(analytics);
-        } else res.status(401).send(unauthorized);
-      } else res.status(401).send(unauthorized);
+        } else res.sendStatus(401);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -46,18 +44,18 @@ router
     try {
       if (req.user && (req.user as User).status !== "ban") {
         const analytic: Analytic | SquealerError = await getAnalytic(
-          req.query.id as string,
+          req.query.id as string
         );
         if (analytic instanceof SquealerError) {
-          res.status(404).send(analytic);
+          res.sendStatus(404).send(analytic);
         } else {
           if ((req.user as User).plan === "admin") {
             res.status(200).send(analytic);
           } else if ((req.user as User)._id === analytic.author) {
             res.status(200).send(analytic);
-          } else res.status(401).send(unauthorized);
+          } else res.sendStatus(401);
         }
-      } else res.status(401).send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error) {
       catchError(error);
     }

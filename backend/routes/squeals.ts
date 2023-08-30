@@ -36,9 +36,9 @@ router
               | TimedSqueal
               | TimedSquealGeo
             )[] = await getAllSqueals();
-        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
-      } else res.status(401).send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -62,9 +62,9 @@ router
               | TimedSqueal
               | TimedSquealGeo
             )[] = await getAllUserSqueals(req.params.username);
-        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
-      } else res.status(401).send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error) {
       catchError(error);
     }
@@ -81,11 +81,10 @@ router
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals:
           | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
-          | undefined
           | SquealerError = await getSquealsByRecipients(
-          req.query.recipient as string,
+          req.query.recipient as string
         );
-        if (squeals instanceof SquealerError) res.status(404).send(squeals);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
