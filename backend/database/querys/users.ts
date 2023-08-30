@@ -131,9 +131,9 @@ export async function updateUser(username: string, user: User) {
  * @param filename nome del file
  * @returns Errore o Successo
  */
-export async function updateProfilePicture(id: string, filename: string) {
+export async function updateProfilePicture(username: string, filename: string) {
   const user = await userModel.updateOne(
-    { _id: id },
+    { username: username },
     { profilepicture: filename },
   );
   if (user.modifiedCount < 1) return cannot_update;
@@ -144,8 +144,8 @@ export async function updateProfilePicture(id: string, filename: string) {
  * funzione che elimina la foto profilo dell'utente
  * @param id id dell'utente
  */
-export async function deleteProfilePicture(id: string) {
-  const user: User | null = await userModel.findOne({ _id: id });
+export async function deleteProfilePicture(username: string) {
+  const user: User | null = await userModel.findOne({ username: username });
   if (!user) return non_existent;
   else {
     fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
