@@ -22,7 +22,7 @@ router
         const squeals: SquealGeo[] | SquealerError = await getGeoSqueals();
         if (squeals instanceof SquealerError) res.status(404).send(squeals);
         else res.status(200).send(squeals);
-      } else res.send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -40,7 +40,7 @@ router
       ) {
         const ret: SquealerError | Success | undefined = await postGeoSqueal(
           req.body,
-          req.user as User
+          req.user as User,
         );
         if (ret instanceof SquealerError) res.status(500).send(ret);
         else if (ret === undefined) res.sendStatus(500);
@@ -70,7 +70,7 @@ router
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: SquealGeo | SquealerError = await getGeoSqueal(
-          req.query.id as string
+          req.query.id as string,
         );
         if (squeal instanceof SquealerError) res.status(404).send(squeal);
         else {
@@ -78,7 +78,7 @@ router
           if (
             (squeal as SquealGeo).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as SquealGeo).author as string
+              (squeal as SquealGeo).author as string,
             )
           ) {
             const returnValue: SquealerError | Success | undefined =

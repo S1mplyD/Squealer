@@ -139,7 +139,7 @@ router.post("/login", passport.authenticate("local"), function (req, res) {
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
   if (req.user) res.send(req.user);
-  else res.status(500);
+  else res.sendStatus(500);
 });
 
 passport.deserializeUser((id, done) => {

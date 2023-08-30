@@ -87,7 +87,7 @@ router
         );
         if (squeals instanceof SquealerError) res.status(404).send(squeals);
         else res.status(200).send(squeals);
-      } else res.send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
