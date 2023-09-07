@@ -9,6 +9,7 @@ import {
   Success,
   TimedSquealGeo,
   User,
+  Channel,
 } from "../../util/types";
 import timedSquealModel from "../models/timedSqueals.model";
 import {
@@ -108,7 +109,7 @@ export async function getAllTimedSqueals() {
 }
 
 export async function getSquealById(
-  id: string
+  id: string,
 ): Promise<
   | Squeal
   | SquealGeo
@@ -162,9 +163,10 @@ export async function getTextSqueal(id: string) {
  * @returns eventuali errori
  */
 export async function postTextSqueal(squeal: Squeal, user: User) {
-  const channels: any = await getAllChannels();
+  const channels: SquealerError | Channel[] = await getAllChannels();
+  if (channels instanceof SquealerError) return channels;
 
-  const newSqueal: any = await squealModel.create({
+  const newSqueal: Squeal | null = await squealModel.create({
     body: squeal.body,
     recipients: squeal.recipients,
     date: new Date(),
@@ -179,11 +181,14 @@ export async function postTextSqueal(squeal: Squeal, user: User) {
       return created;
     } else {
       for (let i of newSqueal.channels) {
-        for (let j of channels) {
+        for (let j of channels as Channel[]) {
           if (i === j.name) {
             const id: string = newSqueal._id;
-            const ret: SquealerError | Success | undefined =
-              await addSquealToChannel(j.name, id, user);
+            const ret: SquealerError | Success = await addSquealToChannel(
+              j.name,
+              id,
+              user,
+            );
             return ret;
           }
         }
@@ -201,7 +206,7 @@ export async function postTextSqueal(squeal: Squeal, user: User) {
 export async function deleteTextSqueal(id: string) {
   const deleted: any = await squealModel.deleteOne(
     { _id: id },
-    { returnDocument: "after" }
+    { returnDocument: "after" },
   );
   if (deleted.deletedCount < 1) return cannot_delete;
   else return removed;

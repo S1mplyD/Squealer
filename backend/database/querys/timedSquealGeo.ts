@@ -39,7 +39,7 @@ export async function postTimedSquealGeo(
   squeal: TimedSquealGeo,
   author: string
 ) {
-  const newSqueal: any = await timedSquealGeoModel.create({
+  const newSqueal: TimedSquealGeo = await timedSquealGeoModel.create({
     lat: squeal.lat,
     lng: squeal.lng,
     recipients: squeal.recipients,

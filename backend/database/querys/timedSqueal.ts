@@ -30,7 +30,7 @@ export async function getTimedSqueal(id: string) {
  * @param squeal squeal temporizzato
  */
 export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
-  const newSqueal: any = await timedSquealModel.create({
+  const newSqueal: TimedSqueal | null = await timedSquealModel.create({
     body: squeal.body,
     recipients: squeal.recipients,
     author: author,
@@ -49,19 +49,12 @@ export async function postTimedSqueal(squeal: TimedSqueal, author: string) {
  * @param id id dello squeal temporizzato
  */
 export async function deleteTimedSqueal(id: string) {
-  const squeal: TimedSqueal | null = (await timedSquealModel.findById(
-    id
-  )) as TimedSqueal;
-  if (squeal === null) {
+  const squeal: TimedSqueal | null = await timedSquealModel.findById(id);
+  if (!squeal) {
     return non_existent;
   } else {
     await stopTimer(squeal);
-    const deleted: any = await timedSquealModel.deleteOne(
-      { _id: id },
-      {
-        returnDocument: "after",
-      }
-    );
+    const deleted = await timedSquealModel.deleteOne({ _id: id });
     if (deleted.deletedCount < 1) return cannot_delete;
     else return removed;
   }

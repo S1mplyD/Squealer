@@ -17,16 +17,18 @@ router
         if ((req.user as User).plan === "admin") {
           const analytics: Analytic[] | SquealerError =
             await getAllUserAnalytics(req.params.id);
-          res.send(analytics);
+          if (analytics instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(analytics);
         } else if (
           (req.user as User)._id === req.params.id ||
           (req.user as User).managedAccounts.includes(req.params.id)
         ) {
           const analytics: Analytic[] | SquealerError =
             await getAllUserAnalytics(req.params.id);
-          res.send(analytics);
-        } else res.send(unauthorized);
-      } else res.send(unauthorized);
+          if (analytics instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(analytics);
+        } else res.sendStatus(401);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -45,15 +47,15 @@ router
           req.query.id as string
         );
         if (analytic instanceof SquealerError) {
-          res.send(analytic);
+          res.sendStatus(404).send(analytic);
         } else {
           if ((req.user as User).plan === "admin") {
-            res.send(analytic);
+            res.status(200).send(analytic);
           } else if ((req.user as User)._id === analytic.author) {
-            res.send(analytic);
-          } else res.send(unauthorized);
+            res.status(200).send(analytic);
+          } else res.sendStatus(401);
         }
-      } else res.send(unauthorized);
+      } else res.sendStatus(401);
     } catch (error) {
       catchError(error);
     }

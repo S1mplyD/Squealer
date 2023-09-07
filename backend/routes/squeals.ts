@@ -1,11 +1,6 @@
 import {
-  getSquealsByChannel,
-  deleteTextSqueal,
   getAllSqueals,
   getSquealsByRecipients,
-  postTextSqueal,
-  getTextSqueals,
-  getTextSqueal,
   getAllUserSqueals,
 } from "../database/querys/squeals";
 import express from "express";
@@ -15,15 +10,9 @@ import {
   SquealGeo,
   SquealMedia,
   User,
-  Success,
   TimedSquealGeo,
 } from "../util/types";
-import {
-  SquealerError,
-  catchError,
-  non_existent,
-  unauthorized,
-} from "../util/errors";
+import { SquealerError, catchError, unauthorized } from "../util/errors";
 
 export const router = express.Router();
 
@@ -40,10 +29,16 @@ router
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals:
           | SquealerError
-          | (Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo)[]
-          | undefined = await getAllSqueals();
-        res.send(squeals);
-      } else res.status(401).send(unauthorized);
+          | (
+              | Squeal
+              | SquealGeo
+              | SquealMedia
+              | TimedSqueal
+              | TimedSquealGeo
+            )[] = await getAllSqueals();
+        if (squeals instanceof SquealerError) res.sendStatus(404);
+        else res.status(200).send(squeals);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -67,9 +62,9 @@ router
               | TimedSqueal
               | TimedSquealGeo
             )[] = await getAllUserSqueals(req.params.username);
-        if (squeals instanceof SquealerError) return non_existent;
-        else return squeals;
-      } else res.status(401).send(unauthorized);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
+        else res.status(200).send(squeals);
+      } else res.sendStatus(401);
     } catch (error) {
       catchError(error);
     }
@@ -86,13 +81,12 @@ router
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals:
           | (Squeal | SquealGeo | SquealMedia | TimedSqueal)[]
-          | undefined
           | SquealerError = await getSquealsByRecipients(
           req.query.recipient as string
         );
-        if (squeals === undefined) res.send(non_existent);
-        else res.send(squeals);
-      } else res.send(unauthorized);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
+        else res.status(200).send(squeals);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }

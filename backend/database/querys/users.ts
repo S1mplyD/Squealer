@@ -5,13 +5,15 @@ import {
   cannot_update,
   non_existent,
 } from "../../util/errors";
-import { created, removed, updated } from "../../util/success";
-import { User } from "../../util/types";
+import { removed, updated } from "../../util/success";
+import { Timeout, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
 import { resolve } from "path";
 
 const publicUploadPath = resolve(__dirname, "../../..", "public");
+
+var intervals: Array<Timeout> = [];
 
 /**
  * Ritorna tutti gli utenti
@@ -55,7 +57,7 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string
+  password: string,
 ) {
   const doc = await userModel.create({
     name: name,
@@ -85,7 +87,7 @@ export async function createUserUsingGoogle(
   mail: string,
   serviceId: number,
   profilePicture: string,
-  createdAt: Date
+  createdAt: Date,
 ) {
   const newUser = await userModel.create({
     name: name,
@@ -114,7 +116,7 @@ export async function updateUser(username: string, user: User) {
       username: user.username,
       mail: user.mail,
     },
-    { returnDocument: "after" }
+    { returnDocument: "after" },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
@@ -129,10 +131,10 @@ export async function updateUser(username: string, user: User) {
  * @param filename nome del file
  * @returns Errore o Successo
  */
-export async function updateProfilePicture(id: string, filename: string) {
+export async function updateProfilePicture(username: string, filename: string) {
   const user = await userModel.updateOne(
-    { _id: id },
-    { profilepicture: filename }
+    { username: username },
+    { profilepicture: filename },
   );
   if (user.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -142,16 +144,16 @@ export async function updateProfilePicture(id: string, filename: string) {
  * funzione che elimina la foto profilo dell'utente
  * @param id id dell'utente
  */
-export async function deleteProfilePicture(id: string) {
-  const user = await userModel.findOne({ _id: id });
+export async function deleteProfilePicture(username: string) {
+  const user: User | null = await userModel.findOne({ username: username });
   if (!user) return non_existent;
   else {
     fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
       if (err) return cannot_delete;
       else {
-        await user?.updateOne(
+        await userModel.updateOne(
+          { _id: user._id },
           { profilePicture: "default.png" },
-          { returnDocument: "after" }
         );
       }
     });
@@ -168,7 +170,7 @@ export async function deleteProfilePicture(id: string) {
 export async function deleteAccount(
   mail: string,
   password: string,
-  isAdmin: boolean
+  isAdmin: boolean,
 ) {
   const profilepicture = await userModel.findOne({ mail: mail });
   fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
@@ -195,7 +197,7 @@ export async function deleteAccount(
 export async function updateResetToken(mail: string, token: string) {
   const result = await userModel.updateOne(
     { mail: mail },
-    { resetToken: token }
+    { resetToken: token },
   );
   if (result.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -239,11 +241,42 @@ export async function revokePermissions(userId: string) {
   else return updated;
 }
 
-//TODO test
+/**
+ * funzione che banna un utente e rimuove gli account gestiti o l'SMM che gestisce l'account
+ * @param id id dell'utente da bannare
+ * @returns non_existent | cannot_update | updated
+ */
 export async function ban(id: string) {
-  const update = await userModel.updateOne({ _id: id }, { status: "ban" });
-  if (update.modifiedCount < 1) return cannot_update;
-  else return updated;
+  const user: User | SquealerError = await getUser(id);
+  if (user instanceof SquealerError) return user;
+  else {
+    const update = await userModel.updateOne({ _id: id }, { status: "ban" });
+    if (update.modifiedCount < 1) return cannot_update;
+    //Rimuovo l'smm o un account managed
+    else {
+      if (user.SMM !== "" || user.SMM === undefined) {
+        //Rimuovo l'SMM all'utente bannato
+        const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
+        if (updateUser.modifiedCount < 1) return cannot_update;
+        // Rimuovo all'smm dell'utente bannato l'account gestito
+        const updateSMM = await userModel.updateOne(
+          { _id: user.SMM },
+          { $pop: { managedAccounts: user._id } },
+        );
+        if (updateSMM.modifiedCount < 1) return cannot_update;
+        else return updated;
+      } else if (user.managedAccounts.length > 0) {
+        const len = user.managedAccounts.length;
+        let count = 0;
+        for (let i of user.managedAccounts) {
+          const updateUser = await userModel.updateOne({ _id: i }, { SMM: "" });
+          if (updateUser.modifiedCount > 0) count++;
+        }
+        if (count === len) return updated;
+        else return cannot_update;
+      } else return updated;
+    }
+  }
 }
 
 //TODO test
@@ -254,20 +287,80 @@ export async function unbanUser(id: string) {
 }
 
 //TODO test
-export async function blockUser(id: string, time: number) {
+export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
-    { _id: id },
-    { status: "block", blockedFor: time }
+    { username: username },
+    { status: "block", blockedFor: time },
   );
+  let timeout: NodeJS.Timeout;
   if (update.modifiedCount < 1) return cannot_update;
   else {
-    setTimeout(async () => {
+    timeout = setTimeout(async () => {
       const update = await userModel.updateOne(
-        { _id: id },
-        { status: "normal", blockedFor: 0 }
+        { username: username },
+        { status: "normal", blockedFor: 0 },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
     }, time);
+    const newTimeout: Timeout = {
+      timeout: timeout,
+      username: username,
+    };
+    intervals.push(newTimeout);
   }
+}
+
+export async function unblockUser(username: string) {
+  const update = await userModel.updateOne(
+    { username: username },
+    { status: "normal", blockedFor: 0 },
+  );
+  if (update.modifiedCount < 1) return cannot_update;
+  else {
+    stopTimer(username);
+    return updated;
+  }
+}
+
+async function findInterval(username: string) {
+  const ret: Timeout | undefined = intervals.find(
+    (el) => el.username === username,
+  );
+  return ret?.timeout as NodeJS.Timeout;
+}
+
+async function stopTimer(username: string) {
+  clearInterval(await findInterval(username));
+  const newIntervals = intervals.filter(
+    (interval) => interval.username !== username,
+  );
+  intervals = newIntervals;
+}
+
+/**
+ * funzione che aggiunge un social media manager all'account
+ * @param username username del smm
+ * @param id id dell'utente che aggiunge un smm
+ * @returns non_existent | cannot_update | updated
+ */
+export async function addSMM(username: string, id: string) {
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (user instanceof SquealerError) return user;
+  else {
+    const update = await userModel.updateOne({ _id: id }, { SMM: user._id });
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  }
+}
+
+/**
+ * funzione che rimuove l'smm di un account
+ * @param id id dell'utente che deve rimuovere l'smm
+ * @returns cannot_update | updated
+ */
+export async function removeSMM(id: string) {
+  const update = await userModel.updateOne({ _id: id }, { SMM: "" });
+  if (update.modifiedCount < 1) return cannot_update;
+  else return updated;
 }

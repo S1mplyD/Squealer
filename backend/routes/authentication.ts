@@ -14,7 +14,12 @@ import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
 import { Success, sent } from "../util/success";
-import { SquealerError, cannot_update, catchError } from "../util/errors";
+import {
+  SquealerError,
+  cannot_login,
+  cannot_update,
+  catchError,
+} from "../util/errors";
 config();
 
 export const router = express.Router();
@@ -89,14 +94,17 @@ passport.use(
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+  (req, res) => {
+    if (req.user) res.status(200).send(req.user);
+  }
 );
 
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
-    res.redirect("/");
+    res.status(200).redirect("/");
   }
 );
 
@@ -125,12 +133,13 @@ passport.use(
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
   if (req.user) {
-    res.send(req.user);
-  }
+    res.status(200).send(req.user);
+  } else res.sendStatus(500);
 });
 
 router.post("/register", passport.authenticate("local-signup"), (req, res) => {
   if (req.user) res.send(req.user);
+  else res.sendStatus(500);
 });
 
 passport.deserializeUser((id, done) => {
@@ -172,9 +181,9 @@ router
     const returnValue = await sendMail(token, mail);
     const queryResult: SquealerError | Success | undefined =
       await updateResetToken(mail, token);
-    if (queryResult === undefined) return cannot_update;
-    else if (returnValue instanceof SquealerError) return returnValue;
-    else res.send(sent);
+    if (queryResult === undefined) res.sendStatus(500);
+    else if (returnValue instanceof SquealerError) res.sendStatus(500);
+    else res.status(200);
   })
   /**
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
@@ -186,14 +195,14 @@ router
     const password: any = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      const ret: SquealerError | Success | undefined = await updatePassword(
+      const ret: SquealerError | Success = await updatePassword(
         mail,
         encryptedPassword
       );
-      if (!ret) {
-        res.send(cannot_update);
+      if (ret instanceof SquealerError) {
+        res.sendStatus(500);
       } else {
-        res.send(ret);
+        res.status(200);
       }
     }
   });

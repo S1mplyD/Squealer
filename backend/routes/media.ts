@@ -41,8 +41,8 @@ router.route("/").post(upload.single("file"), (req, res) => {
       ((req.user as User).status !== "ban" ||
         (req.user as User).status !== "block")
     )
-      res.send(req.file?.filename);
-    else res.send(unauthorized);
+      res.status(201).send(req.file?.filename);
+    else res.sendStatus(401);
   } catch (error: any) {
     catchError(error);
   }

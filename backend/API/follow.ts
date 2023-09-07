@@ -44,13 +44,16 @@ export async function getAllFollowing(username: string) {
     else if (user.following?.length < 1) return non_existent;
     else {
       for (let i of user.following) {
-        const user: User | SquealerError = await getUserByUsername(username);
+        console.log(i);
+        const user: User | SquealerError = await getUser(i);
         if (!(user instanceof SquealerError)) following.push(user as User);
       }
     }
     return following;
   }
 }
+
+//TODO aggiungere e rimuovere id utente
 
 /**
  * funzione che aggiorna il numero di followers di un utente e il numero di followed del seguito
@@ -59,15 +62,18 @@ export async function getAllFollowing(username: string) {
  * @returns SquealerError | Success
  */
 export async function followUser(userId: string, username: string) {
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (user instanceof SquealerError) return user;
+  // inserisco l'id dell'utente da seguire nei seguti dell'utente che segue
   const update = await userModel.updateOne(
     { _id: userId },
-    { $inc: { followingCount: 1 } }
+    { $push: { following: user._id } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     const updateUser = await userModel.updateOne(
       { _id: username },
-      { $inc: { followersCount: 1 } }
+      { $push: { following: userId } },
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -83,13 +89,13 @@ export async function followUser(userId: string, username: string) {
 export async function unfollowUser(userId: string, username: string) {
   const update = await userModel.updateOne(
     { _id: userId },
-    { $inc: { followingCount: -1 } }
+    { $inc: { followingCount: -1 } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     const updateUser = await userModel.updateOne(
       { _id: username },
-      { $inc: { followersCount: -1 } }
+      { $inc: { followersCount: -1 } },
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;

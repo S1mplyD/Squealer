@@ -23,6 +23,7 @@ export enum ErrorCodes {
   cannot_send = 12,
   cannot_update = 13,
   cannot_get_location = 14,
+  cannot_login = 15,
   non_existent = 20,
   no_timers = 21,
   no_characters = 22,
@@ -45,68 +46,74 @@ export enum ErrorDescriptions {
   no_characters = "Not enough characters",
   cannot_get_location = "Cannot get location",
   browser_not_supported = "Browser is not supportes",
+  cannot_login = "Cannot login",
 }
 
 export const cannot_create = new SquealerError(
   ErrorDescriptions.cannot_create,
-  ErrorCodes.cannot_create
+  ErrorCodes.cannot_create,
 );
 
 export const non_existent = new SquealerError(
   ErrorDescriptions.non_existent,
-  ErrorCodes.non_existent
+  ErrorCodes.non_existent,
 );
 
 export const cannot_update = new SquealerError(
   ErrorDescriptions.cannot_update,
-  ErrorCodes.cannot_update
+  ErrorCodes.cannot_update,
 );
 
 export const no_timers = new SquealerError(
   ErrorDescriptions.no_timers,
-  ErrorCodes.no_timers
+  ErrorCodes.no_timers,
 );
 
 export const cannot_delete = new SquealerError(
   ErrorDescriptions.cannot_delete,
-  ErrorCodes.cannot_delete
+  ErrorCodes.cannot_delete,
 );
 
 export const not_supported = new SquealerError(
   ErrorDescriptions.not_supported,
-  ErrorCodes.not_supported
+  ErrorCodes.not_supported,
 );
 
 export const not_recived = new SquealerError(
   ErrorDescriptions.not_recived,
-  ErrorCodes.not_recived
+  ErrorCodes.not_recived,
 );
 
 export const unauthorized = new SquealerError(
   ErrorDescriptions.unauthorized,
-  ErrorCodes.unauthorized
+  ErrorCodes.unauthorized,
 );
 
 export const cannot_send = new SquealerError(
   ErrorDescriptions.cannot_send,
-  ErrorCodes.cannot_send
+  ErrorCodes.cannot_send,
 );
 
 export const no_characters = new SquealerError(
   ErrorDescriptions.no_characters,
-  ErrorCodes.no_characters
+  ErrorCodes.no_characters,
 );
 
 export const cannot_get_location = new SquealerError(
   ErrorDescriptions.cannot_get_location,
-  ErrorCodes.cannot_get_location
+  ErrorCodes.cannot_get_location,
 );
 
 export const browser_not_supported = new SquealerError(
   ErrorDescriptions.browser_not_supported,
-  ErrorCodes.browser_not_supported
+  ErrorCodes.browser_not_supported,
+);
+
+export const cannot_login = new SquealerError(
+  ErrorDescriptions.cannot_login,
+  ErrorCodes.cannot_login,
 );
 
 export function catchError(error: any) {
-  return { errorName: error.name, errorDescription: error.message };
+  console.log({ errorName: error.name, errorDescription: error.message });
 }

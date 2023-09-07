@@ -35,7 +35,7 @@ export async function postGeoSqueal(squeal: SquealGeo, user: User) {
   if (channels instanceof SquealerError) {
     return non_existent;
   } else {
-    const newSqueal: SquealGeo = await squealGeoModel.create({
+    const newSqueal: SquealGeo | null = await squealGeoModel.create({
       lat: squeal.lat,
       lng: squeal.lng,
       recipients: squeal.recipients,
@@ -54,8 +54,11 @@ export async function postGeoSqueal(squeal: SquealGeo, user: User) {
           for (let j of channels as Channel[]) {
             if (i === j.name) {
               const id: string = newSqueal._id;
-              const ret: SquealerError | Success | undefined =
-                await addSquealToChannel(j.name, id, user);
+              const ret: SquealerError | Success = await addSquealToChannel(
+                j.name,
+                id,
+                user,
+              );
               return ret;
             }
           }
@@ -74,7 +77,7 @@ export async function postGeoSqueal(squeal: SquealGeo, user: User) {
 export async function deleteGeoSqueal(id: string) {
   const deleted: any = await squealGeoModel.deleteOne(
     { _id: id },
-    { returnDocument: "after" }
+    { returnDocument: "after" },
   );
   if (deleted.deletedCount < 1) return cannot_delete;
   else return removed;

@@ -20,8 +20,9 @@ router
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals: SquealGeo[] | SquealerError = await getGeoSqueals();
-        res.send(squeals);
-      } else res.send(unauthorized);
+        if (squeals instanceof SquealerError) res.sendStatus(404);
+        else res.status(200).send(squeals);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -37,9 +38,14 @@ router
         ((req.user as User).status !== "ban" ||
           (req.user as User).status !== "block")
       ) {
-        const ret: any = await postGeoSqueal(req.body, req.user as User);
-        res.send(ret);
-      } else res.send(unauthorized);
+        const ret: SquealerError | Success = await postGeoSqueal(
+          req.body,
+          req.user as User,
+        );
+        if (ret instanceof SquealerError) res.sendStatus(500);
+        else if (ret === undefined) res.sendStatus(500);
+        else res.sendStatus(201);
+      } else res.sendStatus(401);
     } catch (error: any) {
       catchError(error);
     }
@@ -51,31 +57,35 @@ router
   .delete(async (req, res) => {
     try {
       // Controllo se l'utente è loggato
-      if (!req.user) res.send(unauthorized);
+      if (!req.user) res.sendStatus(401);
       // Controllo se l'utente è admin
       // Se è admin posso cancellare qualsiasi squeal
       else if ((req.user as User).plan == "admin") {
-        const returnValue: SquealerError | Success | undefined =
-          await deleteGeoSqueal(req.query.id as string);
-        res.send(returnValue);
+        const returnValue: SquealerError | Success = await deleteGeoSqueal(
+          req.query.id as string,
+        );
+        if (returnValue instanceof SquealerError) res.sendStatus(500);
+        else res.status(200);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: SquealGeo | SquealerError = await getGeoSqueal(
-          req.query.id as string
+          req.query.id as string,
         );
-        if (squeal instanceof SquealerError) return squeal;
+        if (squeal instanceof SquealerError) res.sendStatus(404);
         else {
           //Controllo se l'utente è il creatore dello squeal oppure se gestisce l'account del creatore dello squeal
           if (
             (squeal as SquealGeo).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as SquealGeo).author as string
+              (squeal as SquealGeo).author as string,
             )
           ) {
-            const returnValue: SquealerError | Success | undefined =
-              await deleteGeoSqueal(req.query.id as string);
-            res.send(returnValue);
-          } else res.send(unauthorized);
+            const returnValue: SquealerError | Success = await deleteGeoSqueal(
+              req.query.id as string,
+            );
+            if (returnValue instanceof SquealerError) res.sendStatus(500);
+            else res.status(200);
+          } else res.sendStatus(401);
         }
       }
     } catch (error: any) {
