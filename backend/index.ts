@@ -21,6 +21,7 @@ import { router as TextSquealRoute } from "./routes/squealsText";
 import fs from "fs";
 import { updateAnalyticTimer } from "./database/querys/analytics";
 import { SquealerError } from "./util/errors";
+import { resetCharactersScheduler } from "./API/characters";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -36,7 +37,7 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
@@ -59,8 +60,8 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   "/",
   express.static(
-    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
-  )
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo"),
+  ),
 );
 
 //TEST
@@ -69,7 +70,7 @@ app.use("/", express.static(path.join(__dirname, "../frontend")));
 //BACKOFFICE
 app.use(
   "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo"))
+  express.static(path.join(__dirname, "../frontend/squealer-bo")),
 );
 
 // ENDPOINT DELLE API
@@ -96,7 +97,8 @@ mongoose.connect(uri).then(async () => {
   console.log("[CONNECTED TO MONGOOSE]");
   const ret: SquealerError | undefined = await startAllTimer();
   console.log(ret);
-  const analyticsRet = await updateAnalyticTimer();
+  await updateAnalyticTimer();
+  await resetCharactersScheduler();
 });
 
 app.listen(port, () => {
