@@ -27,7 +27,7 @@ router
         else res.status(200).send(timedSquealGeos);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -57,7 +57,7 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -94,6 +94,6 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });

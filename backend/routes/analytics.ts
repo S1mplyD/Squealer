@@ -30,7 +30,7 @@ router
         } else res.sendStatus(401);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -57,6 +57,6 @@ router
         }
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });

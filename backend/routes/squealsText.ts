@@ -25,7 +25,7 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(catchError(error));
+      console.log(console.log(error));
     }
   })
   /**
@@ -41,14 +41,14 @@ router
       ) {
         const ret: SquealerError | Success = await postTextSqueal(
           req.body,
-          req.user as User,
+          req.user as User
         );
         if (ret instanceof SquealerError) res.sendStatus(404);
         else if (ret === undefined) res.sendStatus(500);
         else res.sendStatus(201);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -60,25 +60,25 @@ router
       if (!req.user) res.sendStatus(401);
       else if ((req.user as User).plan === "admin") {
         const ret: SquealerError | Success = await deleteTextSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (ret instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: Squeal | SquealerError = await getTextSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (squeal instanceof SquealerError) res.sendStatus(404);
         else {
           if (
             (squeal as Squeal).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as Squeal).author as string,
+              (squeal as Squeal).author as string
             )
           ) {
             const returnValue: SquealerError | Success = await deleteTextSqueal(
-              req.query.id as string,
+              req.query.id as string
             );
             if (returnValue instanceof SquealerError) res.sendStatus(500);
             else res.sendStatus(200);
@@ -86,6 +86,6 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });

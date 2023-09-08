@@ -40,7 +40,7 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -66,7 +66,7 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -76,6 +76,7 @@ router
    * GET
    * ritorna tutti gli squeal appartenenti ai recipients ricercati
    */
+  //TODO fixme
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
@@ -88,6 +89,6 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
