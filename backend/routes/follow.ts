@@ -17,13 +17,13 @@ router.route("/followers").get(async (req, res) => {
   try {
     if (req.user) {
       const followers: User[] | SquealerError = await getAllFollowers(
-        req.query.userId as string
+        req.query.username as string
       );
       if (followers instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(followers);
     } else res.sendStatus(401);
   } catch (error: any) {
-    catchError(error);
+    console.log(error);
   }
 });
 
@@ -34,13 +34,13 @@ router.route("/following").get(async (req, res) => {
   try {
     if (req.user) {
       const following: User[] | SquealerError = await getAllFollowing(
-        req.query.userId as string
+        req.query.username as string
       );
       if (following instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(following);
     } else res.sendStatus(401);
   } catch (error: any) {
-    catchError(error);
+    console.log(error);
   }
 });
 
@@ -57,13 +57,13 @@ router.route("/follow").post(async (req, res) => {
     ) {
       const update: SquealerError | Success = await followUser(
         (req.user as User)._id,
-        req.query.followId as string
+        req.query.username as string
       );
       if (update instanceof SquealerError) res.sendStatus(500);
       else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error: any) {
-    catchError(error);
+    console.log(error);
   }
 });
 
@@ -79,13 +79,15 @@ router.route("/unfollow").post(async (req, res) => {
         (req.user as User).status !== "block")
     ) {
       const update: SquealerError | Success = await unfollowUser(
-        req.body.userId,
-        req.body.followId
+        (req.user as User)._id,
+        req.query.username as string
       );
       if (update instanceof SquealerError) res.sendStatus(500);
-      else res.status(200);
+      else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error: any) {
-    catchError(error);
+    console.log("here");
+
+    console.log(error);
   }
 });
