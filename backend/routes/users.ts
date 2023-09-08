@@ -40,7 +40,7 @@ router
         else res.status(200).send(users);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -72,12 +72,12 @@ router
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
 router
-  .route("/:username")
+  .route("/user/:username")
   /**
    * GET
    * chiamata che ritorna un utente
@@ -92,7 +92,7 @@ router
         else res.status(200).send(user);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -121,12 +121,12 @@ router
         }
       } else res;
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
 router
-  .route("/:username/profilePicture")
+  .route("/user/:username/profilePicture")
   /**
    * chiamata per aggiornare il percorso della profile picture
    * DA USARE DOPO LA CHIAMATA POST /api/media
@@ -153,7 +153,7 @@ router
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -183,33 +183,31 @@ router
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
-router
-  .route("/:username/smm")
+router.route("/user/:username/smm").post(async (req, res) => {
+  try {
+    if (
+      ((req.user as User).status !== "block" ||
+        (req.user as User).status !== "ban") &&
+      (req.user as User).plan === "professional"
+    ) {
+      const update: SquealerError | Success = await addSMM(
+        req.params.username,
+        (req.user as User)._id
+      );
+      if (update instanceof SquealerError) {
+        if (update === non_existent) res.sendStatus(404);
+        else res.sendStatus(500);
+      } else res.sendStatus(200);
+    } else res.sendStatus(401);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
-  .post(async (req, res) => {
-    try {
-      if (
-        ((req.user as User).status !== "block" ||
-          (req.user as User).status !== "ban") &&
-        (req.user as User).plan === "professional"
-      ) {
-        const update: SquealerError | Success = await addSMM(
-          req.params.username,
-          (req.user as User)._id
-        );
-        if (update instanceof SquealerError) {
-          if (update === non_existent) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
-      } else res.sendStatus(401);
-    } catch (error) {
-      catchError(error);
-    }
-  });
 router.route("/smm").delete(async (req, res) => {
   try {
     if (
@@ -225,7 +223,7 @@ router.route("/smm").delete(async (req, res) => {
       } else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error) {
-    catchError(error);
+    console.log(error);
   }
 });
 
@@ -245,7 +243,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -256,6 +254,7 @@ router
    * chiamata per garantire i permessi da admin ad un utente
    */
   .patch(async (req, res) => {
+    console.log(req.user);
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await grantPermissions(
@@ -265,7 +264,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -275,6 +274,7 @@ router
    * POST
    * chiamata per bannare un utente
    */
+  //TODO fix CastError: Cast to number failed for value "new ObjectId("64ea172e3afe222ee23db2a0")" (type ObjectId) at path "managedAccounts"
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
@@ -285,7 +285,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -305,7 +305,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -315,6 +315,7 @@ router
    * POST
    * chiamata per bloccare l'utente per un determinato periodo di tempo
    */
+  //TODO fix CastError: Cast to number failed for value "new ObjectId("64ea172e3afe222ee23db2a0")" (type ObjectId) at path "managedAccounts"
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
@@ -326,7 +327,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -340,6 +341,6 @@ router.route("/unblock").post(async (req, res) => {
       else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error) {
-    catchError(error);
+    console.log(error);
   }
 });
