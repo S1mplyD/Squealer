@@ -37,7 +37,7 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  }),
+  })
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
@@ -60,17 +60,24 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   "/",
   express.static(
-    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo"),
-  ),
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
+  )
 );
 
+//SMM dashboard
+app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
+// Funzione che ricarica il file statico della pagina corrente
+app.get("/smm", (req, res) => {
+  res.sendFile(__dirname + "/smm_dashboard/dist/index.html");
+});
+
 //TEST
-app.use("/", express.static(path.join(__dirname, "../frontend")));
+app.use("/test", express.static(path.join(__dirname, "../frontend")));
 
 //BACKOFFICE
 app.use(
   "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo")),
+  express.static(path.join(__dirname, "../frontend/squealer-bo"))
 );
 
 // ENDPOINT DELLE API
