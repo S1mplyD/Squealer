@@ -16,7 +16,8 @@ export class NewSquealsComponent implements OnInit {
   accounts: User[] = [];
 
   newSqueal: Squeal = {
-    author: '', body: '',
+    author: '',
+    body: '',
     date: new Date(),
     recipients: [],
     category: ''
@@ -78,17 +79,23 @@ export class NewSquealsComponent implements OnInit {
   }
 
   addPost(): void {
-    const newSqueal: Squeal = {
+    const squeal: Squeal = {
       author: this.username,
       body: this.newSqueal.body,
       date: new Date(),
       recipients: [],
-      category: ''
+      channels: [],
+      category: 'public'
     };
-    this.squealService.addTextSqueal(newSqueal)
+    this.squealService.addTextSqueal(squeal)
     .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(res => this.squeals = res);
-    this.newSqueal.body = ''; // Clear the form field
+    .subscribe((res) => {
+      this.squealService.getAllTextSqueals()
+          .pipe(takeUntil(this._unsubscribeAll)).
+          subscribe((res) => {
+            this.squeals = res;
+          });
+    });
     this.isPostFormOpen = false;
   }
 }
