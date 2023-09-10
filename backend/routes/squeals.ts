@@ -42,51 +42,48 @@ router
     }
   });
 
-router
-  .route("/type/:type")
-  .get(async (req, res) => {
-    try {
-      if (!req.user || (req.user as User).status !== "ban") {
-        switch (req.params.type) {
-          case "geo":
-            const squealsGeo: Squeal[] | SquealerError =
-              await getAllGeoSqueals();
-            if (squealsGeo instanceof SquealerError) res.sendStatus(404);
-            else res.status(200).send(squealsGeo);
-            break;
-          case "timed":
-            const squealsTimed: Squeal[] | SquealerError =
-              await getAllTimedSqueals();
-            if (squealsTimed instanceof SquealerError) res.sendStatus(404);
-            else res.status(200).send(squealsTimed);
-            break;
-          case "media":
-            const squealsMedia: Squeal[] | SquealerError =
-              await getAllMediaSqueals();
-            if (squealsMedia instanceof SquealerError) res.sendStatus(404);
-            else res.status(200).send(squealsMedia);
-            break;
+router.route("/type/:type").get(async (req, res) => {
+  try {
+    if (!req.user || (req.user as User).status !== "ban") {
+      switch (req.params.type) {
+        case "geo":
+          const squealsGeo: Squeal[] | SquealerError = await getAllGeoSqueals();
+          if (squealsGeo instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(squealsGeo);
+          break;
+        case "timed":
+          const squealsTimed: Squeal[] | SquealerError =
+            await getAllTimedSqueals();
+          if (squealsTimed instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(squealsTimed);
+          break;
+        case "media":
+          const squealsMedia: Squeal[] | SquealerError =
+            await getAllMediaSqueals();
+          if (squealsMedia instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(squealsMedia);
+          break;
 
-          case "text":
-            const squealsText: Squeal[] | SquealerError =
-              await getTextSqueals();
-            if (squealsText instanceof SquealerError) res.sendStatus(404);
-            else res.status(200).send(squealsText);
-            break;
-          case "auto":
-            const squealsAuto: Squeal[] | SquealerError =
-              await getAutoSqueals();
-            if (squealsAuto instanceof SquealerError) res.sendStatus(404);
-            else res.status(200).send(squealsAuto);
-            break;
-          default:
-            break;
-        }
-      } else res.sendStatus(401);
-    } catch (error: any) {
-      console.log(error);
-    }
-  })
+        case "text":
+          const squealsText: Squeal[] | SquealerError = await getTextSqueals();
+          if (squealsText instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(squealsText);
+          break;
+        case "auto":
+          const squealsAuto: Squeal[] | SquealerError = await getAutoSqueals();
+          if (squealsAuto instanceof SquealerError) res.sendStatus(404);
+          else res.status(200).send(squealsAuto);
+          break;
+        default:
+          break;
+      }
+    } else res.sendStatus(401);
+  } catch (error: any) {
+    console.log(error);
+  }
+});
+router
+  .route("/type")
   .post(async (req, res) => {
     try {
       if (
@@ -94,7 +91,7 @@ router
         ((req.user as User).status !== "ban" ||
           (req.user as User).status !== "block")
       ) {
-        switch (req.params.type) {
+        switch (req.body.type) {
           case "timed":
             const newSqueal: Squeal | SquealerError = await postSqueal(
               req.body,
@@ -112,6 +109,7 @@ router
             const post = await postSqueal(req.body, req.user as User);
             const squeals: Squeal[] | SquealerError = await getAllSqueals();
             if (post instanceof SquealerError) res.status(500).send(squeals);
+            else res.status(201).send(squeals);
             break;
         }
       } else res.sendStatus(401);
@@ -121,9 +119,13 @@ router
   })
   .delete(async (req, res) => {
     try {
+      const squeal: Squeal | SquealerError = await getSquealById(
+        req.query.id as string
+      );
+      if (squeal instanceof SquealerError) res.sendStatus(404);
       if (!req.user) res.sendStatus(401);
       else if ((req.user as User).plan === "admin") {
-        switch (req.params.type) {
+        switch ((squeal as Squeal).type) {
           case "timed":
             const squealTimed: Squeal | SquealerError = await getTimedSqueal(
               req.query.id as string
@@ -168,78 +170,57 @@ router
             break;
         }
       } else {
-        switch (req.params.type) {
+        switch ((squeal as Squeal).type) {
           case "timed":
-            const squealTimed: Squeal | SquealerError = await getTimedSqueal(
-              req.query.id as string
-            );
-            if (squealTimed instanceof SquealerError) res.sendStatus(500);
-            else {
-              if (
-                (squealTimed as Squeal).author ===
-                  (req.user as User).username ||
-                (req.user as User).managedAccounts.includes(
-                  (squealTimed as Squeal).author as string
-                )
-              ) {
-                const ret: SquealerError | Success = await deleteTimedSqueal(
-                  squealTimed
-                );
-                if (ret instanceof SquealerError) res.sendStatus(500);
-                else {
-                  const squeals: Squeal[] | SquealerError =
-                    await getAllSqueals();
-                  res.status(200).send(squeals);
-                }
+            if (
+              (squeal as Squeal).author === (req.user as User).username ||
+              (req.user as User).managedAccounts.includes(
+                (squeal as Squeal).author as string
+              )
+            ) {
+              const ret: SquealerError | Success = await deleteTimedSqueal(
+                squeal as Squeal
+              );
+              if (ret instanceof SquealerError) res.sendStatus(500);
+              else {
+                const squeals: Squeal[] | SquealerError = await getAllSqueals();
+                res.status(200).send(squeals);
               }
             }
+
             break;
           case "media":
-            const squealMedia: Squeal | SquealerError = await getMediaSqueal(
-              req.query.id as string
-            );
-            if (squealMedia instanceof SquealerError) res.sendStatus(500);
-            else {
-              if (
-                (squealMedia as Squeal).author ===
-                  (req.user as User).username ||
-                (req.user as User).managedAccounts.includes(
-                  (squealMedia as Squeal).author as string
-                )
-              ) {
-                const ret: SquealerError | Success = await deleteMediaSqueal(
-                  squealMedia
-                );
-                if (ret instanceof SquealerError) res.sendStatus(500);
-                else {
-                  const squeals: Squeal[] | SquealerError =
-                    await getAllSqueals();
-                  res.status(200).send(squeals);
-                }
+            if (
+              (squeal as Squeal).author === (req.user as User).username ||
+              (req.user as User).managedAccounts.includes(
+                (squeal as Squeal).author as string
+              )
+            ) {
+              const ret: SquealerError | Success = await deleteMediaSqueal(
+                squeal as Squeal
+              );
+              if (ret instanceof SquealerError) res.sendStatus(500);
+              else {
+                const squeals: Squeal[] | SquealerError = await getAllSqueals();
+                res.status(200).send(squeals);
               }
             }
+
             break;
           default:
-            const squealText: Squeal | SquealerError = await getSquealById(
-              req.query.id as string
-            );
-            if (squealText instanceof SquealerError) res.sendStatus(500);
-            else {
-              if (
-                (squealText as Squeal).author === (req.user as User).username ||
-                (req.user as User).managedAccounts.includes(
-                  (squealText as Squeal).author as string
-                )
-              ) {
-                const ret: SquealerError | Success = await deleteSqueal(
-                  req.query.id as string
-                );
-                if (ret instanceof SquealerError) res.sendStatus(500);
-                else {
-                  const squeals: Squeal[] | SquealerError =
-                    await getAllSqueals();
-                  res.status(200).send(squeals);
-                }
+            if (
+              (squeal as Squeal).author === (req.user as User).username ||
+              (req.user as User).managedAccounts.includes(
+                (squeal as Squeal).author as string
+              )
+            ) {
+              const ret: SquealerError | Success = await deleteSqueal(
+                req.query.id as string
+              );
+              if (ret instanceof SquealerError) res.sendStatus(500);
+              else {
+                const squeals: Squeal[] | SquealerError = await getAllSqueals();
+                res.status(200).send(squeals);
               }
             }
 
