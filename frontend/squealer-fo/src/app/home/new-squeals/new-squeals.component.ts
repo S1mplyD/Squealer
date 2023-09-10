@@ -35,11 +35,7 @@ export class NewSquealsComponent implements OnInit {
     private userService: UsersService) {}
 
   ngOnInit(): void {
-    this.squealService.getAllTextSqueals()
-    .pipe(takeUntil(this._unsubscribeAll)).
-    subscribe((res) => {
-      this.squeals = res;
-    });
+    this.loadSqueals();
     this.userService.getAllUsers()
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
@@ -73,6 +69,14 @@ export class NewSquealsComponent implements OnInit {
     this.isPostFormOpen = true;
   }
 
+  loadSqueals(): void {
+    this.squealService.getAllTextSqueals()
+    .pipe(takeUntil(this._unsubscribeAll)).
+    subscribe((res) => {
+      this.squeals = res;
+    });
+  }
+
   closePostForm() {
     this.isPostFormOpen = false;
     this.newSqueal = {  author: '', body: '', date: new Date(),  recipients: [], category: '' };
@@ -90,12 +94,10 @@ export class NewSquealsComponent implements OnInit {
     this.squealService.addTextSqueal(squeal)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
-      this.squealService.getAllTextSqueals()
-          .pipe(takeUntil(this._unsubscribeAll)).
-          subscribe((res) => {
-            this.squeals = res;
-          });
+      if (res) {
+        this.loadSqueals();
+      }
     });
-    this.isPostFormOpen = false;
+    this.closePopup();
   }
 }
