@@ -7,16 +7,7 @@ import {
   unauthorized,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
-import {
-  Channel,
-  Squeal,
-  SquealGeo,
-  SquealMedia,
-  Success,
-  TimedSqueal,
-  TimedSquealGeo,
-  User,
-} from "../../util/types";
+import { Channel, Squeal, Success, User } from "../../util/types";
 import channelsModel from "../models/channels.model";
 import { getSquealById } from "./squeals";
 import { getUserByUsername } from "./users";
@@ -114,21 +105,9 @@ export async function getAllSquealsFromChannel(
   if (channel instanceof SquealerError) return non_existent;
   else {
     if (channel.allowedRead.includes(userId)) {
-      let squeals: (
-        | Squeal
-        | SquealGeo
-        | SquealMedia
-        | TimedSqueal
-        | TimedSquealGeo
-      )[] = [];
+      let squeals: Squeal[] = [];
       for (let i of channel.squeals) {
-        const squeal:
-          | SquealerError
-          | Squeal
-          | SquealGeo
-          | SquealMedia
-          | TimedSqueal
-          | TimedSquealGeo = await getSquealById(i);
+        const squeal: Squeal | SquealerError = await getSquealById(i);
         if (squeal instanceof SquealerError) return non_existent;
         else {
           squeals.push(squeal);
@@ -280,13 +259,7 @@ export async function addSquealToChannel(
 ) {
   const channel: Channel | SquealerError = await getChannel(channelName);
   if (channel instanceof SquealerError) {
-    const squeal:
-      | SquealerError
-      | Squeal
-      | SquealGeo
-      | SquealMedia
-      | TimedSqueal
-      | TimedSquealGeo = await getSquealById(squealId);
+    const squeal: SquealerError | Squeal = await getSquealById(squealId);
     if (squeal instanceof SquealerError) return non_existent;
     else {
       //Se il canale non esiste ma è una keyword creo il canale e poi aggiungo lo squeal

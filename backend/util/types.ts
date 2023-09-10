@@ -2,116 +2,22 @@ import { SuccessCode, SuccessDescription } from "./success";
 
 // nuovo tipo Squeal
 export type Squeal = {
-  body: string; //Corpo del messaggio (testo, immagine (path), video (path), geolocazione (coordinate per open street map api))
-  recipients: string[]; //Destinatari (individuo, canale o keyword)
-  date: Date; //Data e ora messaggio (creata in automatico)
-  positiveReactions: number;
-  negativeReactions: number;
-  category: string; //Categorie (privato, pubblico, popolare, impopolare, controverso)
-  channels: string[]; //Canali a cui è stato aggiunto dalla redazione
-  author: string;
-  //Non visualizzabili
-  criticalMass: number; //Massa critica (0,25 x visual)
-  visual: number; //Visualizzazioni di account registrati e non
-  _id: string;
-};
-
-export type SquealGeo = {
-  lat: string;
-  lng: string;
+  body: string;
+  lng?: string;
+  lat?: string;
   recipients: string[];
   date: Date;
   positiveReactions?: number;
   negativeReactions?: number;
   category: string;
-  channels?: string[];
+  channels: string[];
   author: string;
-  criticalMass?: number;
+  criticalMass: number;
   visual?: number;
-  _id: string;
-};
-
-export type SquealMedia = {
-  body: string;
   type: string;
-  recipients: string[];
-  date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
-  category: string;
-  channels?: string[];
-  author: string;
-  criticalMass?: number;
-  visual?: number;
-  _id: string;
-};
-
-// nuovo tipo per squeal temporizzati
-export type TimedSqueal = {
-  body: string;
-  recipients: string[];
-  date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
-  category: string;
-  channels?: string[];
-  author: string;
-  criticalMass?: number;
-  visual: number;
   time?: number;
   count?: number;
-  _id: string;
-};
-
-export type TimedSquealGeo = {
-  //visualizzabili
-  lat: string;
-  lng: string;
-  recipients: string[];
-  date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
-  category: string;
-  channels?: string[];
-  author: string;
-  //non visualizzabili
-  criticalMass?: number;
-  visual?: number;
-  time?: number;
-  count?: number;
-  _id: string;
-};
-
-//tipo per squeal di testo automatico
-export type AutomatedSqueal = {
-  body: string;
-  recipients: string[];
-  date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
-  category: string;
-  channels?: string[];
-  author: string;
-  criticalMass?: number;
-  visual: number;
-  originalSqueal: string;
-  _id: string;
-};
-
-// tipo per squeal geo automatici
-export type AutomatedGeoSqueal = {
-  lat: string;
-  lng: string;
-  recipients: string[];
-  date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
-  category: string;
-  channels?: string[];
-  author: string;
-  criticalMass?: number;
-  visual: number;
-  originalSqueal: string;
+  originalSqueal?: string;
   _id: string;
 };
 
@@ -148,11 +54,6 @@ export type Channel = {
   type: string;
   channelAdmins: string[];
 };
-
-// export type Error = {
-//   message: ErrorDescriptions;
-//   code: ErrorCodes;
-// };
 
 export type Success = {
   message: SuccessDescription;
