@@ -21,6 +21,7 @@ import { router as TextSquealRoute } from "./routes/squealsText";
 import fs from "fs";
 import { updateAnalyticTimer } from "./database/querys/analytics";
 import { SquealerError } from "./util/errors";
+import { resetCharactersScheduler } from "./API/characters";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -63,9 +64,15 @@ app.use(
   )
 );
 
-//TEST
-//app.use("/", express.static(path.join(__dirname, "../frontend/src")));
+//SMM dashboard
+app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
+// Funzione che ricarica il file statico della pagina corrente
+app.get("/smm", (req, res) => {
+  res.sendFile(__dirname + "/smm_dashboard/dist/index.html");
+});
 
+//TEST
+app.use("/test", express.static(path.join(__dirname, "../frontend")));
 
 //BACKOFFICE
 app.use("/backoffice", express.static(path.join(__dirname, "../frontend/squealer-bo")));
@@ -94,7 +101,8 @@ mongoose.connect(uri).then(async () => {
   console.log("[CONNECTED TO MONGOOSE]");
   const ret: SquealerError | undefined = await startAllTimer();
   console.log(ret);
-  const analyticsRet = await updateAnalyticTimer();
+  await updateAnalyticTimer();
+  await resetCharactersScheduler();
 });
 
 app.listen(port, () => {

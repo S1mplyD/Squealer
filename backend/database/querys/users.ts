@@ -9,9 +9,9 @@ import { removed, updated } from "../../util/success";
 import { Timeout, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
-import { resolve } from "path";
+import { resolve, join } from "path";
 
-const publicUploadPath = resolve(__dirname, "../../..", "public");
+const publicUploadPath = resolve(__dirname, "../../..", "public/uploads/");
 
 var intervals: Array<Timeout> = [];
 
@@ -57,7 +57,7 @@ export async function createDefaultUser(
   name: string,
   username: string,
   mail: string,
-  password: string,
+  password: string
 ) {
   const doc = await userModel.create({
     name: name,
@@ -87,7 +87,7 @@ export async function createUserUsingGoogle(
   mail: string,
   serviceId: number,
   profilePicture: string,
-  createdAt: Date,
+  createdAt: Date
 ) {
   const newUser = await userModel.create({
     name: name,
@@ -116,7 +116,7 @@ export async function updateUser(username: string, user: User) {
       username: user.username,
       mail: user.mail,
     },
-    { returnDocument: "after" },
+    { returnDocument: "after" }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
@@ -134,7 +134,7 @@ export async function updateUser(username: string, user: User) {
 export async function updateProfilePicture(username: string, filename: string) {
   const user = await userModel.updateOne(
     { username: username },
-    { profilepicture: filename },
+    { profilePicture: filename }
   );
   if (user.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -146,17 +146,20 @@ export async function updateProfilePicture(username: string, filename: string) {
  */
 export async function deleteProfilePicture(username: string) {
   const user: User | null = await userModel.findOne({ username: username });
+
   if (!user) return non_existent;
   else {
-    fs.unlink(publicUploadPath + user?.profilePicture, async (err) => {
-      if (err) return cannot_delete;
-      else {
-        await userModel.updateOne(
-          { _id: user._id },
-          { profilePicture: "default.png" },
-        );
-      }
-    });
+    if (user.profilePicture !== undefined) {
+      fs.unlink(join(publicUploadPath, user.profilePicture), async (err) => {
+        if (err) return cannot_delete;
+        else {
+          await userModel.updateOne(
+            { _id: user._id },
+            { profilePicture: "default.png" }
+          );
+        }
+      });
+    }
   }
 }
 
@@ -167,10 +170,12 @@ export async function deleteProfilePicture(username: string) {
  * @param isAdmin indica se l'utente è admin o no
  * @returns SquealerError | Success
  */
+
+//TODO check if pfp exist
 export async function deleteAccount(
   mail: string,
   password: string,
-  isAdmin: boolean,
+  isAdmin: boolean
 ) {
   const profilepicture = await userModel.findOne({ mail: mail });
   fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
@@ -197,7 +202,7 @@ export async function deleteAccount(
 export async function updateResetToken(mail: string, token: string) {
   const result = await userModel.updateOne(
     { mail: mail },
-    { resetToken: token },
+    { resetToken: token }
   );
   if (result.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -209,7 +214,7 @@ export async function updateResetToken(mail: string, token: string) {
  * @param password nuova password dell'utente
  */
 export async function updatePassword(mail: string, password: string) {
-  const newDoc = await userModel
+  const newDoc: User | null = await userModel
     .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
     .lean();
   if (!newDoc) return non_existent;
@@ -261,7 +266,7 @@ export async function ban(id: string) {
         // Rimuovo all'smm dell'utente bannato l'account gestito
         const updateSMM = await userModel.updateOne(
           { _id: user.SMM },
-          { $pop: { managedAccounts: user._id } },
+          { $pop: { managedAccounts: user._id } }
         );
         if (updateSMM.modifiedCount < 1) return cannot_update;
         else return updated;
@@ -290,7 +295,7 @@ export async function unbanUser(id: string) {
 export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
     { username: username },
-    { status: "block", blockedFor: time },
+    { status: "block", blockedFor: time }
   );
   let timeout: NodeJS.Timeout;
   if (update.modifiedCount < 1) return cannot_update;
@@ -298,7 +303,7 @@ export async function blockUser(username: string, time: number) {
     timeout = setTimeout(async () => {
       const update = await userModel.updateOne(
         { username: username },
-        { status: "normal", blockedFor: 0 },
+        { status: "normal", blockedFor: 0 }
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -314,7 +319,7 @@ export async function blockUser(username: string, time: number) {
 export async function unblockUser(username: string) {
   const update = await userModel.updateOne(
     { username: username },
-    { status: "normal", blockedFor: 0 },
+    { status: "normal", blockedFor: 0 }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
@@ -325,7 +330,7 @@ export async function unblockUser(username: string) {
 
 async function findInterval(username: string) {
   const ret: Timeout | undefined = intervals.find(
-    (el) => el.username === username,
+    (el) => el.username === username
   );
   return ret?.timeout as NodeJS.Timeout;
 }
@@ -333,7 +338,7 @@ async function findInterval(username: string) {
 async function stopTimer(username: string) {
   clearInterval(await findInterval(username));
   const newIntervals = intervals.filter(
-    (interval) => interval.username !== username,
+    (interval) => interval.username !== username
   );
   intervals = newIntervals;
 }
@@ -344,6 +349,8 @@ async function stopTimer(username: string) {
  * @param id id dell'utente che aggiunge un smm
  * @returns non_existent | cannot_update | updated
  */
+//TODO managed accounts
+//TODO controllo che smm sia vuoto
 export async function addSMM(username: string, id: string) {
   const user: User | SquealerError = await getUserByUsername(username);
   if (user instanceof SquealerError) return user;

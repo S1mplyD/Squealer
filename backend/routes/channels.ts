@@ -12,7 +12,7 @@ import {
   addUserToUserChannel,
   removeUserFromChannel,
 } from "../database/querys/channels";
-import { SquealerError, catchError, unauthorized } from "../util/errors";
+import { SquealerError, catchError } from "../util/errors";
 import {
   Channel,
   Squeal,
@@ -40,7 +40,7 @@ router
         else res.status(200).send(channels);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -73,7 +73,7 @@ router
         res.sendStatus(401);
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -96,12 +96,12 @@ router
         res.sendStatus(401);
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
 
 router
-  .route("/:name")
+  .route("/channel/:name")
   /**
    * GET
    * getChannel
@@ -116,7 +116,7 @@ router
         else res.status(200).send(channel);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -128,15 +128,16 @@ router
    */
   .get(async (req, res) => {
     try {
-      if ((req.user as User).status !== "ban") {
+      if (req.user && (req.user as User).status !== "ban") {
         const userchannel: Channel[] | SquealerError = await getAllUserChannel(
           req.user as User
         );
         if (userchannel instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(userchannel);
-      } else res.sendStatus(401);
+      } else if (!req.user) res.sendStatus(401);
+      else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 router
@@ -161,7 +162,7 @@ router
         } else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -187,7 +188,7 @@ router
         } else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -206,7 +207,7 @@ router
         else res.status(200).send(officialChannels);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -217,15 +218,18 @@ router
    * getAllKeywordChannel
    */
   .get(async (req, res) => {
+    console.log(req.user);
+
     try {
       if ((req.user as User).status !== "ban") {
         const keywordChannel: Channel[] | SquealerError =
           await getAllKeywordChannel();
-        if (keywordChannel instanceof SquealerError) res.sendStatus(404);
+        if (keywordChannel instanceof SquealerError)
+          res.status(404).send("DBT");
         else res.status(200).send(keywordChannel);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -239,12 +243,12 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         const mentionChannel: Channel[] | SquealerError =
-          await getAllMentionChannel();
+          await getAllMentionChannel(req.user as User);
         if (mentionChannel instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(mentionChannel);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });
 
@@ -267,6 +271,6 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error) {
-      catchError(error);
+      console.log(error);
     }
   });

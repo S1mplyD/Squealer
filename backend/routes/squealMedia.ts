@@ -24,7 +24,7 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -41,7 +41,7 @@ router
         const newSqueal: SquealerError | Success = await postMediaSqueal(
           req.body,
           req.query.filename as string,
-          req.user as User,
+          req.user as User
         );
         if (newSqueal instanceof SquealerError) {
           if (newSqueal.code === 20) res.sendStatus(404);
@@ -51,7 +51,7 @@ router
         else res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -63,21 +63,21 @@ router
       if (!req.user) res.sendStatus(401);
       else if ((req.user as User).plan === "admin") {
         const ret: SquealerError | Success = await deleteMediaSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (ret instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: SquealMedia | SquealerError = await getMediaSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (squeal instanceof SquealerError) res.sendStatus(404).send(squeal);
         else {
           if (
             (squeal as SquealMedia).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as SquealMedia).author as string,
+              (squeal as SquealMedia).author as string
             )
           ) {
             const returnValue: SquealerError | Success =
@@ -88,6 +88,6 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });

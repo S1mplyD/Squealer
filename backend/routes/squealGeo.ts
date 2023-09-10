@@ -24,7 +24,7 @@ router
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -40,14 +40,14 @@ router
       ) {
         const ret: SquealerError | Success = await postGeoSqueal(
           req.body,
-          req.user as User,
+          req.user as User
         );
         if (ret instanceof SquealerError) res.sendStatus(500);
         else if (ret === undefined) res.sendStatus(500);
         else res.sendStatus(201);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -62,14 +62,14 @@ router
       // Se è admin posso cancellare qualsiasi squeal
       else if ((req.user as User).plan == "admin") {
         const returnValue: SquealerError | Success = await deleteGeoSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (returnValue instanceof SquealerError) res.sendStatus(500);
-        else res.status(200);
+        else res.sendStatus(200);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: SquealGeo | SquealerError = await getGeoSqueal(
-          req.query.id as string,
+          req.query.id as string
         );
         if (squeal instanceof SquealerError) res.sendStatus(404);
         else {
@@ -77,11 +77,11 @@ router
           if (
             (squeal as SquealGeo).author === (req.user as User).username ||
             (req.user as User).managedAccounts.includes(
-              (squeal as SquealGeo).author as string,
+              (squeal as SquealGeo).author as string
             )
           ) {
             const returnValue: SquealerError | Success = await deleteGeoSqueal(
-              req.query.id as string,
+              req.query.id as string
             );
             if (returnValue instanceof SquealerError) res.sendStatus(500);
             else res.status(200);
@@ -89,6 +89,6 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });

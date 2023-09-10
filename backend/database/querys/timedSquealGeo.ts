@@ -46,6 +46,7 @@ export async function postTimedSquealGeo(
     author: author,
     date: new Date(),
     channels: squeal.channels,
+    category: squeal.category,
     time: squeal.time,
   });
 

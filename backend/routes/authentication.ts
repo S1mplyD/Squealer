@@ -166,7 +166,7 @@ router.get("/logout", (req, res, next) => {
       res.status(200).redirect("/");
     });
   } catch (error: any) {
-    catchError(error);
+    console.log(error);
   }
 });
 router
@@ -199,10 +199,11 @@ router
         mail,
         encryptedPassword
       );
+      console.log(ret);
       if (ret instanceof SquealerError) {
         res.sendStatus(500);
       } else {
-        res.status(200);
+        res.sendStatus(200);
       }
     }
   });

@@ -1,5 +1,5 @@
 import userModel from "../database/models/users.model";
-import { getUser } from "../database/querys/users";
+import { getAllUsers, getUser } from "../database/querys/users";
 import {
   defaultCharactersBase,
   defaultCharactersJournalist,
@@ -8,7 +8,8 @@ import {
 } from "../util/constants";
 import { SquealerError, cannot_update, non_existent } from "../util/errors";
 import { updated } from "../util/success";
-import { User } from "../util/types";
+import { Success, User } from "../util/types";
+import schedule from "node-schedule";
 
 /**
  * funzione che ritorna i caratteri di un utente
@@ -36,7 +37,7 @@ export async function getUserCharacter(id: string) {
  */
 export async function updateDailyCharacters(
   id: string,
-  usedCharacters: number
+  usedCharacters: number,
 ) {
   const update = await userModel.updateOne(
     { _id: id },
@@ -44,10 +45,50 @@ export async function updateDailyCharacters(
       $inc: {
         dailyCharacters: -usedCharacters,
       },
-    }
+    },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
+}
+
+export async function resetCharactersScheduler() {
+  const users: SquealerError | User[] = await getAllUsers();
+  // Reset giornaliero ogni giorno alle 00:00
+  schedule.scheduleJob("0 0 * * *", async () => {
+    console.log("aggiornamento giornaliero " + new Date());
+    if (users instanceof SquealerError) return non_existent;
+    else {
+      for (let i of users) {
+        const daily: SquealerError | Success | undefined =
+          await resetCharactersDaily(i._id);
+        if (daily instanceof SquealerError) console.log(daily);
+      }
+    }
+  });
+  //Reset settimanale ogni lunedì alle 00.00
+  schedule.scheduleJob("0 0 * * 1", async () => {
+    console.log("aggiornamento settimanale " + new Date());
+    if (users instanceof SquealerError) return non_existent;
+    else {
+      for (let i of users) {
+        const daily: SquealerError | Success | undefined =
+          await resetCharactersWeekly(i._id);
+        if (daily instanceof SquealerError) console.log(daily);
+      }
+    }
+  });
+  //Reset mensile ogni primo giorno del mese alle 00.00
+  schedule.scheduleJob("0 0 1 * *", async () => {
+    console.log("aggiornamento mensile " + new Date());
+    if (users instanceof SquealerError) return non_existent;
+    else {
+      for (let i of users) {
+        const daily: SquealerError | Success | undefined =
+          await resetCharactersMonthly(i._id);
+        if (daily instanceof SquealerError) console.log(daily);
+      }
+    }
+  });
 }
 
 /**
@@ -64,7 +105,7 @@ export async function resetCharactersDaily(id: string) {
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan
+    (user as User).plan,
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
@@ -72,8 +113,7 @@ export async function resetCharactersDaily(id: string) {
       {
         dailyCharacters: defaultCharacters[0],
         weeklyCharacters: weekly - daily,
-        monthlyCharacters: monthly - daily,
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -94,7 +134,7 @@ export async function resetCharactersWeekly(id: string) {
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan
+    (user as User).plan,
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
@@ -102,7 +142,7 @@ export async function resetCharactersWeekly(id: string) {
       {
         weeklyCharacters: defaultCharacters[1],
         monthlyCharacters: monthly - weekly,
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -122,14 +162,14 @@ export async function resetCharactersMonthly(id: string) {
   }
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
-    (user as User).plan
+    (user as User).plan,
   );
   if (defaultCharacters !== undefined) {
     const update = await userModel.updateOne(
       { _id: id },
       {
         monthlyCharacters: defaultCharacters[2],
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;

@@ -27,7 +27,7 @@ router
         else res.status(200).send(timedSqueals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -59,7 +59,7 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   })
   /**
@@ -74,6 +74,7 @@ router
           req.query.id as string
         );
         if (ret instanceof SquealerError) res.sendStatus(500);
+        else res.sendStatus(200);
       } else {
         //Se l'utente non è admin allora controllo che sia l'autore dello squeal e poi cancello
         const squeal: TimedSqueal | SquealerError = await getTimedSqueal(
@@ -95,6 +96,6 @@ router
         }
       }
     } catch (error: any) {
-      catchError(error);
+      console.log(error);
     }
   });
