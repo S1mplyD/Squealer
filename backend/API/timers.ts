@@ -27,7 +27,8 @@ export async function startAllTimer() {
     return squeals as SquealerError;
   } else {
     for (let i of squeals) {
-      await startTimer(i);
+      if (i.originalSqueal === undefined || i.originalSqueal == "")
+        await startTimer(i);
     }
   }
 }
@@ -48,8 +49,25 @@ export async function startTimer(squeal: Squeal) {
       const user: SquealerError | User = await getUserByUsername(
         newSqueal.author
       );
+
       if (user instanceof SquealerError) return non_existent;
-      await postSqueal(newSqueal, user);
+      else {
+        let squeal: Squeal = {
+          body: newSqueal.body,
+          lat: newSqueal.lat,
+          lng: newSqueal.lng,
+          recipients: newSqueal.recipients,
+          date: new Date(),
+          category: newSqueal.category,
+          channels: newSqueal.channels,
+          author: newSqueal.author,
+          type: "auto",
+          originalSqueal: newSqueal._id,
+          _id: "",
+        };
+        await postSqueal(squeal, user);
+        await updateCount(newSqueal._id);
+      }
     }
   }, squeal.time as number);
   const ret: SquealerError | Success = await setSquealInterval(
