@@ -1,8 +1,8 @@
 import multer from "multer";
 import express from "express";
-import { resolve } from "path";
-import { catchError, unauthorized } from "../util/errors";
+import { resolve, join } from "path";
 import { User } from "../util/types";
+import fs from "fs";
 
 const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
@@ -34,7 +34,6 @@ const upload = multer({ storage: storage });
  * POST
  * carica un media sul server e manda in response il nome del file caricato
  */
-//TODO check if user logged in
 router.route("/").post(upload.single("file"), (req, res) => {
   try {
     if (
@@ -43,7 +42,12 @@ router.route("/").post(upload.single("file"), (req, res) => {
         (req.user as User).status !== "block")
     )
       res.status(201).send(req.file?.filename);
-    else res.sendStatus(401);
+    else {
+      fs.unlink(join(publicUploadPath, req.file!.filename), (err) => {
+        if (err) console.log(err);
+      });
+      res.sendStatus(401);
+    }
   } catch (error: any) {
     console.log(error);
   }
