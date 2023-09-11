@@ -125,7 +125,7 @@ export async function getTextSqueal(id: string) {
  */
 export async function getTimedSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
-    $and: [{ _id: id, type: "timed" }],
+    $and: [{ _id: id }, { type: "timed" }],
   });
   if (!squeal) return non_existent;
   else return squeal;
@@ -261,6 +261,7 @@ export async function deleteSqueal(id: string) {
  * @param id id dello squeal
  * @returns errori eventuali
  */
+//TODO fix me
 export async function deleteMediaSqueal(squeal: Squeal) {
   const file = squeal.body;
   fs.unlink(resolve(publicUploadPath, file), (err) => {
@@ -279,8 +280,10 @@ export async function deleteMediaSqueal(squeal: Squeal) {
  */
 export async function deleteTimedSqueal(squeal: Squeal) {
   const timedSqueal: Squeal | null = await squealModel.findOne({
-    $and: [{ _id: squeal._id }, { type: "timed" }],
+    _id: squeal._id,
   });
+  console.log(timedSqueal);
+
   if (!timedSqueal) {
     return non_existent;
   } else {
