@@ -261,7 +261,6 @@ export async function deleteSqueal(id: string) {
  * @param id id dello squeal
  * @returns errori eventuali
  */
-//TODO fix me
 export async function deleteMediaSqueal(squeal: Squeal) {
   const file = squeal.body;
   fs.unlink(resolve(publicUploadPath, file), (err) => {

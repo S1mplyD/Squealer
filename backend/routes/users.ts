@@ -274,7 +274,6 @@ router
    * POST
    * chiamata per bannare un utente
    */
-  //TODO fix CastError: Cast to number failed for value "new ObjectId("64ea172e3afe222ee23db2a0")" (type ObjectId) at path "managedAccounts"
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {

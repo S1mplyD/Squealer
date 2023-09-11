@@ -40,7 +40,6 @@ export async function getChannel(name: string) {
  * funzione che ritorna tutti gli userchannel
  * @returns Channel[] | SquealerError
  */
-//TODO controllo se l'utente può leggere nel canale
 export async function getAllUserChannel(user: User) {
   const userChannels: Channel[] | null = await channelsModel.find({
     type: "userchannel",

@@ -258,7 +258,6 @@ router
    * GET
    * ritorna tutti gli squeal appartenenti ai recipients ricercati
    */
-  //TODO fixme
   .get(async (req, res) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
