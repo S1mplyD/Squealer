@@ -12,7 +12,7 @@ export type Squeal = {
   category: string;
   channels: string[];
   author: string;
-  criticalMass: number;
+  criticalMass?: number;
   visual?: number;
   type: string;
   time?: number;
