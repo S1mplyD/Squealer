@@ -66,9 +66,6 @@ app.get("/smm", (req, res) => {
   res.sendFile(__dirname + "/smm_dashboard/dist/index.html");
 });
 
-//TEST
-app.use("/test", express.static(path.join(__dirname, "../frontend")));
-
 //BACKOFFICE
 app.use(
   "/backoffice",
