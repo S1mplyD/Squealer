@@ -70,10 +70,7 @@ app.get("/smm", (req, res) => {
 app.use("/test", express.static(path.join(__dirname, "../frontend")));
 
 //BACKOFFICE
-app.use(
-  "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo"))
-);
+app.use("/backoffice", express.static(path.join(__dirname, "../frontend/squealer-bo")));
 
 // ENDPOINT DELLE API
 app.use("/api/auth", authRoute);

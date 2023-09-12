@@ -1,0 +1,50 @@
+<div class="feed-container">
+  <h2>Squealer Feed</h2>
+
+  <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
+    <div *ngIf="isPopupOpen" class="popup">
+        <mat-form-field class="full-width" appearance="outline" color="primary">
+          <mat-label color="primary">What are you thinking?</mat-label>
+          <input color="primary" matInput [(ngModel)]="newSqueal.body"/>
+        </mat-form-field>
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
+          <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
+          <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="login" *ngIf="!isLoggedIn">
+    <button mat-raised-button color="primary" [routerLink]="['/authentication']">Login</button>
+    <p *ngIf="!isLoggedIn">Please login to add a post.</p>
+  </div>
+  <br>
+
+  <div class="posts">
+    <div *ngFor="let squeal of squeals">
+      <mat-card id="squeal">
+        <mat-card-header>
+          <div mat-card-avatar class="profile-image">
+            <!--<img *ngIf="squeal?.profileImage" [src]="squeal?.profileImage" [alt]="'profile image of ' + squeal?.username" />-->
+            <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+          </div>
+          <mat-card-title class="squealTitle">{{ squeal.author }}</mat-card-title>
+          <br>
+          <mat-card-subtitle class="squealText">{{ formatDate(squeal.date) }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="squealText">{{ squeal.body }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <button mat-fab color="primary" class="floating-button" (click)="openPopup()" *ngIf="!isPopupOpen">
+   <mat-icon>plus_one</mat-icon>
+  </button>
+
+</div>
+
+
+
