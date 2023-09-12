@@ -286,14 +286,23 @@ export async function ban(id: string) {
   }
 }
 
-//TODO test
+/**
+ * funzione che rimuove il ban ad un utente
+ * @param id id utente
+ * @returns cannot_update | Success
+ */
 export async function unbanUser(id: string) {
   const update = await userModel.updateOne({ _id: id }, { status: "normal" });
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
 }
 
-//TODO switch id to username
+/**
+ * funzione che blocca un utente
+ * @param username utente da bloccare
+ * @param time tempo di blocco
+ * @returns cannot_update | Success
+ */
 export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
     { username: username },
@@ -303,18 +312,17 @@ export async function blockUser(username: string, time: number) {
   if (update.modifiedCount < 1) return cannot_update;
   else {
     timeout = setTimeout(async () => {
-      const update = await userModel.updateOne(
+      await userModel.updateOne(
         { username: username },
         { status: "normal", blockedFor: 0 }
       );
-      if (update.modifiedCount < 1) return cannot_update;
-      else return updated;
     }, time);
     const newTimeout: Timeout = {
       timeout: timeout,
       username: username,
     };
     intervals.push(newTimeout);
+    return updated;
   }
 }
 
