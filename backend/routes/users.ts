@@ -318,8 +318,8 @@ router
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | undefined = await blockUser(
-          req.query.id as string,
+        const update: SquealerError | Success = await blockUser(
+          req.query.username as string,
           req.query.time as unknown as number
         );
         if (update instanceof SquealerError) res.sendStatus(500);
