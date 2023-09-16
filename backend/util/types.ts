@@ -42,6 +42,7 @@ export type User = {
   createdAt: Date;
   status: string;
   blockedFor: number;
+  notification: string[];
 };
 
 // nuovo tipo canali
