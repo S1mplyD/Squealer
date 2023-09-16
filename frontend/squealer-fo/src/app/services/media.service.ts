@@ -13,7 +13,7 @@ export class MediaService {
   constructor(private http: HttpClient) {
   }
 
-  postMediaFile(file: any): Observable<string> {
+  postMediaFile(file: File): Observable<string> {
     return this.http.post<string>(this.apiUrl, file);
   }
 

@@ -3,15 +3,54 @@
 
   <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
     <div *ngIf="isPopupOpen" class="popup">
-        <mat-form-field class="full-width" appearance="outline" color="primary">
+      <label id="example-radio-group-label">Pick the type of the squeal:</label>
+      <mat-radio-group aria-labelledby="example-radio-group-label" [(ngModel)]="squealType">
+        <mat-radio-button value="text">Text</mat-radio-button>
+        <mat-radio-button value="media">Media</mat-radio-button>
+        <mat-radio-button value="geo">Geo</mat-radio-button>
+      </mat-radio-group>
+      <mat-form-field class="full-width" appearance="outline" color="primary">
+        <div *ngIf="squealType !== 'media'">
           <mat-label color="primary">What are you thinking?</mat-label>
           <input color="primary" matInput [(ngModel)]="newSqueal.body"/>
-        </mat-form-field>
-        <div class="button-group">
-          <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
-          <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
-          <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
+          <label id="example-check-group-label">This squeal is:</label>
+          <section aria-labelledby="example-check-group-label" >
+            <mat-checkbox [(ngModel)]="squealSubType">Timed</mat-checkbox>
+          </section>
+          <div *ngIf="squealSubType">
+            <mat-label color="primary">Set the frequency of the post (in seconds):</mat-label>
+            <mat-slider min="10" max="60" step="1" showTickMarks discrete [displayWith]="formatLabel">
+              <input matSliderThumb>
+            </mat-slider>
+          </div>
         </div>
+        <div *ngIf="squealType === 'media'">
+          <mat-toolbar>
+            <input matInput [value]="selectedFileName ? selectedFileName : 'Select Image'" />
+            <button mat-flat-button color="primary" [disabled]="!selectedFile" (click)="uploadFiles()"> Upload</button>
+          </mat-toolbar>
+          <input type="file" id="fileInput" name="fileInput" accept="image/*" (change)="selectFiles($event)"/>
+        </div>
+      </mat-form-field>
+      <div *ngIf="squealType === 'geo'">
+        <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
+          <mat-label>Latitude</mat-label>
+          <input matInput type="number" [(ngModel)]="newSqueal.lat">
+        </mat-form-field>
+        <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
+          <mat-label>Longitude</mat-label>
+          <input matInput type="number" [(ngModel)]="newSqueal.lng">
+        </mat-form-field>
+      </div>
+      <div *ngIf="squealType === 'media'">
+        <img [src]="newSqueal.body" class="preview">
+      </div>
+
+      <div class="button-group">
+        <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
+        <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
+        <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -33,8 +72,11 @@
           <br>
           <mat-card-subtitle class="squealText">{{ formatDate(squeal.date) }}</mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
+        <mat-card-content *ngIf="squeal.type !== 'media'">
           <p class="squealText">{{ squeal.body }}</p>
+        </mat-card-content>
+        <mat-card-content *ngIf="squeal.type === 'media'">
+          <img [src]="squeal.body">
         </mat-card-content>
       </mat-card>
     </div>

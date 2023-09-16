@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import { User } from 'app/interfaces/account.interface';
 import { UsersService } from 'app/services/users.service';
 import { Subject, takeUntil } from 'rxjs';
+import { MediaService } from 'app/services/media.service';
 
 @Component({
   selector: 'app-new-squeal',
@@ -14,13 +15,18 @@ import { Subject, takeUntil } from 'rxjs';
 export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
   accounts: User[] = [];
-
+  squealType: string = 'text';
+  squealSubType: boolean = false;
+  selectedFile?: File = undefined;
+  selectedFileName: string = '';
   newSqueal: Squeal = {
     author: '',
     body: '',
     date: new Date(),
     recipients: [],
-    category: ''
+    category: '',
+    channels: [],
+    type: ''
   };
 
   isLoggedIn: boolean = false;
@@ -32,7 +38,8 @@ export class NewSquealsComponent implements OnInit {
   constructor(
     private squealService: SquealService,
     private datePipe: DatePipe,
-    private userService: UsersService) {}
+    private userService: UsersService,
+    private mediaService: MediaService) {}
 
   ngOnInit(): void {
     this.loadSqueals();
@@ -65,6 +72,14 @@ export class NewSquealsComponent implements OnInit {
     return this.datePipe.transform(date, 'dd-MM-yyyy'); // Change the format pattern as per your requirement
   }
 
+  formatLabel(value: number): string {
+    if (value >= 1000) {
+      return Math.round(value / 1000) + 'k';
+    }
+
+    return `${value}`;
+  }
+
   openPostForm() {
     this.isPostFormOpen = true;
   }
@@ -79,7 +94,32 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = {  author: '', body: '', date: new Date(),  recipients: [], category: '' };
+    this.newSqueal = {  author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
+  }
+
+  uploadFiles(): void {
+    if (this.selectedFile) {
+      this.upload(this.selectedFile);
+    }
+    this.newSqueal.body = this.selectedFileName;
+  }
+
+  upload(file: File): void {
+    if (file) {
+      this.mediaService.postMediaFile(file)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(res => this.selectedFileName = res);
+    }
+  }
+
+  selectFiles(event: any): void {
+    this.selectedFileName = '';
+    this.selectedFile = event.target.file;
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.readAsDataURL(this.selectedFile);
+      this.selectedFileName = this.selectedFile.name;
+    }
   }
 
   addPost(): void {
@@ -89,9 +129,10 @@ export class NewSquealsComponent implements OnInit {
       date: new Date(),
       recipients: [],
       channels: [],
-      category: 'public'
+      category: 'public',
+      type: this.squealType
     };
-    this.squealService.addTextSqueal(squeal)
+    this.squealService.addSqueal(squeal)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
       if (res) {

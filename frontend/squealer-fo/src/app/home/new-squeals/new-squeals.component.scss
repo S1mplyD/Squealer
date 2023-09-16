@@ -16,6 +16,12 @@
   color: white;
 }
 
+.thirtythree-width {
+  width: 33%;
+  background: none !important;
+  color: white;
+}
+
 .feed-container {
   margin: 0 auto;
 }
@@ -82,4 +88,14 @@
   border-radius: 20px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+#fileInput {
+  position: absolute;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  height: 100%;
+  left: 0px;
+  top: 0px;
 }

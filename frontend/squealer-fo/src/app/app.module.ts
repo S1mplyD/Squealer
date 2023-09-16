@@ -21,6 +21,9 @@ import { UserPageComponent } from './user-page/user-page.component';
 import { AuthComponent } from './authentication/auth.component';
 import { HttpClientModule } from '@angular/common/http'
 import { MatDialogModule } from '@angular/material/dialog';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
   declarations: [
@@ -47,7 +50,10 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatInputModule,
     ReactiveFormsModule,
     MatDialogModule,
-    HttpClientModule
+    HttpClientModule,
+    MatRadioModule,
+    MatCheckboxModule,
+    MatSliderModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]
