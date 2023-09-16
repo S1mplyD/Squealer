@@ -82,3 +82,9 @@ export type Analytic = {
   negativeReactions: number[];
   author: string;
 };
+
+export type Notification = {
+  text: string;
+  status: string;
+  _id: string;
+};

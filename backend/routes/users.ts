@@ -342,3 +342,12 @@ router.route("/unblock").post(async (req, res) => {
     console.log(error);
   }
 });
+
+router.route("/notification").get(async (req, res) => {
+  if (
+    req.user &&
+    ((req.user as User).status != "ban" || (req.user as User).status != "block")
+  ) {
+    res.send((req.user as User).notification);
+  } else res.sendStatus(401);
+});
