@@ -13,16 +13,7 @@ import {
   removeUserFromChannel,
 } from "../database/querys/channels";
 import { SquealerError, catchError } from "../util/errors";
-import {
-  Channel,
-  Squeal,
-  SquealGeo,
-  SquealMedia,
-  Success,
-  TimedSqueal,
-  TimedSquealGeo,
-  User,
-} from "../util/types";
+import { Channel, Squeal, Success, User } from "../util/types";
 
 export const router = express.Router();
 
@@ -261,12 +252,11 @@ router
   .get(async (req, res) => {
     try {
       if ((req.user as User).status !== "ban") {
-        const squeals:
-          | (Squeal | SquealGeo | SquealMedia | TimedSqueal | TimedSquealGeo)[]
-          | SquealerError = await getAllSquealsFromChannel(
-          req.query.name as string,
-          (req.user as User)._id
-        );
+        const squeals: Squeal[] | SquealerError =
+          await getAllSquealsFromChannel(
+            req.query.name as string,
+            (req.user as User)._id
+          );
         if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
       } else res.sendStatus(401);

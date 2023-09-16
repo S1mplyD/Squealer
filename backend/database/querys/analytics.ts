@@ -6,14 +6,7 @@ import {
   non_existent,
 } from "../../util/errors";
 import { created, updated } from "../../util/success";
-import {
-  Analytic,
-  Squeal,
-  SquealGeo,
-  SquealMedia,
-  TimedSqueal,
-  TimedSquealGeo,
-} from "../../util/types";
+import { Analytic, Squeal } from "../../util/types";
 import analyticsDataModel from "../models/analytics.model";
 import { getSquealById } from "./squeals";
 
@@ -89,13 +82,7 @@ export async function updateAnalyticForEverySqueal() {
       throw non_existent;
     } else {
       for (let i of analytics as Analytic[]) {
-        const squeal:
-          | Squeal
-          | SquealGeo
-          | SquealMedia
-          | TimedSqueal
-          | TimedSquealGeo
-          | SquealerError = await getSquealById(i.squealId);
+        const squeal: Squeal | SquealerError = await getSquealById(i.squealId);
         if ("visual" in squeal) {
           const update = await analyticsDataModel.updateOne(
             {
@@ -108,7 +95,7 @@ export async function updateAnalyticForEverySqueal() {
                 { positiveReactions: squeal.positiveReactions },
                 { negativeReactions: squeal.negativeReactions },
               ],
-            },
+            }
           );
           if (update.modifiedCount < 1) return cannot_update;
           else return updated;

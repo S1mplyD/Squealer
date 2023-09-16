@@ -9,7 +9,6 @@ import { User } from "../util/types";
  * @param username username dell'utente
  * @returns followersCount | SquealerError
  */
-//TODO ritornare lista di followers
 export async function getAllFollowers(username: string) {
   const user: User | SquealerError = await getUserByUsername(username);
 
@@ -33,7 +32,6 @@ export async function getAllFollowers(username: string) {
  * @param username username dell'utente
  * @returns followingCount | SquealerError
  */
-//TODO ritornare lista di seguiti
 export async function getAllFollowing(username: string) {
   const user: User | SquealerError = await getUserByUsername(username);
 
@@ -53,8 +51,6 @@ export async function getAllFollowing(username: string) {
   }
 }
 
-//TODO aggiungere e rimuovere id utente
-
 /**
  * funzione che aggiorna il numero di followers di un utente e il numero di followed del seguito
  * @param userId id dell'utente che segue
@@ -65,7 +61,6 @@ export async function followUser(userId: string, username: string) {
   const user: User | SquealerError = await getUserByUsername(username);
 
   if (user instanceof SquealerError) return user;
-  console.log(user._id);
 
   // inserisco l'id dell'utente da seguire nei seguti dell'utente che segue
   const update = await userModel.updateOne(

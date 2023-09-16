@@ -47,7 +47,6 @@ router.route("/following").get(async (req, res) => {
 /**
  * chiamata per seguire un utente
  */
-//TODO fixme
 router.route("/follow").post(async (req, res) => {
   try {
     if (
@@ -70,7 +69,6 @@ router.route("/follow").post(async (req, res) => {
 /**
  * chiamata per smettere di seguire un utente
  */
-//TODO fixme
 router.route("/unfollow").post(async (req, res) => {
   try {
     if (

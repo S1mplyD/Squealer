@@ -65,8 +65,7 @@ export async function createDefaultUser(
     mail: mail,
     password: password,
     createdAt: new Date(),
-    followersCount: 0,
-    followingCount: 0,
+    profilePicture: "default.png",
   });
   if (!doc) return cannot_create;
   else return doc;
@@ -170,17 +169,19 @@ export async function deleteProfilePicture(username: string) {
  * @param isAdmin indica se l'utente è admin o no
  * @returns SquealerError | Success
  */
-
-//TODO check if pfp exist
 export async function deleteAccount(
   mail: string,
   password: string,
   isAdmin: boolean
 ) {
-  const profilepicture = await userModel.findOne({ mail: mail });
-  fs.unlink(publicUploadPath + profilepicture?.profilePicture, (err) => {
-    if (err) console.log(err);
-  });
+  const user: User | null = await userModel.findOne({ mail: mail });
+  if (!user) return non_existent;
+  if (user.profilePicture !== "default.png") {
+    fs.unlink(publicUploadPath + user.profilePicture, (err) => {
+      if (err) console.log(err);
+    });
+  }
+
   if (isAdmin) {
     const user = await userModel.deleteOne({ mail: mail });
     if (user.deletedCount < 1) return cannot_delete;
@@ -264,9 +265,10 @@ export async function ban(id: string) {
         const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
         if (updateUser.modifiedCount < 1) return cannot_update;
         // Rimuovo all'smm dell'utente bannato l'account gestito
+
         const updateSMM = await userModel.updateOne(
           { _id: user.SMM },
-          { $pop: { managedAccounts: user._id } }
+          { $pull: { managedAccounts: user._id } }
         );
         if (updateSMM.modifiedCount < 1) return cannot_update;
         else return updated;
@@ -284,14 +286,23 @@ export async function ban(id: string) {
   }
 }
 
-//TODO test
+/**
+ * funzione che rimuove il ban ad un utente
+ * @param id id utente
+ * @returns cannot_update | Success
+ */
 export async function unbanUser(id: string) {
   const update = await userModel.updateOne({ _id: id }, { status: "normal" });
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
 }
 
-//TODO test
+/**
+ * funzione che blocca un utente
+ * @param username utente da bloccare
+ * @param time tempo di blocco
+ * @returns cannot_update | Success
+ */
 export async function blockUser(username: string, time: number) {
   const update = await userModel.updateOne(
     { username: username },
@@ -301,18 +312,17 @@ export async function blockUser(username: string, time: number) {
   if (update.modifiedCount < 1) return cannot_update;
   else {
     timeout = setTimeout(async () => {
-      const update = await userModel.updateOne(
+      await userModel.updateOne(
         { username: username },
         { status: "normal", blockedFor: 0 }
       );
-      if (update.modifiedCount < 1) return cannot_update;
-      else return updated;
     }, time);
     const newTimeout: Timeout = {
       timeout: timeout,
       username: username,
     };
     intervals.push(newTimeout);
+    return updated;
   }
 }
 
