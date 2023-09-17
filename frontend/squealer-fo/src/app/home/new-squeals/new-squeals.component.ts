@@ -18,7 +18,9 @@ export class NewSquealsComponent implements OnInit {
   squealType: string = 'text';
   squealSubType: boolean = false;
   selectedFile?: File = undefined;
+  selectedRef: string = '';
   selectedFileName: string = '';
+  recipients: string = '';
   newSqueal: Squeal = {
     author: '',
     body: '',
@@ -122,13 +124,36 @@ export class NewSquealsComponent implements OnInit {
     }
   }
 
+  getChannels(body: string): string[] {
+    const channels: string[] = [];
+    body = body.replace('.', ' ');
+    body = body.replace(',', ' ');
+    body = body.replace(':', ' ');
+    body = body.replace(';', ' ');
+    const words: string[] = body.split(' ');
+    for (const word of words) {
+      if (word[0] === '@') channels.push(word);
+      if (word[0] === '§') channels.push(word);
+      if (word[0] === '#') channels.push(word);
+    }
+    return channels;
+  }
+
+  getRecipients(rec: string): string[] {
+    rec.replace('/\s+/g', '');
+    return rec.split(',');
+  }
+
   addPost(): void {
     const squeal: Squeal = {
       author: this.username,
       body: this.newSqueal.body,
       date: new Date(),
-      recipients: [],
-      channels: [],
+      lat: this.newSqueal.lat,
+      lng: this.newSqueal.lng,
+      time: this.newSqueal.time,
+      recipients: this.getRecipients(this.recipients),
+      channels: this.getChannels(this.newSqueal.body),
       category: 'public',
       type: this.squealType
     };

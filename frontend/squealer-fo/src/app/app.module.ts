@@ -24,6 +24,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSliderModule} from '@angular/material/slider';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,9 @@ import {MatSliderModule} from '@angular/material/slider';
     HttpClientModule,
     MatRadioModule,
     MatCheckboxModule,
-    MatSliderModule
+    MatSliderModule,
+    MatSelectModule,
+    MatFormFieldModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

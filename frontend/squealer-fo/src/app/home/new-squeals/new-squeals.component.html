@@ -42,6 +42,10 @@
           <input matInput type="number" [(ngModel)]="newSqueal.lng">
         </mat-form-field>
       </div>
+      <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
+        <mat-label>Recipients (they must be separated by comma):</mat-label>
+        <input matInput [(ngModel)]="recipients">
+      </mat-form-field>
       <div *ngIf="squealType === 'media'">
         <img [src]="newSqueal.body" class="preview">
       </div>

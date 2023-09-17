@@ -84,14 +84,13 @@ export class AuthComponent {
   signup() {
     const email = this.signupForm.value.email;
     const password = this.signupForm.value.password;
-    const username = this.signupForm.value.username;
+    const username = this.signupForm.value.username.Replace(' ', '_');
     const name = this.signupForm.value.name;
     this.authService.signUp(email, password, username, name)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
     });
-    console.log(this.user);
     localStorage.setItem('plan', this.user.plan);
     localStorage.setItem('username', this.user.username);
     localStorage.setItem('isLoggedIn', 'true');
