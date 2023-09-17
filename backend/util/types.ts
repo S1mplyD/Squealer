@@ -42,6 +42,7 @@ export type User = {
   createdAt: Date;
   status: string;
   blockedFor: number;
+  notification: string[];
 };
 
 // nuovo tipo canali
@@ -80,4 +81,10 @@ export type Analytic = {
   positiveReactions: number[];
   negativeReactions: number[];
   author: string;
+};
+
+export type Notification = {
+  text: string;
+  status: string;
+  _id: string;
 };

@@ -314,7 +314,6 @@ router
    * POST
    * chiamata per bloccare l'utente per un determinato periodo di tempo
    */
-  //TODO fix CastError: Cast to number failed for value "new ObjectId("64ea172e3afe222ee23db2a0")" (type ObjectId) at path "managedAccounts"
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
@@ -342,4 +341,13 @@ router.route("/unblock").post(async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+router.route("/notification").get(async (req, res) => {
+  if (
+    req.user &&
+    ((req.user as User).status != "ban" || (req.user as User).status != "block")
+  ) {
+    res.send((req.user as User).notification);
+  } else res.sendStatus(401);
 });
