@@ -190,9 +190,3 @@ export async function getDefaultCharacters(plan: string) {
       break;
   }
 }
-
-export async function updateCharacter(id: string, usedCharacters: number) {
-  const update = await userModel.updateOne({ _id: id }, {});
-}
-
-export async function addCharacters() {}
