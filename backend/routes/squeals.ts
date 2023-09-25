@@ -102,9 +102,7 @@ router
             );
             if (newSqueal instanceof SquealerError) res.sendStatus(404);
             else {
-              const ret: SquealerError | Error | Success = await startTimer(
-                newSqueal,
-              );
+              const ret: Error |SquealerError | Success = await startTimer(newSqueal);
               const squeals: Squeal[] | SquealerError = await getAllSqueals();
               if (ret instanceof SquealerError) res.sendStatus(404);
               res.status(201).send(squeals);
