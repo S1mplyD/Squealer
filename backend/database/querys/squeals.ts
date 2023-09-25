@@ -198,6 +198,8 @@ export async function postSqueal(squeal: Squeal, user: User) {
     author: user.username,
     type: squeal.type,
     time: squeal.time,
+    positiveReactions: [],
+    negativeReactions: [],
   });
 
   if (!newSqueal) return cannot_create;
@@ -435,4 +437,16 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
   }
+}
+
+export async function updateSquealsUsername(
+  oldUsername: string,
+  username: string,
+): Promise<Success | SquealerError> {
+  const update = await squealModel.updateMany(
+    { author: oldUsername },
+    { author: username },
+  );
+  if (update.modifiedCount > 0) return updated;
+  else return cannot_update;
 }
