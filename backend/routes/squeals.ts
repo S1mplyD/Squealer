@@ -306,11 +306,14 @@ router.route("/positiveReactions").post(async (req, res) => {
       (req.user as User).status !== "ban" ||
       (req.user as User).status !== "block"
     ) {
-      const update: SquealerError | Success = await addPositiveReaction(
-        req.query.squealId as string,
-        (req.user as User)?._id,
-      );
-      if (!(update instanceof SquealerError)) res.sendStatus(200);
+      const update: SquealerError | Success | undefined =
+        await addPositiveReaction(
+          req.query.squealId as string,
+          (req.user as User)?._id,
+        );
+      if (!(update instanceof SquealerError) && update !== undefined)
+        res.sendStatus(200);
+      else res.sendStatus(500);
     }
   } catch (error) {
     console.log(error);
@@ -324,11 +327,14 @@ router.route("/negativeReactions").post(async (req, res) => {
       (req.user as User).status !== "ban" ||
       (req.user as User).status !== "block"
     ) {
-      const update: SquealerError | Success = await addNegativeReaction(
-        req.query.squealId as string,
-        (req.user as User)?._id,
-      );
-      if (!(update instanceof SquealerError)) res.sendStatus(200);
+      const update: SquealerError | Success | undefined =
+        await addNegativeReaction(
+          req.query.squealId as string,
+          (req.user as User)?._id,
+        );
+      if (!(update instanceof SquealerError) && update !== undefined)
+        res.sendStatus(200);
+      else res.sendStatus(500);
     }
   } catch (error) {
     console.log(error);

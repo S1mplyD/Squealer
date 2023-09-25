@@ -392,14 +392,19 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
   } else {
-    const update = await squealModel.updateOne(
-      { _id: squealId },
-      {
-        $push: { positiveReactions: userId },
-      },
-    );
-    if (update.modifiedCount < 1) return cannot_update;
-    else return updated;
+    if (
+      !(squeal instanceof SquealerError) &&
+      !squeal.positiveReactions?.includes(userId)
+    ) {
+      const update = await squealModel.updateOne(
+        { _id: squealId },
+        {
+          $push: { positiveReactions: userId },
+        },
+      );
+      if (update.modifiedCount < 1) return cannot_update;
+      else return updated;
+    }
   }
 }
 
@@ -428,14 +433,19 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
   } else {
-    const update = await squealModel.updateOne(
-      { _id: squealId },
-      {
-        $push: { negativeReactions: userId },
-      },
-    );
-    if (update.modifiedCount < 1) return cannot_update;
-    else return updated;
+    if (
+      !(squeal instanceof SquealerError) &&
+      !squeal.negativeReactions?.includes(userId)
+    ) {
+      const update = await squealModel.updateOne(
+        { _id: squealId },
+        {
+          $push: { negativeReactions: userId },
+        },
+      );
+      if (update.modifiedCount < 1) return cannot_update;
+      else return updated;
+    }
   }
 }
 
