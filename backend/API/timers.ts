@@ -38,16 +38,18 @@ export async function startAllTimer() {
  * @param squeal lo squeal da postare
  * @param time il tempo necessario per postare uno squeal
  * @param id id dello squeal
- * @returns no_timers | Success
+ * @returns no_timers | Success | Error
  */
 export async function startTimer(squeal: Squeal) {
   let interval: NodeJS.Timeout;
+  const existingInterval = await findInterval(squeal);
+  if (existingInterval) return new Error("Timed squeal is already on");
   interval = setInterval(async () => {
     const newSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
     if (newSqueal instanceof SquealerError) return no_timers;
     else {
       const user: SquealerError | User = await getUserByUsername(
-        newSqueal.author
+        newSqueal.author,
       );
 
       if (user instanceof SquealerError) return non_existent;
@@ -72,7 +74,7 @@ export async function startTimer(squeal: Squeal) {
   }, squeal.time as number);
   const ret: SquealerError | Success = await setSquealInterval(
     interval,
-    squeal._id
+    squeal._id,
   );
   return ret;
 }
@@ -84,7 +86,7 @@ export async function startTimer(squeal: Squeal) {
 export async function stopTimer(squeal: Squeal) {
   clearInterval(await findInterval(squeal));
   const newIntervals = intervals.filter(
-    (interval) => interval.id !== squeal._id
+    (interval) => interval.id !== squeal._id,
   );
   intervals = newIntervals;
 }
@@ -96,7 +98,7 @@ export async function stopTimer(squeal: Squeal) {
  */
 export async function findInterval(squeal: Squeal) {
   const ret: Interval | undefined = intervals.find(
-    (el) => el.id === squeal._id
+    (el) => el.id === squeal._id,
   );
   return ret?.timeout as NodeJS.Timeout;
 }
@@ -128,7 +130,7 @@ export async function setSquealInterval(timeout: NodeJS.Timeout, id: string) {
 export async function updateCount(id: string) {
   const update = await squealModel.updateOne(
     { _id: id },
-    { $inc: { count: 1 } }
+    { $inc: { count: 1 } },
   );
   if (update.modifiedCount < 1) {
     return updated;

@@ -12,7 +12,7 @@ import { addSquealToChannel } from "./channels";
 import channelsModel from "../models/channels.model";
 import { resolve } from "path";
 import fs from "fs";
-import { stopTimer } from "../../API/timers";
+import { startTimer, stopTimer } from "../../API/timers";
 import { updateDailyCharacters } from "../../API/characters";
 import { createNotification } from "./notification";
 
@@ -291,7 +291,6 @@ export async function deleteTimedSqueal(squeal: Squeal) {
   const timedSqueal: Squeal | null = await squealModel.findOne({
     _id: squeal._id,
   });
-  console.log(timedSqueal);
 
   if (!timedSqueal) {
     return non_existent;
@@ -300,6 +299,29 @@ export async function deleteTimedSqueal(squeal: Squeal) {
     const deleted = await squealModel.deleteOne({ _id: squeal._id });
     if (deleted.deletedCount < 1) return cannot_delete;
     else return removed;
+  }
+}
+
+/**
+ * funzione che fa arresta uno squeal temporizzato
+ * @param squeal  squeal da arrestare
+ */
+export async function stopTimedSqueal(squeal: Squeal) {
+  const timedSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
+  if (!(timedSqueal instanceof SquealerError)) {
+    await stopTimer(timedSqueal);
+  }
+}
+
+/**
+ * funzione che fa ripartire uno squeal temporizzato
+ * @param squeal  squeal da far ripartire
+ */
+export async function restartTimedSqueal(squeal: Squeal) {
+  const timedSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
+  if (!(timedSqueal instanceof SquealerError)) {
+    const ret = await startTimer(timedSqueal);
+    return ret;
   }
 }
 
