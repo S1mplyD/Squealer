@@ -310,8 +310,7 @@ router.route("/positiveReactions").post(async (req, res) => {
         req.query.squealId as string,
         (req.user as User)._id,
       );
-      if (update instanceof SquealerError) res.sendStatus(500);
-      else res.sendStatus(200);
+      if (!(update instanceof SquealerError)) res.sendStatus(200);
     }
   } catch (error) {
     console.log(error);
@@ -329,8 +328,7 @@ router.route("/negativeReactions").post(async (req, res) => {
         req.query.squealId as string,
         (req.user as User)._id,
       );
-      if (update instanceof SquealerError) res.sendStatus(500);
-      else res.sendStatus(200);
+      if (!(update instanceof SquealerError)) res.sendStatus(200);
     }
   } catch (error) {
     console.log(error);
