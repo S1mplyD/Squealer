@@ -364,3 +364,75 @@ export async function editReaction(
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
 }
+
+export async function addPositiveReaction(squealId: string, userId?: string) {
+  const squeal: Squeal | SquealerError = await getSquealById(squealId);
+  if (userId === undefined) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { positiveReactions: "guest" },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  } else if (
+    !(squeal instanceof SquealerError) &&
+    squeal.negativeReactions?.includes(userId!)
+  ) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $pull: { negativeReactions: userId },
+        $push: { positiveReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  } else {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { positiveReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  }
+}
+
+export async function addNegativeReaction(squealId: string, userId?: string) {
+  const squeal: Squeal | SquealerError = await getSquealById(squealId);
+  if (userId === undefined) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { negativeReactions: "guest" },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  } else if (
+    !(squeal instanceof SquealerError) &&
+    squeal.positiveReactions?.includes(userId)
+  ) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { negativeReactions: userId },
+        $pull: { positiveReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  } else {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { negativeReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) return cannot_update;
+    else return updated;
+  }
+}

@@ -15,6 +15,8 @@ import {
   getSquealById,
   deleteSqueal,
   editReaction,
+  addPositiveReaction,
+  addNegativeReaction,
 } from "../database/querys/squeals";
 import express from "express";
 import { Squeal, Success, User } from "../util/types";
@@ -100,7 +102,9 @@ router
             );
             if (newSqueal instanceof SquealerError) res.sendStatus(404);
             else {
-              const ret: SquealerError | Success = await startTimer(newSqueal);
+              const ret: SquealerError | Error | Success = await startTimer(
+                newSqueal,
+              );
               const squeals: Squeal[] | SquealerError = await getAllSqueals();
               if (ret instanceof SquealerError) res.sendStatus(404);
               res.status(201).send(squeals);
@@ -280,13 +284,55 @@ router
    * permette ad un amministratore di modificare le reazioni ad uno squeal
    */
   .get(async (req, res) => {
-    if ((req.user as User).plan === "admin") {
-      const update: SquealerError | Success = await editReaction(
-        req.body.squealid,
-        req.body.positiveReactions,
-        req.body.negativeReactions,
+    try {
+      if ((req.user as User).plan === "admin") {
+        const update: SquealerError | Success = await editReaction(
+          req.body.squealid,
+          req.body.positiveReactions,
+          req.body.negativeReactions,
+        );
+        if (update instanceof SquealerError) res.sendStatus(500);
+        else res.sendStatus(200);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+router.route("/positiveReactions").post(async (req, res) => {
+  try {
+    if (
+      !req.user ||
+      (req.user as User).status !== "ban" ||
+      (req.user as User).status !== "block"
+    ) {
+      const update: SquealerError | Success = await addPositiveReaction(
+        req.query.squealId as string,
+        (req.user as User)._id,
       );
       if (update instanceof SquealerError) res.sendStatus(500);
       else res.sendStatus(200);
     }
-  });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.route("/negativeReactions").post(async (req, res) => {
+  try {
+    if (
+      !req.user ||
+      (req.user as User).status !== "ban" ||
+      (req.user as User).status !== "block"
+    ) {
+      const update: SquealerError | Success = await addNegativeReaction(
+        req.query.squealId as string,
+        (req.user as User)._id,
+      );
+      if (update instanceof SquealerError) res.sendStatus(500);
+      else res.sendStatus(200);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
