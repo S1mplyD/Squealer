@@ -14,12 +14,7 @@ import { sendMail } from "../util/mail";
 import { config } from "dotenv";
 import { generate } from "randomstring";
 import { Success, sent } from "../util/success";
-import {
-  SquealerError,
-  cannot_login,
-  cannot_update,
-  catchError,
-} from "../util/errors";
+import { SquealerError } from "../util/errors";
 config();
 
 export const router = express.Router();
@@ -42,11 +37,11 @@ passport.use(
             //Utente non registrato, lo creo
             const newUser = await createUserUsingGoogle(
               profile.displayName,
-              profile.displayName,
+              profile.displayName.replaceAll(" ", "_"),
               profile._json.email,
               profile.id,
               profile._json.picture,
-              new Date()
+              new Date(),
             );
             if (newUser) return done(null, newUser);
             else return done(null, false);
@@ -54,8 +49,8 @@ passport.use(
             done(null, currentUser);
           }
         });
-    }
-  )
+    },
+  ),
 );
 
 /**
@@ -77,7 +72,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword
+            encryptedPassword,
           );
           if (newUser) {
             return done(null, newUser);
@@ -88,8 +83,8 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );
 
 router.get(
@@ -97,7 +92,7 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] }),
   (req, res) => {
     if (req.user) res.status(200).send(req.user);
-  }
+  },
 );
 
 router.get(
@@ -105,7 +100,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.status(200).redirect("/");
-  }
+  },
 );
 
 /**
@@ -128,7 +123,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  })
+  }),
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
@@ -197,7 +192,7 @@ router
     if (token === user.resetToken) {
       const ret: SquealerError | Success = await updatePassword(
         mail,
-        encryptedPassword
+        encryptedPassword,
       );
       console.log(ret);
       if (ret instanceof SquealerError) {

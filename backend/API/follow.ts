@@ -61,18 +61,17 @@ export async function followUser(userId: string, username: string) {
   const user: User | SquealerError = await getUserByUsername(username);
 
   if (user instanceof SquealerError) return user;
-
   // inserisco l'id dell'utente da seguire nei seguti dell'utente che segue
   const update = await userModel.updateOne(
     { _id: userId },
-    { $push: { following: user._id } }
+    { $push: { following: user._id } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     //aggiorno l'utente seguito
     const updateUser = await userModel.updateOne(
       { username: username },
-      { $push: { followers: userId } }
+      { $push: { followers: userId } },
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -93,13 +92,13 @@ export async function unfollowUser(userId: string, username: string) {
 
   const update = await userModel.updateOne(
     { _id: userId },
-    { $pull: { following: followed._id } }
+    { $pull: { following: followed._id } },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else {
     const updateUser = await userModel.updateOne(
       { username: username },
-      { $pull: { followers: userId } }
+      { $pull: { followers: userId } },
     );
     if (updateUser.modifiedCount < 1) return cannot_update;
     else return updated;

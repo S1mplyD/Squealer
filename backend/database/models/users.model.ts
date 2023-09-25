@@ -19,6 +19,7 @@ interface User {
   createdAt: Date;
   status: string;
   blockedFor: number;
+  notification: string[];
 }
 
 interface UserDocument extends User, Document {}
@@ -42,6 +43,7 @@ const userSchema = new Schema<UserDocument>({
   createdAt: { type: Date, required: true },
   status: { type: String, default: "normal" }, //normal, ban, block
   blockedFor: { type: Number },
+  notification: { type: [String] },
   // dailyExtraCharacters: { type: Number, required: true, default: 300 }, //Caratteri giornalieri
   // weeklyExtraCharacters: { type: Number, required: true, default: 2000 }, //Caratteri settimanali
   // monthlyExtraCharacters: { type: Number, required: true, default: 7500 }, //Caratteri mensili
