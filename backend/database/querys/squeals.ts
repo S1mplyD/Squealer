@@ -34,7 +34,9 @@ export async function getAllSqueals() {
  * @returns Squeal [] | non_existent
  */
 export async function getAllUserSqueals(username: string) {
-  const squeals: Squeal[] | null = await squealModel.find({ author: username });
+  const squeals: Squeal[] | null = await squealModel
+    .find({ author: username })
+    .sort({ date: -1 });
   if (!squeals) return non_existent;
   else return squeals;
 }
@@ -44,9 +46,11 @@ export async function getAllUserSqueals(username: string) {
  * @returns non_existent | TimedSqueal []
  */
 export async function getAllTimedSqueals() {
-  const squeals: Squeal[] | null = await squealModel.find({
-    type: "timed",
-  });
+  const squeals: Squeal[] | null = await squealModel
+    .find({
+      type: "timed",
+    })
+    .sort({ date: -1 });
   if (!squeals) return non_existent;
   else return squeals;
 }
@@ -56,9 +60,11 @@ export async function getAllTimedSqueals() {
  * @returns non_existent | TimedSqueal []
  */
 export async function getAllMediaSqueals() {
-  const squeals: Squeal[] | null = await squealModel.find({
-    type: "media",
-  });
+  const squeals: Squeal[] | null = await squealModel
+    .find({
+      type: "media",
+    })
+    .sort({ date: -1 });
   if (!squeals) return non_existent;
   else return squeals;
 }
@@ -68,7 +74,9 @@ export async function getAllMediaSqueals() {
  * @returns error o gli squeal text
  */
 export async function getTextSqueals() {
-  const squeals: Squeal[] | null = await squealModel.find({ type: "text" });
+  const squeals: Squeal[] | null = await squealModel
+    .find({ type: "text" })
+    .sort({ date: -1 });
 
   if (!squeals) return non_existent;
   else return squeals;
@@ -79,7 +87,9 @@ export async function getTextSqueals() {
  * @returns error o gli squeal text
  */
 export async function getAllGeoSqueals() {
-  const squeals: Squeal[] | null = await squealModel.find({ type: "geo" });
+  const squeals: Squeal[] | null = await squealModel
+    .find({ type: "geo" })
+    .sort({ date: -1 });
 
   if (!squeals) return non_existent;
   else return squeals;
@@ -90,7 +100,9 @@ export async function getAllGeoSqueals() {
  * @returns Squeal[] | non_existent
  */
 export async function getAutoSqueals() {
-  const squeals: Squeal[] | null = await squealModel.find({ type: "auto" });
+  const squeals: Squeal[] | null = await squealModel
+    .find({ type: "auto" })
+    .sort({ date: -1 });
 
   if (!squeals) return non_existent;
   else return squeals;
