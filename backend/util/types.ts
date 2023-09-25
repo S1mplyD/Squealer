@@ -7,8 +7,8 @@ export type Squeal = {
   lat?: string;
   recipients: string[];
   date: Date;
-  positiveReactions?: number;
-  negativeReactions?: number;
+  positiveReactions?: string[];
+  negativeReactions?: string[];
   category: string;
   channels: string[];
   author: string;
