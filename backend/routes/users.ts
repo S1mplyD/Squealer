@@ -15,6 +15,7 @@ import {
   unblockUser,
   addSMM,
   removeSMM,
+  changeUserPlan,
 } from "../database/querys/users";
 import { SquealerError, non_existent } from "../util/errors";
 import { updateSquealsUsername } from "../database/querys/squeals";
@@ -211,6 +212,31 @@ router.route("/user/:username/smm").post(async (req, res) => {
     } else res.sendStatus(401);
   } catch (error) {
     console.log(error);
+  }
+});
+
+router.route("/user/:username/changeplan").post(async (req, res) => {
+  try {
+    if (
+      req.user &&
+      (req.user as User).status !== "ban" &&
+      (req.user as User).status !== "block"
+    ) {
+      if ((req.user as User).plan === "admin") {
+        console.log(req.params, req.body);
+        const update: Success | SquealerError | undefined =
+          await changeUserPlan(req.params.username as string, req.body.plan);
+        if (!(update instanceof SquealerError)) res.sendStatus(200);
+        else res.sendStatus(500);
+      } else {
+        const update: Success | SquealerError | undefined =
+          await changeUserPlan((req.user as User).username, req.body.plan);
+        if (!(update instanceof SquealerError)) res.sendStatus(200);
+        else res.sendStatus(500);
+      }
+    }
+  } catch (err) {
+    console.log(err);
   }
 });
 
