@@ -1,4 +1,5 @@
 import { SquealerError } from "../../util/errors";
+import { updated } from "../../util/success";
 import { Channel, Notification, User } from "../../util/types";
 import notificationModel from "../models/notification.model";
 import userModel from "../models/users.model";
@@ -13,27 +14,30 @@ import { getUserByUsername } from "./users";
  */
 export async function createNotification(
   notification: string,
-  channelName?: string,
-  recipient?: string
+  recipient: string,
 ) {
-  if (channelName) {
-    const channel: Channel | SquealerError = await getChannel(channelName);
-    if (!(channel instanceof SquealerError)) {
-      for (let i of channel.allowedRead) {
-        await userModel.updateOne(
-          { _id: i },
-          { $push: { notification: notification } }
-        );
-      }
-    }
-  }
   if (recipient) {
+    //Recipient è un utente
     const user: User | SquealerError = await getUserByUsername(recipient);
-    if (!(user instanceof SquealerError))
+    if (!(user instanceof SquealerError)) {
       await userModel.updateOne(
         { _id: user._id },
-        { $push: { notification: notification } }
+        { $push: { notification: notification } },
       );
+      return updated;
+    } else {
+      //recipient è un canale
+      const channel: Channel | SquealerError = await getChannel(recipient);
+      if (!(channel instanceof SquealerError)) {
+        for (let i of channel.allowedRead) {
+          await userModel.updateOne(
+            { _id: i },
+            { $push: { notification: notification } },
+          );
+        }
+        return updated;
+      }
+    }
   }
 }
 

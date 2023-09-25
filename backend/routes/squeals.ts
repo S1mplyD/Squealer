@@ -14,10 +14,11 @@ import {
   deleteMediaSqueal,
   getSquealById,
   deleteSqueal,
+  editReaction,
 } from "../database/querys/squeals";
 import express from "express";
 import { Squeal, Success, User } from "../util/types";
-import { SquealerError, catchError, unauthorized } from "../util/errors";
+import { SquealerError } from "../util/errors";
 import { startTimer } from "../API/timers";
 
 export const router = express.Router();
@@ -95,7 +96,7 @@ router
           case "timed":
             const newSqueal: Squeal | SquealerError = await postSqueal(
               req.body,
-              req.user as User
+              req.user as User,
             );
             if (newSqueal instanceof SquealerError) res.sendStatus(404);
             else {
@@ -120,7 +121,7 @@ router
   .delete(async (req, res) => {
     try {
       const squeal: Squeal | SquealerError = await getSquealById(
-        req.query.id as string
+        req.query.id as string,
       );
       if (squeal instanceof SquealerError) res.sendStatus(404);
       if (!req.user) res.sendStatus(401);
@@ -128,12 +129,12 @@ router
         switch ((squeal as Squeal).type) {
           case "timed":
             const squealTimed: Squeal | SquealerError = await getTimedSqueal(
-              req.query.id as string
+              req.query.id as string,
             );
             if (squealTimed instanceof SquealerError) res.sendStatus(500);
             else {
               const ret: SquealerError | Success = await deleteTimedSqueal(
-                squealTimed
+                squealTimed,
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
@@ -144,12 +145,12 @@ router
             break;
           case "media":
             const squealMedia: Squeal | SquealerError = await getMediaSqueal(
-              req.query.id as string
+              req.query.id as string,
             );
             if (squealMedia instanceof SquealerError) res.sendStatus(500);
             else {
               const ret: SquealerError | Success = await deleteMediaSqueal(
-                squealMedia
+                squealMedia,
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
@@ -160,7 +161,7 @@ router
             break;
           default:
             const ret: SquealerError | Success = await deleteSqueal(
-              req.query.id as string
+              req.query.id as string,
             );
             if (ret instanceof SquealerError) res.sendStatus(500);
             else {
@@ -175,11 +176,11 @@ router
             if (
               (squeal as Squeal).author === (req.user as User).username ||
               (req.user as User).managedAccounts.includes(
-                (squeal as Squeal).author as string
+                (squeal as Squeal).author as string,
               )
             ) {
               const ret: SquealerError | Success = await deleteTimedSqueal(
-                squeal as Squeal
+                squeal as Squeal,
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
@@ -193,11 +194,11 @@ router
             if (
               (squeal as Squeal).author === (req.user as User).username ||
               (req.user as User).managedAccounts.includes(
-                (squeal as Squeal).author as string
+                (squeal as Squeal).author as string,
               )
             ) {
               const ret: SquealerError | Success = await deleteMediaSqueal(
-                squeal as Squeal
+                squeal as Squeal,
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
@@ -211,11 +212,11 @@ router
             if (
               (squeal as Squeal).author === (req.user as User).username ||
               (req.user as User).managedAccounts.includes(
-                (squeal as Squeal).author as string
+                (squeal as Squeal).author as string,
               )
             ) {
               const ret: SquealerError | Success = await deleteSqueal(
-                req.query.id as string
+                req.query.id as string,
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
@@ -242,7 +243,7 @@ router
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals: SquealerError | Squeal[] = await getAllUserSqueals(
-          req.params.username
+          req.params.username,
         );
         if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
@@ -262,12 +263,30 @@ router
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals: Squeal[] | SquealerError = await getSquealsByRecipients(
-          req.query.recipient as string
+          req.query.recipient as string,
         );
         if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
       console.log(error);
+    }
+  });
+
+router
+  .route("/reactions")
+  /**
+   *GET
+   * permette ad un amministratore di modificare le reazioni ad uno squeal
+   */
+  .get(async (req, res) => {
+    if ((req.user as User).plan === "admin") {
+      const update: SquealerError | Success = await editReaction(
+        req.body.squealid,
+        req.body.positiveReactions,
+        req.body.negativeReactions,
+      );
+      if (update instanceof SquealerError) res.sendStatus(500);
+      else res.sendStatus(200);
     }
   });
