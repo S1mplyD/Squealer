@@ -7,7 +7,7 @@ import {
   SquealerError,
   cannot_update,
 } from "../../util/errors";
-import { removed } from "../../util/success";
+import { removed, updated } from "../../util/success";
 import { addSquealToChannel } from "./channels";
 import channelsModel from "../models/channels.model";
 import { resolve } from "path";
@@ -347,4 +347,20 @@ export async function getSquealsByChannel(channel: string) {
     channels: channel,
   });
   return squeals;
+}
+
+export async function editReaction(
+  squealId: string,
+  positiveReactions: number,
+  negativeReactions: number,
+) {
+  const update = await squealModel.updateOne(
+    { _id: squealId },
+    {
+      positveReactions: positiveReactions,
+      negativeReactions: negativeReactions,
+    },
+  );
+  if (update.modifiedCount < 1) return cannot_update;
+  else return updated;
 }

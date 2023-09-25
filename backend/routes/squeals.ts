@@ -14,6 +14,7 @@ import {
   deleteMediaSqueal,
   getSquealById,
   deleteSqueal,
+  editReaction,
 } from "../database/querys/squeals";
 import express from "express";
 import { Squeal, Success, User } from "../util/types";
@@ -269,5 +270,23 @@ router
       } else res.sendStatus(401);
     } catch (error: any) {
       console.log(error);
+    }
+  });
+
+router
+  .route("/reactions")
+  /**
+   *GET
+   * permette ad un amministratore di modificare le reazioni ad uno squeal
+   */
+  .get(async (req, res) => {
+    if ((req.user as User).plan === "admin") {
+      const update: SquealerError | Success = await editReaction(
+        req.body.squealid,
+        req.body.positiveReactions,
+        req.body.negativeReactions,
+      );
+      if (update instanceof SquealerError) res.sendStatus(500);
+      else res.sendStatus(200);
     }
   });
