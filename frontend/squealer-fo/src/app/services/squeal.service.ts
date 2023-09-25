@@ -57,11 +57,24 @@ export class SquealService {
     return this.http.get<Squeal[]>(`${this.apiUrl}/timed`);
   }
 
+  addUpvote(squealId: string): Observable<string> {
+    const params = {
+      'squealId': squealId + ''
+    }
+    return this.http.post<string>(`${this.newApiUrl}/positiveReactions?squealId=${squealId}`, { params: params });
+  }
+
+  addDownvote(squealId: string): Observable<string> {
+    const params = {
+      'squealId': squealId + ''
+    }
+    return this.http.post<string>(`${this.newApiUrl}/negativeReactions?squealId=${squealId}`, { params: params });
+  }
+
   addSqueal(squeal: Squeal): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}`, squeal);
   }
   deleteSqueal(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}`, {params: {'id': id + ''}});
   }
-
 }

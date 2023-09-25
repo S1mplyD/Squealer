@@ -18,6 +18,8 @@ export class NewSquealsComponent implements OnInit {
   squealType: string = 'text';
   squealSubType: boolean = false;
   selectedFile?: File = undefined;
+  upvote: number = 0;
+  downvote: number = 0;
   selectedRef: string = '';
   selectedFileName: string = '';
   recipients: string = '';
@@ -28,7 +30,8 @@ export class NewSquealsComponent implements OnInit {
     recipients: [],
     category: '',
     channels: [],
-    type: ''
+    type: '',
+    _id: ''
   };
 
   isLoggedIn: boolean = false;
@@ -96,7 +99,7 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = {  author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
+    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
   }
 
   uploadFiles(): void {
@@ -144,8 +147,30 @@ export class NewSquealsComponent implements OnInit {
     return rec.split(',');
   }
 
+  addUpvote(squealId: string): void {
+    console.log(squealId);
+    this.squealService.addUpvote(squealId)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      console.log(res);
+    });
+    window.location.reload();
+  }
+
+  addDownvote(squealId: string): void {
+    console.log(squealId);
+    this.squealService.addDownvote(squealId)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      console.log(res);
+
+    });
+    window.location.reload();
+  }
+
   addPost(): void {
     const squeal: Squeal = {
+      _id: '',
       author: this.username,
       body: this.newSqueal.body,
       date: new Date(),
@@ -154,6 +179,8 @@ export class NewSquealsComponent implements OnInit {
       time: this.newSqueal.time,
       recipients: this.getRecipients(this.recipients),
       channels: this.getChannels(this.newSqueal.body),
+      positiveReactions: this.newSqueal.positiveReactions,
+      negativeReactions: this.newSqueal.negativeReactions,
       category: 'public',
       type: this.squealType
     };

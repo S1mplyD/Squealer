@@ -79,12 +79,12 @@
         <mat-card-content *ngIf="squeal.type !== 'media'">
           <p class="squealText">{{ squeal.body }}</p>
           <div class="button-group">
-            <button mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
-              <p class="squealText">{{ squeal.positiveReactions?.length }}</p>
+            <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
+              <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
               <mat-icon>thumb_up</mat-icon>
             </button>
-            <button mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
-              <p class="squealText">{{ squeal.negativeReactions?.length }}</p>
+            <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
+              <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
               <mat-icon>thumb_down</mat-icon>
             </button>
           </div>
@@ -92,12 +92,12 @@
         <mat-card-content *ngIf="squeal.type === 'media'">
           <img [src]="squeal.body">
           <div class="button-group">
-            <button mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
-              <p class="squealText">{{ squeal.positiveReactions?.length }}</p>
+            <button class="upvote" mat-raised-button (click)="addUpvote(squeal._id)" >
+              <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
               <mat-icon>thumb_up</mat-icon>
             </button>
-            <button mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
-              <p class="squealText">{{ squeal.negativeReactions?.length }}</p>
+            <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
+              <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
               <mat-icon>thumb_down</mat-icon>
             </button>
           </div>
