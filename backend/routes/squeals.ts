@@ -308,7 +308,7 @@ router.route("/positiveReactions").post(async (req, res) => {
     ) {
       const update: SquealerError | Success = await addPositiveReaction(
         req.query.squealId as string,
-        (req.user as User)._id,
+        (req.user as User)?._id,
       );
       if (!(update instanceof SquealerError)) res.sendStatus(200);
     }
@@ -326,7 +326,7 @@ router.route("/negativeReactions").post(async (req, res) => {
     ) {
       const update: SquealerError | Success = await addNegativeReaction(
         req.query.squealId as string,
-        (req.user as User)._id,
+        (req.user as User)?._id,
       );
       if (!(update instanceof SquealerError)) res.sendStatus(200);
     }
