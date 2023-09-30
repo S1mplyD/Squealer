@@ -1,11 +1,23 @@
 import React from "react";
-import Dashboard from "./Dashboard";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import CreateSqueal from "./components/CreateSqueal";
+import Navbar from "./components/Navbar";
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <Dashboard />
-    </div>
+    <BrowserRouter>
+      <>
+        <header>
+          <Navbar></Navbar>
+        </header>
+        <Routes>
+          <Route
+            path="/smm/createsqueal"
+            element={<CreateSqueal></CreateSqueal>}
+          />
+        </Routes>
+      </>
+    </BrowserRouter>
   );
 };
 
