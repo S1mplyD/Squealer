@@ -1,6 +1,5 @@
 .user-profile {
-  margin: 20px;
-  height: 800px;
+  margin: 0 auto;
 }
 
 #squeal {
@@ -38,8 +37,21 @@
 .post-list,
 .answer-list {
   margin-top: 20px;
+  margin: auto;
+  height:600px;
+  width: 50%;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
+.post-list::-webkit-scrollbar {
+  display: none;
+}
+
+.answer-list::-webkit-scrollbar {
+  display: none;
+}
 .post,
 .answer {
   border: 1px solid #ccc;

@@ -30,11 +30,11 @@ export class UsersService {
   }
 
   getUserByUsername(username: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${username}`);
+    return this.http.get<User>(`${this.apiUrl}/user/${username}`);
   }
 
   updateUserByUsername(username: string, user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${username}`, user);
+    return this.http.put<User>(`${this.apiUrl}/user/${username}`, user);
   }
 
   updateUserPictureByUsername(username: string, filename: string): Observable<any> {

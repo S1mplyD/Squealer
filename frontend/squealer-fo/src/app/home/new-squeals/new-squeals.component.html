@@ -72,7 +72,7 @@
             <!--<img *ngIf="squeal?.profileImage" [src]="squeal?.profileImage" [alt]="'profile image of ' + squeal?.username" />-->
             <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
           </div>
-          <mat-card-title class="squealTitle">{{ squeal.author }}</mat-card-title>
+          <mat-card-title class="squealTitle" [routerLink]="['/following/'+ squeal.author]">{{ squeal.author }}</mat-card-title>
           <br>
           <mat-card-subtitle class="squealText">{{ formatDate(squeal.date) }}</mat-card-subtitle>
         </mat-card-header>
