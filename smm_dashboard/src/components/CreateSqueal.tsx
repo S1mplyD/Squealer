@@ -1,9 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { LatLngTuple } from "leaflet";
 
 const CreateSqueal: React.FC = () => {
   const [checkbox, setCheckbox] = useState(true);
+  const [location, setLocation] = useState<LatLngTuple>([51.505, -0.09]);
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      //geolocazione disponibile
+      navigator.geolocation.getCurrentPosition((position) => {
+        setLocation([position.coords.latitude, position.coords.longitude]);
+      });
+    } else {
+      //geolocazione non disponibile
+    }
+  }, []);
+  const MapLoc = () => {
+    useMapEvents({
+      click(e) {
+        setLocation([e.latlng.lat, e.latlng.lng]);
+      },
+    });
+    return null;
+  };
   return (
     <form className="mt-4">
       <div className="mb-4">
@@ -71,11 +99,19 @@ const CreateSqueal: React.FC = () => {
           </div>
         ) : null}
         {geo ? (
-          <div>
-            <label htmlFor="lat">Latitude</label>
-            <input type="text" placeholder="Latitude" id="lat"></input>
-            <label htmlFor="lng">Longitude</label>
-            <input type="text" placeholder="Longitude" id="lng"></input>
+          <div className="h-96">
+            <MapContainer center={location} zoom={13} scrollWheelZoom={true}>
+              <MapLoc />
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={location}>
+                <Popup>
+                  A pretty CSS3 popup. <br /> Easily customizable.
+                </Popup>
+              </Marker>
+            </MapContainer>
           </div>
         ) : null}
       </div>
