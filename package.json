@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "",
     "api": "nodemon ./backend/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "cd smm_dashboard && npm run build && cd .. && npm run api"
   },
   "repository": {
     "type": "git",
