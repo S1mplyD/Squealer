@@ -47,16 +47,16 @@ router.route("/following").get(async (req, res) => {
 /**
  * chiamata per seguire un utente
  */
-router.route("/follow").post(async (req, res) => {
+router.route("/follow/:username").post(async (req, res) => {
   try {
     if (
       req.user &&
       ((req.user as User).status !== "ban" ||
         (req.user as User).status !== "block")
     ) {
-      const update: SquealerError | Success | undefined = await followUser(
+      const update: SquealerError | Success = await followUser(
         (req.user as User)._id,
-        req.query.username as string
+        req.params.username as string
       );
       if (update instanceof SquealerError) res.status(500).send(update);
       else res.sendStatus(200);
@@ -69,7 +69,7 @@ router.route("/follow").post(async (req, res) => {
 /**
  * chiamata per smettere di seguire un utente
  */
-router.route("/unfollow").post(async (req, res) => {
+router.route("/unfollow/:username").post(async (req, res) => {
   try {
     if (
       req.user &&
@@ -78,14 +78,12 @@ router.route("/unfollow").post(async (req, res) => {
     ) {
       const update: SquealerError | Success = await unfollowUser(
         (req.user as User)._id,
-        req.query.username as string
+        req.params.username as string
       );
       if (update instanceof SquealerError) res.sendStatus(500);
       else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error: any) {
-    console.log("here");
-
     console.log(error);
   }
 });
