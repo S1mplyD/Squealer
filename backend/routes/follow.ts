@@ -13,11 +13,11 @@ export const router = express.Router();
 /**
  * chiamata che ritorna il numero di followers di un utente
  */
-router.route("/followers").get(async (req, res) => {
+router.route("/followers/:username").get(async (req, res) => {
   try {
     if (req.user) {
       const followers: User[] | SquealerError = await getAllFollowers(
-        req.query.username as string
+        req.params.username as string
       );
       if (followers instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(followers);
@@ -30,11 +30,11 @@ router.route("/followers").get(async (req, res) => {
 /**
  * chiamata che ritorna tutti i seguiti di un utente
  */
-router.route("/following").get(async (req, res) => {
+router.route("/following/:username").get(async (req, res) => {
   try {
     if (req.user) {
       const following: User[] | SquealerError = await getAllFollowing(
-        req.query.username as string
+        req.params.username as string
       );
       if (following instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(following);
