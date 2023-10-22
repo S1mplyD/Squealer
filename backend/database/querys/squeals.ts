@@ -15,6 +15,7 @@ import fs from "fs";
 import { startTimer, stopTimer } from "../../API/timers";
 import { updateDailyCharacters } from "../../API/characters";
 import { createNotification } from "./notification";
+import { getUserByUsername } from "./users";
 
 const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
@@ -219,7 +220,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     if (newSqueal.type === "media") {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
-        125,
+        125
       );
       if (characters instanceof SquealerError) {
         await squealModel.deleteOne({ _id: newSqueal._id });
@@ -228,7 +229,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     } else {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
-        newSqueal.body.length,
+        newSqueal.body.length
       );
       if (characters instanceof SquealerError) {
         await squealModel.deleteOne({ _id: newSqueal._id });
@@ -251,7 +252,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
           i.includes("@")
             ? `You have a new message from ${newSqueal.author}`
             : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
-          i,
+          i
         );
       }
     }
@@ -366,14 +367,14 @@ export async function getSquealsByChannel(channel: string) {
 export async function editReaction(
   squealId: string,
   positiveReactions: number,
-  negativeReactions: number,
+  negativeReactions: number
 ) {
   const update = await squealModel.updateOne(
     { _id: squealId },
     {
       positveReactions: positiveReactions,
       negativeReactions: negativeReactions,
-    },
+    }
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -386,7 +387,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
       { _id: squealId },
       {
         $push: { positiveReactions: "guest" },
-      },
+      }
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -399,7 +400,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
       {
         $pull: { negativeReactions: userId },
         $push: { positiveReactions: userId },
-      },
+      }
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -412,7 +413,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
         { _id: squealId },
         {
           $push: { positiveReactions: userId },
-        },
+        }
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -427,7 +428,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
       { _id: squealId },
       {
         $push: { negativeReactions: "guest" },
-      },
+      }
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -440,7 +441,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
       {
         $push: { negativeReactions: userId },
         $pull: { positiveReactions: userId },
-      },
+      }
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -453,7 +454,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
         { _id: squealId },
         {
           $push: { negativeReactions: userId },
-        },
+        }
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -463,12 +464,33 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
 
 export async function updateSquealsUsername(
   oldUsername: string,
-  username: string,
+  username: string
 ): Promise<Success | SquealerError> {
   const update = await squealModel.updateMany(
     { author: oldUsername },
-    { author: username },
+    { author: username }
   );
   if (update.modifiedCount > 0) return updated;
   else return cannot_update;
+}
+
+/**
+ * funzione che permette ad un smm di pubblicare uno squeal a nome di un altro utente
+ * @param username username dell'account gestito
+ * @param smm id del smm
+ * @param squeal squeal da pubblicare
+ * @returns Squeal | non_existent
+ */
+export async function postSquealAsUser(
+  username: string,
+  smm: string,
+  squeal: Squeal
+) {
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (!(user instanceof SquealerError)) {
+    if (user.SMM == smm) {
+      const newSqueal: Squeal | SquealerError = await postSqueal(squeal, user);
+      return newSqueal;
+    }
+  } else return user;
 }
