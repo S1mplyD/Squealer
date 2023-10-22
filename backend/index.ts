@@ -62,8 +62,8 @@ app.use(
 //SMM dashboard
 app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 // Funzione che ricarica il file statico della pagina corrente
-app.get("/smm", (req, res) => {
-  res.sendFile(__dirname + "/smm_dashboard/dist/index.html");
+app.get("/smm/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../smm_dashboard/dist/index.html"));
 });
 
 //BACKOFFICE

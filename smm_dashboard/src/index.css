@@ -6,3 +6,8 @@
   background-color: #333;
   color: #f8f8f8;
 }
+
+.leaflet-container {
+  height: 400px;
+  width: 50%;
+}

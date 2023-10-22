@@ -1,9 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { LatLngTuple } from "leaflet";
+import { postSqueal } from "../HTTPcalls";
 
 const CreateSqueal: React.FC = () => {
   const [checkbox, setCheckbox] = useState(true);
+  const [location, setLocation] = useState<LatLngTuple>([
+    44.1420926, 11.1478767,
+  ]);
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      //geolocazione disponibile
+      navigator.geolocation.getCurrentPosition((position) => {
+        setLocation([position.coords.latitude, position.coords.longitude]);
+      });
+    }
+  }, []);
+  const MapLoc = () => {
+    useMapEvents({
+      click(e) {
+        setLocation([e.latlng.lat, e.latlng.lng]);
+      },
+    });
+    return null;
+  };
   return (
     <form className="mt-4">
       <div className="mb-4">
@@ -71,11 +100,19 @@ const CreateSqueal: React.FC = () => {
           </div>
         ) : null}
         {geo ? (
-          <div>
-            <label htmlFor="lat">Latitude</label>
-            <input type="text" placeholder="Latitude" id="lat"></input>
-            <label htmlFor="lng">Longitude</label>
-            <input type="text" placeholder="Longitude" id="lng"></input>
+          <div className="h-96">
+            <MapContainer center={location} zoom={13} scrollWheelZoom={true}>
+              <MapLoc />
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Marker position={location}>
+                <Popup>
+                  A pretty CSS3 popup. <br /> Easily customizable.
+                </Popup>
+              </Marker>
+            </MapContainer>
           </div>
         ) : null}
       </div>
@@ -98,7 +135,16 @@ const CreateSqueal: React.FC = () => {
           type="text"
           id="recipients"
           className="w-full px-3 py-2 border rounded"
-          required
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="channels" className="block mb-2 font-bold">
+          Channels
+        </label>
+        <input
+          type="text"
+          id="channels"
+          className="w-full px-3 py-2 border rounded"
         />
       </div>
       <div className="mb-4">
@@ -109,23 +155,42 @@ const CreateSqueal: React.FC = () => {
           type="text"
           id="category"
           className="w-full px-3 py-2 border rounded"
-          required
         />
       </div>
       <button
         type="submit"
         className="btn-orange bg-grey text-white px-4 py-2 rounded"
-        onClick={() => {
+        onClick={async () => {
           const body: string = (
             document.getElementById("body") as HTMLInputElement
           ).value;
+          const category: string = (
+            document.getElementById("category") as HTMLInputElement
+          ).value;
+          const channels: string = (
+            document.getElementById("channels") as HTMLInputElement
+          ).value.replaceAll(" ", "");
+          const channelsArray: string[] = channels.split(",");
           const recipients: string = (
             document.getElementById("recipients") as HTMLInputElement
-          ).value;
+          ).value.replaceAll(" ", "");
+          const recipientsArray: string[] = recipients.split(",");
           const type = (document.querySelector(
             'input[name="type"]:checked'
           ) as HTMLInputElement)!.value;
-          console.log(body, recipients, type);
+          const newSqueal = await postSqueal(
+            body,
+            category,
+            channelsArray,
+            type,
+            location[0].toString(),
+            location[1].toString(),
+            timed
+              ? +(document.getElementById("time") as HTMLInputElement).value
+              : undefined,
+            recipientsArray
+          );
+          console.log(newSqueal);
         }}
       >
         Submit
