@@ -17,7 +17,7 @@ router.route("/followers").get(async (req, res) => {
   try {
     if (req.user) {
       const followers: User[] | SquealerError = await getAllFollowers(
-        req.query.username as string,
+        req.query.username as string
       );
       if (followers instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(followers);
@@ -34,7 +34,7 @@ router.route("/following").get(async (req, res) => {
   try {
     if (req.user) {
       const following: User[] | SquealerError = await getAllFollowing(
-        req.query.username as string,
+        req.query.username as string
       );
       if (following instanceof SquealerError) res.sendStatus(404);
       else res.status(200).send(following);
@@ -56,9 +56,9 @@ router.route("/follow").post(async (req, res) => {
     ) {
       const update: SquealerError | Success | undefined = await followUser(
         (req.user as User)._id,
-        req.query.username as string,
+        req.query.username as string
       );
-      if (update instanceof SquealerError) res.sendStatus(500);
+      if (update instanceof SquealerError) res.status(500).send(update);
       else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error: any) {
@@ -78,7 +78,7 @@ router.route("/unfollow").post(async (req, res) => {
     ) {
       const update: SquealerError | Success = await unfollowUser(
         (req.user as User)._id,
-        req.query.username as string,
+        req.query.username as string
       );
       if (update instanceof SquealerError) res.sendStatus(500);
       else res.sendStatus(200);
