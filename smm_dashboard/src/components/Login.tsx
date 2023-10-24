@@ -32,11 +32,14 @@ const Login: React.FC = () => {
         </form>
         <div className="m-4">OR</div>
         <div>
-          <button className="flex flex-row rounded-xl bg-grey p-4 m-4 text-white">
-            <a href="http://127.0.0.1:3000/api/auth/google" className="mr-4">
+          <button className=" rounded-xl bg-grey p-4 m-4 text-white">
+            <a
+              href="http://localhost:3000/api/auth/google"
+              className="mx-4 flex flex-row"
+            >
               <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"></img>
+              Login with Google
             </a>
-            Login with Google
           </button>
         </div>
       </div>
