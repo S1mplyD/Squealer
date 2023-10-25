@@ -46,3 +46,7 @@ export async function getManagedUsers(username: string) {
   );
   return managedUsers.data;
 }
+
+export async function logout() {
+  await axios.post(`${path}/api/auth/logout`);
+}
