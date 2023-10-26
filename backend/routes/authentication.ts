@@ -152,14 +152,12 @@ passport.serializeUser((user: any, cb) => {
 /**
  * Logout
  */
-router.post("/logout", (req, res) => {
+router.get("/logout", (req, res) => {
   try {
-    req.logOut((err) => {
-      if (err) {
-        console.log(err);
-      }
-      res.redirect("/");
+    req.logout((err) => {
+      if (err) console.log(err);
     });
+    res.status(200).redirect("/");
   } catch (error: any) {
     console.log(error);
   }
