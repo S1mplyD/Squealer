@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../utils/types";
-import { getMe, logout } from "../HTTPcalls";
+import { getMe } from "../HTTPcalls";
 import Login from "./Login";
 
 const Navbar: React.FC = () => {
@@ -29,13 +29,8 @@ const Navbar: React.FC = () => {
           </div>
           <div>
             <div>
-              <button
-                className="p-4 py-2 rounded-lg bg-grey text-white"
-                onClick={() => {
-                  logout();
-                }}
-              >
-                Logout
+              <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
+                <a href="/api/auth/logout">Logout</a>
               </button>
             </div>
           </div>
