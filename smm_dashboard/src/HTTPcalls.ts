@@ -50,3 +50,10 @@ export async function getManagedUsers(username: string) {
 export async function logout() {
   await axios.post(`${path}/api/auth/logout`);
 }
+
+export async function login(mail: string, password: string) {
+  await axios.post(`${path}/api/auth/login`, {
+    username: mail,
+    password: password,
+  });
+}
