@@ -387,7 +387,8 @@ router.route("/notification").get(async (req, res) => {
 
 router.route("/me").get(async (req, res) => {
   try {
-    res.send(req.user);
+    if (req.user) res.send(req.user);
+    else res.sendStatus(404);
   } catch (e) {
     console.log(e);
   }
