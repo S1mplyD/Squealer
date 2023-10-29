@@ -1,10 +1,12 @@
 import axios from "axios";
 import { Squeal } from "./utils/types";
+const path: string = "http://localhost:3000";
 
-export async function addNewSqueal(
+export async function postSqueal(
   body: string,
   category: string,
   channels: string[],
+  username: string,
   type: string,
   lng?: string,
   lat?: string,
@@ -21,6 +23,37 @@ export async function addNewSqueal(
     type: type,
     time: time,
   };
-  const newSqueal = await axios.post<Squeal>("/api/squeals/type", requestBody);
+  const newSqueal = await axios.post<Squeal>(
+    `${path}/api/squeals/smm/${username}`,
+    requestBody
+  );
   return newSqueal;
+}
+
+export async function getUser(username: string) {
+  const user = await axios.get(path + `/api/users/user/${username}`);
+  return user.data;
+}
+
+export async function getMe() {
+  const user = await axios.get(path + "/api/users/me");
+  return user.data;
+}
+
+export async function getManagedUsers(username: string) {
+  const managedUsers = await axios.get(
+    `${path}/api/users/managedUsers/${username}`
+  );
+  return managedUsers.data;
+}
+
+export async function logout() {
+  await axios.post(`${path}/api/auth/logout`);
+}
+
+export async function login(mail: string, password: string) {
+  await axios.post(`${path}/api/auth/login`, {
+    username: mail,
+    password: password,
+  });
 }

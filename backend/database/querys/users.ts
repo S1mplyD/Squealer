@@ -26,6 +26,19 @@ export async function getAllUsers() {
   else return users;
 }
 
+export async function getManagedUsers(username: string): Promise<User[]> {
+  let managedUsers: User[] = [];
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (!(user instanceof SquealerError)) {
+    user.managedAccounts.forEach(async (el) => {
+      const managedUser: User | SquealerError = await getUser(el);
+      if (!(managedUser instanceof SquealerError))
+        managedUsers.push(managedUser);
+    });
+  }
+  return managedUsers;
+}
+
 /**
  * funzione che ritorna un utente
  * @param id id dell'utente
@@ -67,7 +80,7 @@ export async function createDefaultUser(
     mail: mail,
     password: password,
     createdAt: new Date(),
-    profilePicture: "default.png",
+    profilePicture: "/public/default.png",
   });
   if (!doc) return cannot_create;
   else return doc;
