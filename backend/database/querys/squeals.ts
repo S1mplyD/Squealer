@@ -190,10 +190,10 @@ export async function getMediaSqueal(id: string) {
  * @returns eventuali errori
  */
 export async function postSqueal(squeal: Squeal, user: User) {
-  const channels: SquealerError | Channel[] = await channelsModel.find({
+  const channels: null | Channel[] = await channelsModel.find({
     name: { $in: squeal.channels },
   });
-  if (channels instanceof SquealerError) return channels;
+  if (!channels) return channels;
   let rec: string[] = [];
   if (squeal.recipients.length > 0) {
     for (let i of squeal.recipients) {
