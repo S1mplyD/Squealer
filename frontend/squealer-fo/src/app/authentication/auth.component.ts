@@ -1,16 +1,18 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { AuthService } from 'app/services/auth.service'; // Your authentication service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from 'app/interfaces/account.interface';
 import { Subject, takeUntil } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ComponentCacheService } from 'app/services/component-cache.service';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit, OnDestroy{
   isLoggedIn = false;
   userName: string = '';
   user: User = {
@@ -26,16 +28,19 @@ export class AuthComponent {
     status: '',
     blockedFor: 0
   };
-
+  parameters = {
+    dataSource: []
+  }
   loginForm: FormGroup;
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
   private _unsubscribeAll: Subject<void> = new Subject<void>();
-
   constructor(
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private _snackBar: MatSnackBar,
+    private componentCacheService: ComponentCacheService
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
@@ -53,16 +58,19 @@ export class AuthComponent {
       email: ['', Validators.required],
     });
   }
+  ngOnDestroy(): void {
+    this.componentCacheService.set(AuthComponent.name, this.parameters);
+  }
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
 
   loginWithGoogle() {
     this.authService.loginWithGoogle()
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
-      localStorage.setItem('plan', acc.plan);
-      localStorage.setItem('username', acc.username);
     });
-    localStorage.setItem('isLoggedIn', 'true');
     this.router.navigateByUrl('');
   }
 
@@ -73,12 +81,11 @@ export class AuthComponent {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
-      localStorage.setItem('plan', acc.plan);
-      localStorage.setItem('username', acc.username);
+      this.router.navigateByUrl('');
+    },
+    (error) => {
+      this._snackBar.open('Email or password are not correct! Retry,', 'Close');
     });
-
-    localStorage.setItem('isLoggedIn', 'true');
-    this.router.navigateByUrl('');
   }
 
   signup() {
@@ -91,9 +98,6 @@ export class AuthComponent {
     .subscribe((acc) => {
       this.user = acc;
     });
-    localStorage.setItem('plan', this.user.plan);
-    localStorage.setItem('username', this.user.username);
-    localStorage.setItem('isLoggedIn', 'true');
     this.router.navigateByUrl('');
   }
 
@@ -105,7 +109,6 @@ export class AuthComponent {
   logout() {
     this.authService.logout();
     this.isLoggedIn = false;
-    localStorage.setItem('isLoggedIn', 'false');
     this.userName = '';
   }
 }

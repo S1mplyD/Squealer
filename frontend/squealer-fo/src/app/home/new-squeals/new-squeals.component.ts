@@ -6,6 +6,7 @@ import { User } from 'app/interfaces/account.interface';
 import { UsersService } from 'app/services/users.service';
 import { Subject, takeUntil } from 'rxjs';
 import { MediaService } from 'app/services/media.service';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-new-squeal',
@@ -44,7 +45,8 @@ export class NewSquealsComponent implements OnInit {
     private squealService: SquealService,
     private datePipe: DatePipe,
     private userService: UsersService,
-    private mediaService: MediaService) {}
+    private mediaService: MediaService,
+    private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadSqueals();
@@ -53,16 +55,15 @@ export class NewSquealsComponent implements OnInit {
     .subscribe((res) => {
       this.accounts = res;
     });
-    this.plan = localStorage.getItem('plan');
-    if (localStorage.getItem('isLoggedIn') === 'false') {
-      this.isLoggedIn = false;
-    } else if (localStorage.getItem('isLoggedIn') === 'true') {
-      this.isLoggedIn = true;
-    }
-    if (localStorage.getItem('username')) {
-      this.username = localStorage.getItem('username') + '';
-    }
-
+    this.authService.isAuthenticated()
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      if (res !== 'Not Found') {
+        this.isLoggedIn = true;
+        this.username = res.username + '';
+        this.plan = res.plan + '';
+      }
+    });
   }
 
   openPopup(): void {

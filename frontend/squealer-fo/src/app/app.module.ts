@@ -26,6 +26,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     MatButtonModule,
     MatListModule,
     MatExpansionModule,
+    MatSnackBarModule,
     FormsModule,
     MatInputModule,
     ReactiveFormsModule,

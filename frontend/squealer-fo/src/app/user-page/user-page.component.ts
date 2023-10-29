@@ -14,41 +14,61 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class UserPageComponent implements OnInit {
   account: User | undefined;
+  loggedUser: User | undefined;
   answerers!: User[];
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
   userName!: string;
+  isFollowed: boolean = false;
+  un = localStorage.getItem('username');
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,
     private datePipe: DatePipe,
     public activeRoute: ActivatedRoute,
-    private usersService: UsersService) {}
+    private usersService: UsersService) {
+    }
 
   ngOnInit() {
+    this.usersService.getUserByUsername(String(this.activeRoute.snapshot.paramMap.get("username")))
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      this.account = res;
+    });
+    this.squealService.getSquealsForUsers(String(this.activeRoute.snapshot.paramMap.get("username")))
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      this.recentPosts = res;
+    });
+    console.log(String(this.activeRoute.snapshot.paramMap.get("username")));
     this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
-    this.getAccountData();
-    this.getRecentPosts();
-    this.getTaggedAnswers();
+    const loggedUser = localStorage.getItem('username');
+    this.usersService.following(loggedUser ? loggedUser: '')
+    .pipe(takeUntil(this._unsubscribeAll)).subscribe((res) => {
+      for (const foll of res) {
+        if (this.userName === foll.username) {
+          this.isFollowed = true;
+        }
+      }
+    });
   }
 
   formatDate(date: Date | undefined): string | null{
     return this.datePipe.transform(date, 'dd/MM/yyyy'); // Change the format pattern as per your requirement
   }
 
-  getAccountData() {
-    this.usersService.getUserByUsername(this.userName)
+  follow() {
+    this.usersService.follow(this.userName)
     .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      this.account = res;
+    .subscribe(res => {
+      console.log(res);
     });
   }
 
-  getRecentPosts() {
-    this.squealService.getSquealsForUsers(this.userName).subscribe(res => this.recentPosts = res);
+  unfollow() {
+    this.usersService.unfollow(this.userName)
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe(res => {if (res === 'OK') this.isFollowed = false;});
   }
 
-  getTaggedAnswers() {
-   // Da implementare
-  }
 }

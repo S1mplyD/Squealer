@@ -74,6 +74,7 @@ export class SquealService {
   addSqueal(squeal: Squeal): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}`, squeal);
   }
+
   deleteSqueal(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}`, {params: {'id': id + ''}});
   }

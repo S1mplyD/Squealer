@@ -9,6 +9,7 @@ import { User } from 'app/interfaces/account.interface';
 export class AuthService {
 
   private apiUrl = 'http://localhost:3000/api/auth'; // Replace with your authentication API URL
+  private authUrl = 'http://localhost:3000/api/users';
 
 
   constructor(private http: HttpClient) {}
@@ -17,8 +18,8 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/google`, {});
   }
 
-  loginWithEmail(username: string, password: string): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/login`, { username, password });
+  loginWithEmail(username: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, { username, password });
   }
 
   signUp(mail: string, password: string, name: string, username: string): Observable<User> {
@@ -41,6 +42,10 @@ export class AuthService {
 
   logout(): void {
     this.http.get(`${this.apiUrl}/logout`);
+  }
+
+  isAuthenticated(): Observable<any> {
+    return this.http.get<any>(`${this.authUrl}/me`);
   }
 
 }

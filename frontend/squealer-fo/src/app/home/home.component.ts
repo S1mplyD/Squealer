@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     dataSource: []
   }
   constructor(private componentCacheService: ComponentCacheService) {}
+
   ngOnInit(): void {
       this.selectedIndex = 0;
   }

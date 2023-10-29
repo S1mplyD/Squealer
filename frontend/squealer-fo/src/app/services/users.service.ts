@@ -10,6 +10,8 @@ export class UsersService {
 
   private apiUrl = 'http://localhost:3000/api/users'; // Replace with your authentication API URL
 
+  private followApiUrl = 'http://localhost:3000/api/follow';
+
 
   constructor(private http: HttpClient) {}
 
@@ -92,6 +94,28 @@ export class UsersService {
       'id': id + ''
     }
     return this.http.put<any>(`${this.apiUrl}/unblock`, {params: params});
+  }
+
+  follow(username: string): Observable<any> {
+    const params = {
+      'username': username + ''
+    }
+    return this.http.post<any>(`${this.followApiUrl}/follow/${username}`, {params: params});
+  }
+
+  unfollow(username: string): Observable<any> {
+    const params = {
+      'username': username + ''
+    }
+    return this.http.post<any>(`${this.followApiUrl}/unfollow/${username}`, {params: params});
+  }
+
+  followers(username: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.followApiUrl}/followers/${username}`);
+  }
+
+  following(username: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.followApiUrl}/following/${username}`);
   }
 
 
