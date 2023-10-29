@@ -27,22 +27,22 @@ app.use(cors());
 app.use(express.json());
 
 app.use(
-    session({
-        secret: process.env.COOKIE_KEY!,
-        cookie: { maxAge: maxAge },
-        resave: false,
-        saveUninitialized: false,
-    }),
+  session({
+    secret: process.env.COOKIE_KEY!,
+    cookie: { maxAge: maxAge },
+    resave: false,
+    saveUninitialized: false,
+  })
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
 fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
-    if (err) console.log(err);
-    if (!files.includes("uploads")) {
-        fs.mkdir("public/uploads", (err) => {
-            if (err) console.log(err);
-        });
-    }
+  if (err) console.log(err);
+  if (!files.includes("uploads")) {
+    fs.mkdir("public/uploads", (err) => {
+      if (err) console.log(err);
+    });
+  }
 });
 
 app.use(passport.initialize());
@@ -53,11 +53,17 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 // pagina principale APP
 app.use(
-    "/",
-    express.static(
-        path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo"),
-    ),
+  "/",
+  express.static(
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
+  )
 );
+
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
+  );
+});
 
 app.use("/test", express.static(path.join(__dirname, "../test")));
 
@@ -65,13 +71,13 @@ app.use("/test", express.static(path.join(__dirname, "../test")));
 app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 // Funzione che ricarica il file statico della pagina corrente
 app.get("/smm/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../smm_dashboard/dist/index.html"));
+  res.sendFile(path.join(__dirname, "../smm_dashboard/dist/index.html"));
 });
 
 //BACKOFFICE
 app.use(
-    "/backoffice",
-    express.static(path.join(__dirname, "../frontend/squealer-bo")),
+  "/backoffice",
+  express.static(path.join(__dirname, "../frontend/squealer-bo"))
 );
 
 // ENDPOINT DELLE API
@@ -90,13 +96,13 @@ app.use("/api/follow", followRoute);
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
-    console.log("[CONNECTED TO MONGOOSE]");
-    const ret: SquealerError | undefined = await startAllTimer();
-    console.log(ret);
-    await updateAnalyticTimer();
-    await resetCharactersScheduler();
+  console.log("[CONNECTED TO MONGOOSE]");
+  const ret: SquealerError | undefined = await startAllTimer();
+  console.log(ret);
+  await updateAnalyticTimer();
+  await resetCharactersScheduler();
 });
 
 app.listen(port, () => {
-    console.log(`server started on port ${port}`);
+  console.log(`server started on port ${port}`);
 });
