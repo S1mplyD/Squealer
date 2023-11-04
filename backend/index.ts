@@ -48,6 +48,15 @@ fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ENDPOINT DELLE API
+app.use("/api/auth", authRoute);
+app.use("/api/channels", channelRoute);
+app.use("/api/squeals", squealsRoute);
+app.use("/api/media", mediaRoute);
+app.use("/api/users", userRoute);
+app.use("/api/analytics", analyticsRoute);
+app.use("/api/follow", followRoute);
+
 //IMMAGINI PUBBLICHE
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -59,16 +68,11 @@ app.use(
   )
 );
 
-app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
-  );
-});
+app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 
 app.use("/test", express.static(path.join(__dirname, "../test")));
 
 //SMM dashboard
-app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 // Funzione che ricarica il file statico della pagina corrente
 app.get("/smm/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../smm_dashboard/dist/index.html"));
@@ -80,19 +84,11 @@ app.use(
   express.static(path.join(__dirname, "../frontend/squealer-bo"))
 );
 
-// ENDPOINT DELLE API
-app.use("/api/auth", authRoute);
-app.use("/api/channels", channelRoute);
-app.use("/api/squeals", squealsRoute);
-app.use("/api/media", mediaRoute);
-app.use("/api/users", userRoute);
-app.use("/api/analytics", analyticsRoute);
-app.use("/api/follow", followRoute);
-
-// Funzione che ricarica il file statico della pagina corrente
-// app.get("*", (req, res) => {
-//   res.sendFile(__dirname + "/frontend/squealer-fo/dist/index.html");
-// });
+app.get("/*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
+  );
+});
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
