@@ -8,7 +8,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { LatLngTuple } from "leaflet";
-import { getMe, postSqueal } from "../HTTPcalls";
+import { getManagedUsers, getMe, postSqueal } from "../HTTPcalls";
 import L from "leaflet";
 
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -40,6 +40,10 @@ const CreateSqueal: React.FC = () => {
     }
     async function fetchData() {
       const user: User = await getMe();
+      const managed: User[] = await getManagedUsers(user.username);
+      console.log(managed);
+
+      setManagedUsers(managed);
     }
     fetchData().then(() => {
       setLoading(false);
@@ -59,6 +63,15 @@ const CreateSqueal: React.FC = () => {
     return (
       <form className="mt-4">
         <div className="mb-4">
+          {managedUsers.length > 0 ? (
+            <div>
+              <select id="user">
+                {managedUsers.map((el) => (
+                  <option key={el.username}>{el.username}</option>
+                ))}
+              </select>
+            </div>
+          ) : null}
           <label htmlFor="radiodiv" className="font-bold">
             Type
           </label>
@@ -186,7 +199,7 @@ const CreateSqueal: React.FC = () => {
           />
         </div>
         <button
-          type="submit"
+          type="button"
           className="btn-orange bg-grey text-white px-4 py-2 rounded"
           onClick={async () => {
             const body: string = (
@@ -206,13 +219,15 @@ const CreateSqueal: React.FC = () => {
             const type = (document.querySelector(
               'input[name="type"]:checked'
             ) as HTMLInputElement)!.value;
+            const user = document.getElementById("user") as HTMLSelectElement;
             const newSqueal = await postSqueal(
               body,
               category,
               channelsArray,
+              user.options[user.selectedIndex].text,
               type,
-              location[0].toString(),
-              location[1].toString(),
+              geo ? location[0].toString() : undefined,
+              geo ? location[1].toString() : undefined,
               timed
                 ? +(document.getElementById("time") as HTMLInputElement).value
                 : undefined,

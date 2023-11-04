@@ -27,15 +27,17 @@ export async function getAllUsers() {
 }
 
 export async function getManagedUsers(username: string): Promise<User[]> {
-  let managedUsers: User[] = [];
+  var managedUsers: User[] = [];
   const user: User | SquealerError = await getUserByUsername(username);
   if (!(user instanceof SquealerError)) {
-    user.managedAccounts.forEach(async (el) => {
-      const managedUser: User | SquealerError = await getUser(el);
-      if (!(managedUser instanceof SquealerError))
+    for (let i of user.managedAccounts) {
+      const managedUser: User | SquealerError = await getUser(i);
+      if (!(managedUser instanceof SquealerError)) {
         managedUsers.push(managedUser);
-    });
+      }
+    }
   }
+
   return managedUsers;
 }
 
