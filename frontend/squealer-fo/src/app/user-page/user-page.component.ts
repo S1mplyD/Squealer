@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'app/interfaces/account.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { Squeal } from 'app/interfaces/squeal.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'app/services/users.service';
 import { Subject, takeUntil } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-page',
@@ -26,7 +27,9 @@ export class UserPageComponent implements OnInit {
     private squealService: SquealService,
     private datePipe: DatePipe,
     public activeRoute: ActivatedRoute,
-    private usersService: UsersService) {
+    private usersService: UsersService,
+    private router: Router,
+    private _snackBar: MatSnackBar) {
     }
 
   ngOnInit() {
@@ -61,14 +64,23 @@ export class UserPageComponent implements OnInit {
     this.usersService.follow(this.userName)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
-      console.log(res);
+      this._snackBar.open('You followed this user.', 'Close');
+      let currentUrl = this.router.url;
+      console.log(currentUrl);
+      this.router.navigateByUrl('/following/' + res.username);
     });
+
   }
 
   unfollow() {
     this.usersService.unfollow(this.userName)
     .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(res => {if (res === 'OK') this.isFollowed = false;});
+    .subscribe(res => {
+      if (res === 'OK') this.isFollowed = false;
+      this._snackBar.open('You unfollowed this user.', 'Close');
+    });
+    let currentUrl = this.router.url;
+    this.router.navigateByUrl(currentUrl);
   }
 
 }

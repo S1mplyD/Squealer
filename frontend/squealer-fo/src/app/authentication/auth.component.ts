@@ -97,8 +97,8 @@ export class AuthComponent implements OnInit, OnDestroy{
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
+      this.router.navigateByUrl('');
     });
-    this.router.navigateByUrl('');
   }
 
   recoverPassword() {
