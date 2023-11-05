@@ -65,11 +65,8 @@ export class UserPageComponent implements OnInit {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
       this._snackBar.open('You followed this user.', 'Close');
-      let currentUrl = this.router.url;
-      console.log(currentUrl);
-      this.router.navigateByUrl('/following/' + res.username);
     });
-
+    setTimeout(() => window.location.reload());
   }
 
   unfollow() {
@@ -79,8 +76,7 @@ export class UserPageComponent implements OnInit {
       if (res === 'OK') this.isFollowed = false;
       this._snackBar.open('You unfollowed this user.', 'Close');
     });
-    let currentUrl = this.router.url;
-    this.router.navigateByUrl(currentUrl);
+    setTimeout(() => window.location.reload());
   }
 
 }
