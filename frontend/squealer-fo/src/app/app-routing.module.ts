@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'authentication', component: AuthComponent},
   { path: '', component: HomeComponent },
   { path: 'following', component: AccountListComponent },
-  { path: 'following/:username', component: UserPageComponent}
+  { path: 'following/:username', component: UserPageComponent},
 ];
 
 @NgModule({

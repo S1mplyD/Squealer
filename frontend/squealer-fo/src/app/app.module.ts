@@ -26,7 +26,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSliderModule} from '@angular/material/slider';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
     MatListModule,
     MatExpansionModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
     FormsModule,
     MatInputModule,
     ReactiveFormsModule,
