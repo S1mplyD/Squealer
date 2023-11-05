@@ -58,7 +58,7 @@ router.route("/follow/:username").post(async (req, res) => {
         (req.user as User)._id,
         req.params.username as string
       );
-      if (update instanceof SquealerError) res.status(500).send(update);
+      if (update instanceof SquealerError) res.sendStatus(500);
       else res.sendStatus(200);
     } else res.sendStatus(401);
   } catch (error: any) {
