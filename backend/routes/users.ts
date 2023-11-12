@@ -195,26 +195,49 @@ router
     }
   });
 
-router.route("/user/:username/smm").post(async (req, res) => {
-  try {
-    if (
-      ((req.user as User).status !== "block" ||
-        (req.user as User).status !== "ban") &&
-      (req.user as User).plan === "professional"
-    ) {
-      const update: SquealerError | Success = await addSMM(
-        req.params.username,
-        (req.user as User)._id
-      );
-      if (update instanceof SquealerError) {
-        if (update === non_existent) res.sendStatus(404);
-        else res.sendStatus(500);
-      } else res.sendStatus(200);
-    } else res.sendStatus(401);
-  } catch (error) {
-    console.log(error);
-  }
-});
+router
+  .route("/user/:username/smm")
+  .post(async (req, res) => {
+    try {
+      if (
+        (((req.user as User).status !== "block" ||
+          (req.user as User).status !== "ban") &&
+          (req.user as User).plan === "professional") ||
+        (req.user as User).plan === "admin"
+      ) {
+        const update: SquealerError | Success | undefined = await addSMM(
+          req.params.username,
+          (req.user as User)._id
+        );
+        if (update instanceof SquealerError) {
+          if (update === non_existent) res.sendStatus(404);
+        } else if (!update) res.sendStatus(500);
+        else res.sendStatus(200);
+      } else res.sendStatus(401);
+    } catch (error) {
+      console.log(error);
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      if (
+        ((req.user as User).status !== "block" ||
+          (req.user as User).status !== "ban") &&
+        ((req.user as User).plan === "professional" ||
+          (req.user as User).plan) === "admin"
+      ) {
+        const update: SquealerError | Success | undefined = await removeSMM(
+          (req.user as User)._id,
+          req.params.username
+        );
+        if (update instanceof SquealerError) {
+          res.sendStatus(500);
+        } else res.sendStatus(200);
+      } else res.sendStatus(401);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
 router.route("/user/:username/changeplan").post(async (req, res) => {
   try {
@@ -238,25 +261,6 @@ router.route("/user/:username/changeplan").post(async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-  }
-});
-
-router.route("/smm").delete(async (req, res) => {
-  try {
-    if (
-      ((req.user as User).status !== "block" ||
-        (req.user as User).status !== "ban") &&
-      (req.user as User).plan === "professional"
-    ) {
-      const update: SquealerError | Success = await removeSMM(
-        (req.user as User)._id
-      );
-      if (update instanceof SquealerError) {
-        res.sendStatus(500);
-      } else res.sendStatus(200);
-    } else res.sendStatus(401);
-  } catch (error) {
-    console.log(error);
   }
 });
 
