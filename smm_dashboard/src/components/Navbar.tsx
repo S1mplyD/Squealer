@@ -54,16 +54,16 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
-                Geolocation
-              </button>
-            </li>
-            <li>
-              <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
                 Buy More Character
               </button>
             </li>
             <li>
-              <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
+              <button
+                className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
+                onClick={() => {
+                  navigate("/smm/managesmm");
+                }}
+              >
                 Add/Remove SMM
               </button>
             </li>
