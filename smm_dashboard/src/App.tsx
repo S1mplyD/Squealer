@@ -4,6 +4,7 @@ import CreateSqueal from "./components/CreateSqueal";
 import Navbar from "./components/Navbar";
 import Test from "./components/Test";
 import Login from "./components/Login";
+import ManageSMM from "./components/ManageSMM";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           />
           <Route path="/smm/test" element={<Test />} />
           <Route path="/smm/login" element={<Login />} />
+          <Route path="/smm/managesmm" element={<ManageSMM />} />
         </Routes>
       </>
     </BrowserRouter>
