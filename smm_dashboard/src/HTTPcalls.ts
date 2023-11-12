@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Squeal } from "./utils/types";
+import { Squeal, User } from "./utils/types";
 const path: string = "http://localhost:3000";
 
 export async function postSqueal(
@@ -36,7 +36,7 @@ export async function getUser(username: string) {
 }
 
 export async function getMe() {
-  const user = await axios.get(path + "/api/users/me");
+  const user = await axios.get<User>(path + "/api/users/me");
   return user.data;
 }
 
@@ -56,4 +56,17 @@ export async function login(mail: string, password: string) {
     username: mail,
     password: password,
   });
+}
+
+export async function getSMM(username: string) {
+  const user = await axios.get<User>(`${path}/api/users/user/${username}`);
+  return user.data;
+}
+
+export async function addSMM(username: string) {
+  await axios.post(`${path}/api/users/user/${username}/smm`);
+}
+
+export async function removeSMM(username: string) {
+  await axios.delete(`${path}/api/users/user/${username}/smm`);
 }
