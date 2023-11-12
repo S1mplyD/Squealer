@@ -7,6 +7,7 @@ import { UsersService } from 'app/services/users.service';
 import { Subject, takeUntil } from 'rxjs';
 import { MediaService } from 'app/services/media.service';
 import { AuthService } from 'app/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-new-squeal',
@@ -17,6 +18,7 @@ export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
   accounts: User[] = [];
   squealType: string = 'text';
+  dailyChars: number = 9999;
   squealSubType: boolean = false;
   selectedFile?: File = undefined;
   upvote: number = 0;
@@ -46,7 +48,8 @@ export class NewSquealsComponent implements OnInit {
     private datePipe: DatePipe,
     private userService: UsersService,
     private mediaService: MediaService,
-    private authService: AuthService) {}
+    private authService: AuthService,
+    private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.loadSqueals();
@@ -62,6 +65,8 @@ export class NewSquealsComponent implements OnInit {
         this.isLoggedIn = true;
         this.username = res.username + '';
         this.plan = res.plan + '';
+        this.dailyChars = res.dailyCharacters;
+        console.log(this.dailyChars);
       }
     });
   }
@@ -170,28 +175,37 @@ export class NewSquealsComponent implements OnInit {
   }
 
   addPost(): void {
-    const squeal: Squeal = {
-      _id: '',
-      author: this.username,
-      body: this.newSqueal.body,
-      date: new Date(),
-      lat: this.newSqueal.lat,
-      lng: this.newSqueal.lng,
-      time: this.newSqueal.time,
-      recipients: this.getRecipients(this.recipients),
-      channels: this.getChannels(this.newSqueal.body),
-      positiveReactions: this.newSqueal.positiveReactions,
-      negativeReactions: this.newSqueal.negativeReactions,
-      category: 'public',
-      type: this.squealType
-    };
-    this.squealService.addSqueal(squeal)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      if (res) {
-        this.loadSqueals();
-      }
-    });
-    this.closePopup();
+    console.log(this.dailyChars);
+    let numChar = this.newSqueal.body.length;
+    if (this.dailyChars - numChar >= 0) {
+      const squeal: Squeal = {
+        _id: '',
+        author: this.username,
+        body: this.newSqueal.body,
+        date: new Date(),
+        lat: this.newSqueal.lat,
+        lng: this.newSqueal.lng,
+        time: this.newSqueal.time,
+        recipients: this.getRecipients(this.recipients),
+        channels: this.getChannels(this.newSqueal.body),
+        positiveReactions: this.newSqueal.positiveReactions,
+        negativeReactions: this.newSqueal.negativeReactions,
+        category: 'public',
+        type: this.squealType
+      };
+      this.squealService.addSqueal(squeal)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        if (res) {
+          this.loadSqueals();
+        }
+      });
+      this.closePopup();
+    }
+    else {
+      this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
+        duration: 3000
+      });
+    }
   }
 }

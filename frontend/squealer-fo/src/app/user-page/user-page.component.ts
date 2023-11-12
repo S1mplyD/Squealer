@@ -1,11 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { User } from 'app/interfaces/account.interface';
 import { SquealService } from 'app/services/squeal.service';
 import { Squeal } from 'app/interfaces/squeal.interface';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'app/services/users.service';
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -13,13 +13,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './user-page.component.html',
   styleUrls: ['./user-page.component.scss'],
 })
-export class UserPageComponent implements OnInit, OnDestroy {
+export class UserPageComponent implements OnInit {
   account: User | undefined;
   loggedUser: User | undefined;
   answerers!: User[];
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
-   _reloadSubscription: Subscription = new Subscription;
   userName!: string;
   isFollowed: boolean = false;
   un = localStorage.getItem('username');
@@ -29,15 +28,7 @@ export class UserPageComponent implements OnInit, OnDestroy {
     private datePipe: DatePipe,
     public activeRoute: ActivatedRoute,
     private usersService: UsersService,
-    private router: Router,
     private _snackBar: MatSnackBar) {
-      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this._reloadSubscription = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-         // Trick the Router into believing it's last link wasn't previously loaded
-         this.router.navigated = false;
-      }
-    });
     }
 
 
@@ -53,8 +44,7 @@ export class UserPageComponent implements OnInit, OnDestroy {
       this.recentPosts = res;
     });
     this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
-    const loggedUser = localStorage.getItem('username');
-    this.usersService.following(loggedUser ? loggedUser: '')
+    this.usersService.following(this.un ? this.un: '')
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((res) => {
       for (const foll of res) {
         if (this.userName === foll.username) {
@@ -69,7 +59,9 @@ export class UserPageComponent implements OnInit, OnDestroy {
   }
 
   reloadPage(){
-    this.router.navigate([this.router.url]);
+    setTimeout(()=>{
+      window.location.reload();
+    }, 100);
  }
 
 
@@ -77,7 +69,9 @@ export class UserPageComponent implements OnInit, OnDestroy {
     this.usersService.follow(this.userName)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
-      this._snackBar.open('You followed this user.', 'Close');
+      this._snackBar.open('You followed this user.', 'Close', {
+        duration: 3000
+      });
     });
     this.reloadPage();
   }
@@ -88,14 +82,11 @@ export class UserPageComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
       if (res === 'OK') this.isFollowed = false;
-      this._snackBar.open('You unfollowed this user.', 'Close');
+      this._snackBar.open('You unfollowed this user.', 'Close', {
+        duration: 3000
+      });
     });
     this.reloadPage();
   }
 
-  ngOnDestroy(): void {
-    if (this._reloadSubscription) {
-      this._reloadSubscription.unsubscribe();
-    }
-  }
 }
