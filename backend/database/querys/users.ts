@@ -382,21 +382,41 @@ export async function addSMM(username: string, id: string) {
   const user: User | SquealerError = await getUserByUsername(username);
   if (user instanceof SquealerError) return user;
   else {
-    const update = await userModel.updateOne({ _id: id }, { SMM: user._id });
-    if (update.modifiedCount < 1) return cannot_update;
-    else return updated;
+    const updateUser = await userModel.updateOne(
+      { _id: id },
+      { SMM: user.username }
+    );
+    const updateSMM = await userModel.updateOne(
+      {
+        _id: user._id,
+      },
+      { $push: { managedAccounts: id } }
+    );
+    if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
+      return updated;
   }
 }
 
 /**
  * funzione che rimuove l'smm di un account
  * @param id id dell'utente che deve rimuovere l'smm
+ * @param username username dell'smm
  * @returns cannot_update | updated
  */
-export async function removeSMM(id: string) {
-  const update = await userModel.updateOne({ _id: id }, { SMM: "" });
-  if (update.modifiedCount < 1) return cannot_update;
-  else return updated;
+export async function removeSMM(id: string, username: string) {
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (user instanceof SquealerError) return user;
+  else {
+    const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
+    const updateSMM = await userModel.updateOne(
+      {
+        _id: user._id,
+      },
+      { $pull: { managedAccounts: id } }
+    );
+    if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
+      return updated;
+  }
 }
 
 export async function changeUserPlan(username: string, plan: string) {
