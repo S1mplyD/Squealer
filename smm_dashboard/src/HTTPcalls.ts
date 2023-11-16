@@ -11,7 +11,7 @@ export async function postSqueal(
   lng?: string,
   lat?: string,
   time?: number,
-  recipients?: string[]
+  recipients?: string[],
 ) {
   const requestBody = {
     body: body,
@@ -25,7 +25,7 @@ export async function postSqueal(
   };
   const newSqueal = await axios.post<Squeal>(
     `${path}/api/squeals/smm/${username}`,
-    requestBody
+    requestBody,
   );
   return newSqueal;
 }
@@ -42,7 +42,7 @@ export async function getMe() {
 
 export async function getManagedUsers(username: string) {
   const managedUsers = await axios.get(
-    `${path}/api/users/managedUsers/${username}`
+    `${path}/api/users/managedUsers/${username}`,
   );
   return managedUsers.data;
 }
@@ -64,9 +64,17 @@ export async function getSMM(username: string) {
 }
 
 export async function addSMM(username: string) {
-  await axios.post(`${path}/api/users/user/${username}/smm`);
+  const status = await axios.post(`${path}/api/users/user/${username}/smm`);
+  return status.status;
 }
 
 export async function removeSMM(username: string) {
-  await axios.delete(`${path}/api/users/user/${username}/smm`);
+  const status = await axios.delete(`${path}/api/users/user/${username}/smm`);
+  return status.status;
+}
+
+export async function getProUsers() {
+  const users = await axios.get(`${path}/api/users/professionals`);
+  if (users.status == 200) return users.data;
+  else return undefined;
 }
