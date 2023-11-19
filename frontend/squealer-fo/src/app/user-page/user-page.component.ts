@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class UserPageComponent implements OnInit {
   account: User | undefined;
   loggedUser: User | undefined;
-  answerers!: User[];
+  users!: User[];
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
   userName!: string;
@@ -44,6 +44,16 @@ export class UserPageComponent implements OnInit {
       this.recentPosts = res;
     });
     this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
+    this.squealService.getAllSqueals()
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((res) => {
+      this.taggedPosts = res
+    });
+    this.usersService.getAllUsers()
+    .pipe(takeUntil(this._unsubscribeAll))
+    .subscribe((response) => {
+      this.users = response;
+    })
     this.usersService.following(this.un ? this.un: '')
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((res) => {
       for (const foll of res) {

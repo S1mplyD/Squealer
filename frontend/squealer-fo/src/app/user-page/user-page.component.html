@@ -31,7 +31,7 @@
                 <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
                 <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
               </div>
-              <mat-card-title class="squealTitle">@{{ post.author }}</mat-card-title>
+              <mat-card-title class="squealTitle"><p>@</p>{{ post.author }}</mat-card-title>
               <br>
               <mat-card-subtitle class="squealText">{{ formatDate(post.date) }}</mat-card-subtitle>
             </mat-card-header>
@@ -45,21 +45,25 @@
 
     <mat-tab label="Tagged Answers" aria-label="primary">
       <div class="answer-list">
-        <div class="answer" *ngFor="let answer of taggedPosts">
-          <mat-card id="squeal">
-            <mat-card-header>
-              <div mat-card-avatar class="profile-image">
-                <!--<img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.author" />
-                <img *ngIf="!answer?.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" /> -->
-              </div>
-              <mat-card-title class="squealTitle">@{{ answer.author }}</mat-card-title>
-              <br>
-              <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <h2 class="squealText">{{ answer.body }}</h2>
-            </mat-card-content>
-          </mat-card>
+        <div  *ngFor="let answer of taggedPosts">
+          <div class="answer" *ngIf="answer.recipients.includes('@'+ userName)">
+            <mat-card id="squeal">
+              <mat-card-header>
+                <div mat-card-avatar class="profile-image">
+                  <div  *ngFor="let user of users">
+                    <img *ngIf="answer?.author === user.username && user.profilePicture" [src]="user?.profilePicture" [alt]="'profile image of ' + answer?.author" />
+                    <img *ngIf="answer?.author === user.username && !user.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" />
+                  </div>
+                </div>
+                <mat-card-title class="squealTitle"><p>@</p>{{ answer.author }}</mat-card-title>
+                <br>
+                <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <h2 class="squealText">{{ answer.body }}</h2>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </div>
     </mat-tab>
