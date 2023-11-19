@@ -17,6 +17,7 @@ interface Squeal {
   time?: number;
   count?: number;
   originalSqueal?: string;
+  responses?: string[];
 }
 
 interface SquealDocument extends Squeal, Document {}
@@ -40,6 +41,7 @@ const squealSchema = new Schema<SquealDocument>({
   time: { type: Number },
   count: { type: Number },
   originalSqueal: { type: String },
+  responses: { type: [String] }, //id degli squeal in risposta a questo squeal
 });
 
 const squealModel = model<SquealDocument>("squealData", squealSchema);
