@@ -1,11 +1,11 @@
 import squealModel from "../models/squeals.model";
-import { Squeal, Success, User, Channel } from "../../util/types";
+import { Channel, Squeal, Success, User } from "../../util/types";
 import {
-  non_existent,
   cannot_create,
   cannot_delete,
-  SquealerError,
   cannot_update,
+  non_existent,
+  SquealerError,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import { addSquealToChannel } from "./channels";
@@ -184,9 +184,25 @@ export async function getMediaSqueal(id: string) {
   else return squeal;
 }
 
+export async function postResponse(
+  squeal: Squeal,
+  originalSquealId: string,
+  user: User,
+) {
+  const newSqueal: Squeal | SquealerError = await postSqueal(squeal, user);
+  if (!(newSqueal instanceof SquealerError)) {
+    await squealModel.updateOne(
+      { _id: originalSquealId },
+      { $push: { responses: newSqueal._id } },
+    );
+  }
+  return newSqueal;
+}
+
 /**
  * crea un nuovo squeal (non automatizzato)
  * @param squeal oggetto contenente i parametri dello squeal
+ * @param user utente che posta lo squeal
  * @returns eventuali errori
  */
 export async function postSqueal(squeal: Squeal, user: User) {
@@ -220,7 +236,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     if (newSqueal.type === "media") {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
-        125
+        125,
       );
       if (characters instanceof SquealerError) {
         await squealModel.deleteOne({ _id: newSqueal._id });
@@ -229,7 +245,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     } else {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
-        newSqueal.body.length
+        newSqueal.body.length,
       );
       if (characters instanceof SquealerError) {
         await squealModel.deleteOne({ _id: newSqueal._id });
@@ -252,7 +268,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
           i.includes("@")
             ? `You have a new message from ${newSqueal.author}`
             : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
-          i
+          i,
         );
       }
     }
@@ -283,7 +299,7 @@ export async function deleteSqueal(id: string) {
 
 /**
  * funzione che cancella uno squeal
- * @param id id dello squeal
+ * @param squeal squeal da eliminare
  * @returns errori eventuali
  */
 export async function deleteMediaSqueal(squeal: Squeal) {
@@ -300,7 +316,7 @@ export async function deleteMediaSqueal(squeal: Squeal) {
 
 /**
  * funzione che cancella uno squeal temporizzato
- * @param id id dello squeal temporizzato
+ * @param squeal squeal da eliminare
  */
 export async function deleteTimedSqueal(squeal: Squeal) {
   const timedSqueal: Squeal | null = await squealModel.findOne({
@@ -335,14 +351,13 @@ export async function stopTimedSqueal(squeal: Squeal) {
 export async function restartTimedSqueal(squeal: Squeal) {
   const timedSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
   if (!(timedSqueal instanceof SquealerError)) {
-    const ret = await startTimer(timedSqueal);
-    return ret;
+    return await startTimer(timedSqueal);
   }
 }
 
 /**
  * funzione che ritorna tutti gli squeal appartenenti a certi destinatari
- * @param recipients destinatari da ricercare
+ * @param recipient destinatario da ricercare
  * @returns squeals appartenenti ai destinatari scelti
  */
 export async function getSquealsByRecipients(recipient: string) {
@@ -367,14 +382,14 @@ export async function getSquealsByChannel(channel: string) {
 export async function editReaction(
   squealId: string,
   positiveReactions: number,
-  negativeReactions: number
+  negativeReactions: number,
 ) {
   const update = await squealModel.updateOne(
     { _id: squealId },
     {
       positveReactions: positiveReactions,
       negativeReactions: negativeReactions,
-    }
+    },
   );
   if (update.modifiedCount < 1) return cannot_update;
   else return updated;
@@ -387,7 +402,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
       { _id: squealId },
       {
         $push: { positiveReactions: "guest" },
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -400,7 +415,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
       {
         $pull: { negativeReactions: userId },
         $push: { positiveReactions: userId },
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -413,7 +428,7 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
         { _id: squealId },
         {
           $push: { positiveReactions: userId },
-        }
+        },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -428,7 +443,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
       { _id: squealId },
       {
         $push: { negativeReactions: "guest" },
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -441,7 +456,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
       {
         $push: { negativeReactions: userId },
         $pull: { positiveReactions: userId },
-      }
+      },
     );
     if (update.modifiedCount < 1) return cannot_update;
     else return updated;
@@ -454,7 +469,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
         { _id: squealId },
         {
           $push: { negativeReactions: userId },
-        }
+        },
       );
       if (update.modifiedCount < 1) return cannot_update;
       else return updated;
@@ -464,11 +479,11 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
 
 export async function updateSquealsUsername(
   oldUsername: string,
-  username: string
+  username: string,
 ): Promise<Success | SquealerError> {
   const update = await squealModel.updateMany(
     { author: oldUsername },
-    { author: username }
+    { author: username },
   );
   if (update.modifiedCount > 0) return updated;
   else return cannot_update;
@@ -484,7 +499,7 @@ export async function updateSquealsUsername(
 export async function postSquealAsUser(
   username: string,
   smm: string,
-  squeal: Squeal
+  squeal: Squeal,
 ) {
   const user: User | SquealerError = await getUserByUsername(username);
   if (!(user instanceof SquealerError)) {
