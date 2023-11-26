@@ -1,6 +1,10 @@
 <div class="feed-container">
   <h2>Squealer Feed</h2>
 
+  <div class="button-group" *ngIf="isLoggedIn">
+    <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
+  </div>
+
   <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
     <div *ngIf="isPopupOpen" class="popup">
       <label id="example-radio-group-label">Pick the type of the squeal:</label>
@@ -52,7 +56,6 @@
 
       <div class="button-group">
         <button mat-raised-button color="primary" type="submit" (click)="addPost()">Add Post</button>
-        <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href" href="/backoffice">Go to Backoffice</a>
         <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
       </div>
     </div>

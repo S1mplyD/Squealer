@@ -1,7 +1,7 @@
 
 <div class="content" role="main" [class.example-is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="menu.toggle()"><mat-icon>menu</mat-icon></button>
+    <button mat-icon-button (click)="menu.toggle()" *ngIf="isLoggedIn"><mat-icon>menu</mat-icon></button>
     <img width="40" alt="Squealer Logo" src="../assets/1511304664.png"/>
     <span>Squealer</span>
   </mat-toolbar>
@@ -10,39 +10,38 @@
       <mat-sidenav #menu mode="over" opened="false" class="navBar">
         <mat-accordion>
           <mat-list fxLayoutAlign="space-around center" fxLayout="column">
-            <mat-list-item>
-              <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                <mat-icon>home</mat-icon>&nbsp;Homepage
-              </button>
-            </mat-list-item>
-            <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" class="navBar"
-            style="width:100%;box-shadow: none;">
-              <mat-expansion-panel-header>Socials</mat-expansion-panel-header>
-              <mat-accordion>
-                <mat-list>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>group</mat-icon>&nbsp;Followed Accounts
-                    </button>
-                  </mat-list-item>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>public</mat-icon>&nbsp;Explore Squeals
-                    </button>
-                  </mat-list-item>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>whatshot</mat-icon>&nbsp;Best posts of the week
-                    </button>
-                  </mat-list-item>
-                </mat-list>
-              </mat-accordion>
-            </mat-expansion-panel>
-            <mat-list-item>
-              <button mat-button fxFlex fxLayoutAlign="start center" (click)="logout()" style="color: white;">
-                <mat-icon>exit_to_app</mat-icon>&nbsp;Log Out
-              </button>
-            </mat-list-item>
+            <div *ngIf="isLoggedIn">
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
+                  <mat-icon>home</mat-icon>&nbsp;Homepage
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']" (click)="menu.toggle()" style="color: white;">
+                  <mat-icon>group</mat-icon>&nbsp;Followed Accounts
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
+                  <mat-icon>public</mat-icon>&nbsp;Explore Squeals
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
+                  <mat-icon>whatshot</mat-icon>&nbsp;Best posts of the week
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/'+ username]" (click)="menu.toggle()" style="color: white;">
+                  <mat-icon>account_circle</mat-icon>&nbsp;Your Account
+                </button>
+              </mat-list-item>
+              <mat-list-item *ngIf="isLoggedIn">
+                <button mat-button fxFlex fxLayoutAlign="start center" (click)="logout()" style="color: white;">
+                  <mat-icon>exit_to_app</mat-icon>&nbsp;Log Out
+                </button>
+              </mat-list-item>
+            </div>
           </mat-list>
         </mat-accordion>
       </mat-sidenav>
