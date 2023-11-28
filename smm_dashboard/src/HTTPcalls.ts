@@ -78,3 +78,15 @@ export async function getProUsers() {
   if (users.status == 200) return users.data;
   else return undefined;
 }
+
+export async function getAllUserSqueal(username: string) {
+  const users = await axios.get(`${path}/api/squeals/user/${username}`);
+  return users.data;
+}
+
+export async function getAllUserAnalytics(username: string) {
+  const response = await axios.get(`${path}/api/analytics/${username}`);
+  if (response.status === 200) {
+    return response.data;
+  }
+}
