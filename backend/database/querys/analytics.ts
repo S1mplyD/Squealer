@@ -35,11 +35,15 @@ export async function getAllAnalytics() {
 
 /**
  * funzione che ritorna tutte le analitiche
- * @param id id dell'utente
+ * @param username id dell'utente
  * @returns SquealerError | Analytic[]
  */
-export async function getAllUserAnalytics(id: string) {
-  const analytics: Analytic[] = await analyticsDataModel.find({ author: id });
+export async function getAllUserAnalytics(username: string) {
+  const analytics: Analytic[] = await analyticsDataModel
+    .find({
+      author: username,
+    })
+    .sort({ date: -1 });
   if (analytics.length < 1) return non_existent;
   else return analytics;
 }
@@ -57,12 +61,10 @@ export async function createAnalyticForSqueal(id: string) {
     if ("visual" in squeal) {
       const newAnalytic = await analyticsDataModel.create({
         squealId: squeal._id,
-        $push: [
-          { dates: new Date() },
-          { visuals: squeal.visual },
-          { positiveReactions: squeal.positiveReactions },
-          { negativeReactions: squeal.negativeReactions },
-        ],
+        dates: new Date(),
+        visuals: squeal.visual,
+        positiveReactions: squeal.positiveReactions,
+        negativeReactions: squeal.negativeReactions,
       });
       if (!newAnalytic) return cannot_create;
       else return created;
@@ -89,13 +91,11 @@ export async function updateAnalyticForEverySqueal() {
               _id: squeal._id,
             },
             {
-              $push: [
-                { dates: new Date() },
-                { visuals: squeal.visual },
-                { positiveReactions: squeal.positiveReactions },
-                { negativeReactions: squeal.negativeReactions },
-              ],
-            }
+              dates: new Date(),
+              visuals: squeal.visual,
+              positiveReactions: squeal.positiveReactions,
+              negativeReactions: squeal.negativeReactions,
+            },
           );
           if (update.modifiedCount < 1) return cannot_update;
           else return updated;

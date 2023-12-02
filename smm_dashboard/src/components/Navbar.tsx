@@ -48,7 +48,12 @@ const Navbar: React.FC = () => {
               </button>
             </li>
             <li>
-              <button className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]">
+              <button
+                className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
+                onClick={() => {
+                  navigate("/smm/analytics");
+                }}
+              >
                 Analytics
               </button>
             </li>

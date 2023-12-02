@@ -6,7 +6,7 @@ import { SquealerError, catchError, unauthorized } from "../util/errors";
 export const router = express.Router();
 
 router
-  .route("/:id")
+  .route("/:username")
   /**
    * GET
    * chiamata che ritorna tutte le analitiche di tutti gli squeal di un utente
@@ -16,15 +16,15 @@ router
       if (req.user && (req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
           const analytics: Analytic[] | SquealerError =
-            await getAllUserAnalytics(req.params.id);
+            await getAllUserAnalytics(req.params.username);
           if (analytics instanceof SquealerError) res.sendStatus(404);
           else res.status(200).send(analytics);
         } else if (
-          (req.user as User)._id === req.params.id ||
-          (req.user as User).managedAccounts.includes(req.params.id)
+          (req.user as User)._id === req.params.username ||
+          (req.user as User).managedAccounts.includes(req.params.username)
         ) {
           const analytics: Analytic[] | SquealerError =
-            await getAllUserAnalytics(req.params.id);
+            await getAllUserAnalytics(req.params.username);
           if (analytics instanceof SquealerError) res.sendStatus(404);
           else res.status(200).send(analytics);
         } else res.sendStatus(401);
@@ -44,7 +44,7 @@ router
     try {
       if (req.user && (req.user as User).status !== "ban") {
         const analytic: Analytic | SquealerError = await getAnalytic(
-          req.query.id as string
+          req.query.id as string,
         );
         if (analytic instanceof SquealerError) {
           res.sendStatus(404).send(analytic);

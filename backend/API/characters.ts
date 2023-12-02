@@ -4,7 +4,6 @@ import {
   defaultCharactersBase,
   defaultCharactersJournalist,
   defaultCharactersProfessional,
-  defaultCharactersVerified,
 } from "../util/constants";
 import { SquealerError, cannot_update, non_existent } from "../util/errors";
 import { updated } from "../util/success";
@@ -180,8 +179,6 @@ export async function getDefaultCharacters(plan: string) {
   switch (plan) {
     case "base":
       return defaultCharactersBase;
-    case "verified":
-      return defaultCharactersVerified;
     case "professional":
       return defaultCharactersProfessional;
     case "journalist":
