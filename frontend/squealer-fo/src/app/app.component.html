@@ -1,7 +1,7 @@
 
 <div class="content" role="main" [class.example-is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="menu.toggle()" *ngIf="isLoggedIn"><mat-icon>menu</mat-icon></button>
+    <button mat-icon-button (click)="menu.toggle()"><mat-icon>menu</mat-icon></button>
     <img width="40" alt="Squealer Logo" src="../assets/1511304664.png"/>
     <span>Squealer</span>
   </mat-toolbar>
@@ -40,6 +40,13 @@
                 <button mat-button fxFlex fxLayoutAlign="start center" (click)="logout()" style="color: white;">
                   <mat-icon>exit_to_app</mat-icon>&nbsp;Log Out
                 </button>
+              </mat-list-item>
+            </div>
+            <div *ngIf="!isLoggedIn">
+              <mat-list-item>
+                <p fxFlex fxLayoutAlign="start center" style="color: white;">
+                  You are not logged in
+                </p>
               </mat-list-item>
             </div>
           </mat-list>

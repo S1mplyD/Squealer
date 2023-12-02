@@ -40,8 +40,8 @@ export class AuthService {
     return this.http.post<number>(`${this.apiUrl}/forgotPassword`, { params: params });
   }
 
-  logout(): void {
-    this.http.get(`${this.apiUrl}/logout`);
+  logout(): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/logout`);
   }
 
   isAuthenticated(): Observable<any> {

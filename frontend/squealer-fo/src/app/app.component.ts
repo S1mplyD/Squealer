@@ -15,6 +15,7 @@ export class AppComponent implements OnInit, OnDestroy{
   title = 'Squealer Front Office';
   showFiller = false;
   isLoggedIn: boolean = false;
+  localLogged: string | null = localStorage.getItem('isLoggedIn');
   httpError!: HttpErrorResponse;
   mobileQuery: MediaQueryList;
   screenWidth!: number;
@@ -27,12 +28,14 @@ export class AppComponent implements OnInit, OnDestroy{
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+    localStorage.setItem('isLoggedIn', 'false');
   }
   ngOnInit(): void {
     this.authService.isAuthenticated()
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
-      if (res !== 'Not Found') {
+      localStorage.setItem('isLoggedIn', 'true');
+      if (res.status !== '404') {
         this.isLoggedIn = true;
         this.username = res.username + '';
         this.plan = res.plan + '';
@@ -41,10 +44,12 @@ export class AppComponent implements OnInit, OnDestroy{
   }
 
 logout(): void {
-  this.authService.logout();
-  localStorage.setItem('isLoggedIn', 'false');
+  this.authService.logout()
+  .pipe(takeUntil(this._unsubscribeAll))
+  .subscribe((res) => {
+    this.isLoggedIn = false;
+  });
   location.reload();
-
 }
 
 ngOnDestroy(): void {

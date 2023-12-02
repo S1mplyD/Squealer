@@ -81,7 +81,14 @@ export class AuthComponent implements OnInit, OnDestroy{
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
-      this.router.navigateByUrl('');
+      this.authService.isAuthenticated()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        if (res.status !== '404') {
+          this.router.navigateByUrl('');
+        }
+    });
+
     },
     (error) => {
       this._snackBar.open('Email or password are not correct! Retry,', 'Close');
