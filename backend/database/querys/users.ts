@@ -1,5 +1,4 @@
 import { getDefaultCharacters } from "../../API/characters";
-import { plans } from "../../util/constants";
 import {
   SquealerError,
   cannot_create,
