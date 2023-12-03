@@ -25,8 +25,20 @@ export class NewSquealsComponent implements OnInit {
   downvote: number = 0;
   selectedRef: string = '';
   selectedFileName: string = '';
+  responses: Squeal[] = [];
   recipients: string = '';
   newSqueal: Squeal = {
+    author: '',
+    body: '',
+    date: new Date(),
+    recipients: [],
+    category: '',
+    channels: [],
+    type: '',
+    _id: ''
+  };
+
+  newAnswer: Squeal = {
     author: '',
     body: '',
     date: new Date(),
@@ -42,6 +54,7 @@ export class NewSquealsComponent implements OnInit {
   plan: string | null = '';
   isPostFormOpen: boolean = false;
   isPopupOpen = false;
+  isAnswerOpen = false;
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,
@@ -79,6 +92,14 @@ export class NewSquealsComponent implements OnInit {
     this.isPopupOpen = false;
   }
 
+  openAnswer(): void {
+    this.isAnswerOpen = true;
+  }
+
+  closeAnswer(): void {
+    this.isAnswerOpen = false;
+  }
+
   formatDate(date: Date): string | null{
     return this.datePipe.transform(date, 'dd-MM-yyyy'); // Change the format pattern as per your requirement
   }
@@ -95,11 +116,24 @@ export class NewSquealsComponent implements OnInit {
     this.isPostFormOpen = true;
   }
 
+  openAnswerForm() {
+    this.isPostFormOpen = true;
+  }
+
   loadSqueals(): void {
-    this.squealService.getAllTextSqueals()
+    this.squealService.getAllSqueals()
     .pipe(takeUntil(this._unsubscribeAll)).
     subscribe((res) => {
       this.squeals = res;
+      for (const squeal of this.squeals) {
+        this.squealService.getResponses(squeal._id)
+        .pipe(takeUntil(this._unsubscribeAll)).
+        subscribe((resp) => {
+          for (const answ of resp) {
+            this.responses.push(answ);
+          }
+        });
+      }
     });
   }
 
@@ -107,6 +141,12 @@ export class NewSquealsComponent implements OnInit {
     this.isPostFormOpen = false;
     this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
   }
+
+  closeAnswerForm() {
+    this.isPostFormOpen = false;
+    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
+  }
+
 
   uploadFiles(): void {
     if (this.selectedFile) {
@@ -161,6 +201,40 @@ export class NewSquealsComponent implements OnInit {
       console.log(res);
     });
     window.location.reload();
+  }
+
+  answer(): void {
+    let numChar = this.newSqueal.body.length;
+    if (this.dailyChars - numChar >= 0) {
+      const answer: Squeal = {
+        _id: '',
+        author: this.username,
+        body: this.newAnswer.body,
+        date: new Date(),
+        lat: this.newAnswer.lat,
+        lng: this.newAnswer.lng,
+        time: this.newAnswer.time,
+        recipients: this.getRecipients(this.recipients),
+        channels: this.getChannels(this.newAnswer.body),
+        positiveReactions: this.newAnswer.positiveReactions,
+        negativeReactions: this.newAnswer.negativeReactions,
+        category: 'public',
+        type: this.squealType
+      };
+      this.squealService.addResponse(answer)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        if (res) {
+          this.loadSqueals();
+        }
+      });
+      this.closeAnswer();
+    }
+    else {
+      this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
+        duration: 3000
+      });
+    }
   }
 
   addDownvote(squealId: string): void {

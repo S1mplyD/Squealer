@@ -2,6 +2,13 @@
   margin-bottom: 20px;
   background-color: #ec8b0d;
 }
+
+#answer {
+  margin-bottom: 20px;
+  background-color: #8a8a8a;
+}
+
+
 .squealTitle {
   color: white;
   font-size: xx-large;
@@ -91,7 +98,15 @@
 }
 
 .popup {
-  background-color: #ebcc67;
+  background-color: #5c3838;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.answerPopup {
+  background-color: #ec8b0d;
   padding: 20px;
   border-radius: 20px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);

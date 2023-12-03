@@ -28,13 +28,11 @@ export class AppComponent implements OnInit, OnDestroy{
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
-    localStorage.setItem('isLoggedIn', 'false');
   }
   ngOnInit(): void {
     this.authService.isAuthenticated()
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
-      localStorage.setItem('isLoggedIn', 'true');
       if (res.status !== '404') {
         this.isLoggedIn = true;
         this.username = res.username + '';

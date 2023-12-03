@@ -31,7 +31,7 @@
                 <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
                 <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
               </div>
-              <mat-card-title class="squealTitle"><p>@</p>{{ post.author }}</mat-card-title>
+              <mat-card-title class="squealTitle">@{{ post.author }}</mat-card-title>
               <br>
               <mat-card-subtitle class="squealText">{{ formatDate(post.date) }}</mat-card-subtitle>
             </mat-card-header>
@@ -55,7 +55,7 @@
                     <img *ngIf="answer?.author === user.username && !user.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" />
                   </div>
                 </div>
-                <mat-card-title class="squealTitle"><p>@</p>{{ answer.author }}</mat-card-title>
+                <mat-card-title class="squealTitle">@{{ answer.author }}</mat-card-title>
                 <br>
                 <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
               </mat-card-header>
