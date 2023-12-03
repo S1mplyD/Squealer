@@ -19,6 +19,7 @@ export type Squeal = {
   count?: number;
   originalSqueal?: string;
   _id: string;
+  responses?: string[];
 };
 
 // nuovo tipo utente
