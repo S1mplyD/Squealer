@@ -193,7 +193,7 @@ export async function postResponse(
   if (!(newSqueal instanceof SquealerError)) {
     await squealModel.updateOne(
       { _id: originalSquealId },
-      { $push: { responses: newSqueal._id } },
+      { $push: { responses: newSqueal._id }, originalSqueal: originalSquealId },
     );
   }
   return newSqueal;
@@ -508,4 +508,19 @@ export async function postSquealAsUser(
       return newSqueal;
     }
   } else return user;
+}
+
+export async function getSquealResponses(id: string) {
+  const originalSqueal: Squeal | SquealerError = await getSquealById(id);
+  if (originalSqueal instanceof SquealerError) throw non_existent;
+  else if (originalSqueal.responses) {
+    let responses: Squeal[] = [];
+    for (let i of originalSqueal.responses) {
+      const squeal: Squeal | SquealerError = await getSquealById(i);
+      if (!(squeal instanceof SquealerError)) {
+        responses.push(squeal);
+      }
+    }
+    return responses;
+  } else return null;
 }

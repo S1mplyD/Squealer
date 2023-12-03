@@ -19,6 +19,7 @@ import {
   addNegativeReaction,
   postSquealAsUser,
   postResponse,
+  getSquealResponses,
 } from "../database/querys/squeals";
 import express from "express";
 import { Squeal, Success, User } from "../util/types";
@@ -366,19 +367,57 @@ router.route("/smm/:username").post(async (req, res) => {
   }
 });
 
-router.route("/response/:id").post(async (req, res) => {
+/**
+ * POST
+ */
+router
+  .route("/response/:id")
+  .get(async (req, res) => {
+    try {
+      if (
+        !req.user ||
+        ((req.user as User).status !== "ban" &&
+          (req.user as User).status !== "ban")
+      ) {
+        const responses: Squeal[] | SquealerError | null =
+          await getSquealResponses(req.params.id);
+        if (responses instanceof SquealerError) res.sendStatus(500);
+        else if (!responses) res.sendStatus(404);
+        else res.status(200).send(responses);
+      } else res.sendStatus(401);
+    } catch (e) {
+      console.log(e);
+    }
+  })
+  .post(async (req, res) => {
+    try {
+      if (
+        (req.user as User).status !== "ban" &&
+        (req.user as User).status !== "block"
+      ) {
+        const newSqueal: Squeal | SquealerError = await postResponse(
+          req.body,
+          req.params.id,
+          req.user as User,
+        );
+        if (newSqueal instanceof SquealerError) res.sendStatus(500);
+        else res.status(201).send(newSqueal);
+      } else res.sendStatus(401);
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+router.route("/squeal/:id").get(async (req, res) => {
   try {
     if (
-      (req.user as User).status !== "ban" &&
-      (req.user as User).status !== "block"
+      !req.user ||
+      ((req.user as User).status !== "ban" &&
+        (req.user as User).status !== "ban")
     ) {
-      const newSqueal: Squeal | SquealerError = await postResponse(
-        req.body,
-        req.params.id,
-        req.user as User,
-      );
-      if (newSqueal instanceof SquealerError) res.sendStatus(500);
-      else res.status(201).send(newSqueal);
+      const squeal: Squeal | SquealerError = await getSquealById(req.params.id);
+      if (squeal instanceof SquealerError) res.sendStatus(404);
+      else res.status(200).send(squeal);
     } else res.sendStatus(401);
   } catch (e) {
     console.log(e);
