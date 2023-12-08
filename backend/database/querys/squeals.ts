@@ -193,7 +193,15 @@ export async function postResponse(
   if (!(newSqueal instanceof SquealerError)) {
     await squealModel.updateOne(
       { _id: originalSquealId },
-      { $push: { responses: newSqueal._id }, originalSqueal: originalSquealId },
+      { $push: { responses: newSqueal._id } },
+    );
+    await squealModel.updateOne(
+      {
+        _id: newSqueal._id,
+      },
+      {
+        originalSqueal: originalSquealId,
+      },
     );
   }
   return newSqueal;
