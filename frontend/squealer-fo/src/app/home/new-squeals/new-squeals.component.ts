@@ -35,7 +35,8 @@ export class NewSquealsComponent implements OnInit {
     category: '',
     channels: [],
     type: '',
-    _id: ''
+    _id: '',
+    originalSqueal: ''
   };
 
   newAnswer: Squeal = {
@@ -46,7 +47,8 @@ export class NewSquealsComponent implements OnInit {
     category: '',
     channels: [],
     type: '',
-    _id: ''
+    _id: '',
+    originalSqueal: ''
   };
 
   isLoggedIn: boolean = false;
@@ -139,12 +141,12 @@ export class NewSquealsComponent implements OnInit {
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
+    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [], originalSqueal: '' };
   }
 
   closeAnswerForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [] };
+    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [], originalSqueal: '' };
   }
 
 
@@ -203,7 +205,7 @@ export class NewSquealsComponent implements OnInit {
     window.location.reload();
   }
 
-  answer(): void {
+  answer(id: string): void {
     let numChar = this.newSqueal.body.length;
     if (this.dailyChars - numChar >= 0) {
       const answer: Squeal = {
@@ -219,9 +221,10 @@ export class NewSquealsComponent implements OnInit {
         positiveReactions: this.newAnswer.positiveReactions,
         negativeReactions: this.newAnswer.negativeReactions,
         category: 'public',
-        type: this.squealType
+        type: this.squealType,
+        originalSqueal: ''
       };
-      this.squealService.addResponse(answer)
+      this.squealService.addResponse(answer, id)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
         if (res) {
@@ -265,7 +268,8 @@ export class NewSquealsComponent implements OnInit {
         positiveReactions: this.newSqueal.positiveReactions,
         negativeReactions: this.newSqueal.negativeReactions,
         category: 'public',
-        type: this.squealType
+        type: this.squealType,
+        originalSqueal: ''
       };
       this.squealService.addSqueal(squeal)
       .pipe(takeUntil(this._unsubscribeAll))

@@ -61,12 +61,12 @@ app.use("/api/follow", followRoute);
 app.use(express.static(path.join(__dirname, "../public")));
 
 // pagina principale APP
-// app.use(
-//   "/",
-//   express.static(
-//     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
-//   )
-// );
+app.use(
+  "/",
+   express.static(
+     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
+   )
+ );
 
 app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 
@@ -84,11 +84,11 @@ app.use(
   express.static(path.join(__dirname, "../frontend/squealer-bo"))
 );
 
-// app.get("/*", (req, res) => {
-//   res.sendFile(
-//     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
-//   );
-// });
+app.get("/*", (req, res) => {
+  res.sendFile(
+     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
+   );
+});
 
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {

@@ -79,8 +79,8 @@ export class SquealService {
     return this.http.post<any>(`${this.apiUrl}`, squeal);
   }
 
-  addResponse(squeal: Squeal): Observable<any> {
-    return this.http.post<any>(`${this.newApiUrl}/response/${squeal._id}`, squeal);
+  addResponse(squeal: Squeal, originalId: string): Observable<any> {
+    return this.http.post<any>(`${this.newApiUrl}/response/${originalId}`, squeal);
   }
 
   deleteSqueal(id: string): Observable<any> {

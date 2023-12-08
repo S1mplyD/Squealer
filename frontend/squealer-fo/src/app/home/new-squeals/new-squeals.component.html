@@ -59,24 +59,6 @@
         <button mat-raised-button color="primary" (click)="closePopup()">Cancel</button>
       </div>
     </div>
-
-    <div *ngIf="isAnswerOpen" class="answerPopup">
-      <label id="example-radio-group-label">Pick the type of the squeal:</label>
-      <mat-radio-group aria-labelledby="example-radio-group-label" [(ngModel)]="squealType">
-        <mat-radio-button value="text">Text</mat-radio-button>
-      </mat-radio-group>
-      <mat-form-field class="full-width" appearance="outline" color="primary">
-        <div *ngIf="squealType !== 'media'">
-          <mat-label color="primary">What are you thinking?</mat-label>
-          <input color="primary" matInput [(ngModel)]="newAnswer.body"/>
-        </div>
-      </mat-form-field>
-
-      <div class="button-group">
-        <button mat-raised-button color="primary" type="submit" (click)="answer()">Add Answer</button>
-        <button mat-raised-button color="primary" (click)="closeAnswer()">Cancel</button>
-      </div>
-    </div>
   </div>
 
   <div class="login" *ngIf="!isLoggedIn">
@@ -87,7 +69,7 @@
 
   <div class="posts">
     <div *ngFor="let squeal of squeals">
-      <mat-card id="squeal">
+      <mat-card id="squeal" *ngIf="squeal.originalSqueal === ''">
         <mat-card-header>
           <div mat-card-avatar class="profile-image">
             <!--<img *ngIf="squeal?.profileImage" [src]="squeal?.profileImage" [alt]="'profile image of ' + squeal?.username" />-->
@@ -100,9 +82,6 @@
         <mat-card-content *ngIf="squeal.type !== 'media'">
           <p class="squealText">{{ squeal.body }}</p>
           <div class="button-group">
-            <button class="upvote" mat-raised-button (click)="openAnswer()" >
-              <mat-icon>question_answer</mat-icon>
-            </button>
             <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
               <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
               <mat-icon>thumb_up</mat-icon>
@@ -111,13 +90,35 @@
               <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
               <mat-icon>thumb_down</mat-icon>
             </button>
+            <button class="upvote" mat-raised-button (click)="openAnswer()">
+              <mat-icon>question_answer</mat-icon>
+            </button>
           </div>
+          <br>
+          <div *ngIf="isAnswerOpen" class="answerPopup">
+            <label id="example-radio-group-label">Pick the type of the squeal:</label>
+            <mat-radio-group aria-labelledby="example-radio-group-label" [(ngModel)]="squealType">
+                <mat-radio-button value="text">Text</mat-radio-button>
+            </mat-radio-group>
+            <mat-form-field class="full-width" appearance="outline" color="primary">
+              <div *ngIf="squealType !== 'media'">
+                <mat-label color="primary">What are you thinking?</mat-label>
+                <input color="primary" matInput [(ngModel)]="newAnswer.body"/>
+              </div>
+            </mat-form-field>
+
+            <div class="button-group">
+              <button mat-raised-button color="primary" type="submit" (click)="answer(squeal._id)">Add Answer</button>
+              <button mat-raised-button color="primary" (click)="closeAnswer()">Cancel</button>
+            </div>
+          </div>
+          <br>
           <div *ngFor="let answer of responses">
             <div *ngIf="answer.originalSqueal === squeal._id ">
               <mat-card id="answer">
                 <mat-card-header>
                   <div mat-card-avatar class="profile-image">
-                    <!--<img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" />-->
+                    <!-- <img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" /> -->
                     <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
                   </div>
                 <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
@@ -169,6 +170,25 @@
               <mat-icon>thumb_down</mat-icon>
             </button>
           </div>
+          <br>
+                  <div *ngIf="isAnswerOpen" class="answerPopup">
+                    <label id="example-radio-group-label">Pick the type of the squeal:</label>
+                    <mat-radio-group aria-labelledby="example-radio-group-label" [(ngModel)]="squealType">
+                        <mat-radio-button value="text">Text</mat-radio-button>
+              </mat-radio-group>
+              <mat-form-field class="full-width" appearance="outline" color="primary">
+                <div *ngIf="squealType !== 'media'">
+                  <mat-label color="primary">What are you thinking?</mat-label>
+                  <input color="primary" matInput [(ngModel)]="newAnswer.body"/>
+                </div>
+              </mat-form-field>
+
+              <div class="button-group">
+                <button mat-raised-button color="primary" type="submit" (click)="answer(squeal._id)">Add Answer</button>
+                <button mat-raised-button color="primary" (click)="closeAnswer()">Cancel</button>
+              </div>
+            </div>
+           <br>
           <div *ngFor="let answer of responses">
             <div *ngIf="answer.originalSqueal === squeal._id ">
               <mat-card id="answer">

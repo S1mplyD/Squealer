@@ -7,6 +7,7 @@ export interface Squeal {
   date: Date;
   positiveReactions?: string[];
   negativeReactions?: string[];
+  responses?: string[];
   category: string;
   channels: string[];
   author: string;
@@ -15,5 +16,5 @@ export interface Squeal {
   type: string;
   time?: number;
   count?: number;
-  originalSqueal?: string;
+  originalSqueal: string;
 }
