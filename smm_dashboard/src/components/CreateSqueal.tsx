@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getManagedUsers, getMe, postSqueal } from "../HTTPcalls";
-import { useJsApiLoader, GoogleMap, Marker } from "@react-google-maps/api";
 import { User } from "../utils/types";
-
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import "react";
+import "leaflet/dist/leaflet.css";
 const CreateSqueal: React.FC = () => {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY || "",
-  });
   const [checkbox, setCheckbox] = useState(true);
   const [location, setLocation] = useState({
     lat: 44.1420926,
@@ -16,6 +14,7 @@ const CreateSqueal: React.FC = () => {
   const [geo, setGeo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       //geolocazione disponibile
@@ -31,6 +30,7 @@ const CreateSqueal: React.FC = () => {
       const managed: User[] = await getManagedUsers(user.username);
       setManagedUsers(managed);
     }
+
     fetchData().then(() => {
       setLoading(false);
     });
@@ -121,18 +121,32 @@ const CreateSqueal: React.FC = () => {
                 ) : null}
               </div>
             ) : null}
-            {geo && isLoaded ? (
-              <div className="h-96">
-                <GoogleMap
-                  center={location}
-                  zoom={13}
-                  mapContainerStyle={{ width: "50%", height: "400px" }}
-                  options={{
-                    streetViewControl: false,
-                  }}
-                >
-                  <Marker position={location}></Marker>
-                </GoogleMap>
+            {geo ? (
+              <div>
+                <div className="flex flex-row bg-grey rounded-lg p-4 my-4">
+                  <button className="rounded-lg bg-orange text-black p-4">
+                    Center
+                  </button>
+                </div>
+                <div id={"map"}>
+                  <MapContainer
+                    center={[51.505, -0.09]}
+                    zoom={13}
+                    scrollWheelZoom={false}
+                    style={{ height: "300px", width: "50%" }}
+                    className={""}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[51.505, -0.09]}>
+                      <Popup>
+                        A pretty CSS3 popup. <br /> Easily customizable.
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
               </div>
             ) : (
               <>
@@ -200,7 +214,7 @@ const CreateSqueal: React.FC = () => {
               ).value.replaceAll(" ", "");
               const recipientsArray: string[] = recipients.split(",");
               const type = (document.querySelector(
-                'input[name="type"]:checked'
+                'input[name="type"]:checked',
               ) as HTMLInputElement)!.value;
               const user = document.getElementById("user") as HTMLSelectElement;
               const newSqueal = await postSqueal(
@@ -214,7 +228,7 @@ const CreateSqueal: React.FC = () => {
                 timed
                   ? +(document.getElementById("time") as HTMLInputElement).value
                   : undefined,
-                recipientsArray
+                recipientsArray,
               );
               console.log(newSqueal);
             }}
