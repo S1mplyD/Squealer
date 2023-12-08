@@ -229,6 +229,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     time: squeal.time,
     positiveReactions: [],
     negativeReactions: [],
+    originalSqueal: squeal.originalSqueal,
   });
 
   if (!newSqueal) return cannot_create;
