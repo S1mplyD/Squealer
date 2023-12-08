@@ -16,7 +16,7 @@ interface Squeal {
   type: string;
   time?: number;
   count?: number;
-  originalSqueal?: string;
+  originalSqueal: string;
   responses?: string[];
 }
 
@@ -40,7 +40,7 @@ const squealSchema = new Schema<SquealDocument>({
   type: { type: String, required: true }, //text, media, geo, timed, auto
   time: { type: Number },
   count: { type: Number },
-  originalSqueal: { type: String },
+  originalSqueal: { type: String, default: "" },
   responses: { type: [String] }, //id degli squeal in risposta a questo squeal
 });
 
