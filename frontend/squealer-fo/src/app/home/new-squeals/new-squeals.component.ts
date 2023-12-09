@@ -27,6 +27,7 @@ export class NewSquealsComponent implements OnInit {
   selectedFileName: string = '';
   responses: Squeal[] = [];
   recipients: string = '';
+  answeredId: string = '';
   newSqueal: Squeal = {
     author: '',
     body: '',
@@ -94,11 +95,13 @@ export class NewSquealsComponent implements OnInit {
     this.isPopupOpen = false;
   }
 
-  openAnswer(): void {
+  openAnswer(id: string): void {
+    this.answeredId = id;
     this.isAnswerOpen = true;
   }
 
   closeAnswer(): void {
+    this.answeredId = '';
     this.isAnswerOpen = false;
   }
 
@@ -128,13 +131,18 @@ export class NewSquealsComponent implements OnInit {
     subscribe((res) => {
       this.squeals = res;
       for (const squeal of this.squeals) {
-        this.squealService.getResponses(squeal._id)
-        .pipe(takeUntil(this._unsubscribeAll)).
-        subscribe((resp) => {
-          for (const answ of resp) {
-            this.responses.push(answ);
-          }
-        });
+        this.loadAnswers(squeal._id);
+      }
+    });
+  }
+
+  loadAnswers(id: string): void {
+    this.responses = []
+    this.squealService.getResponses(id)
+    .pipe(takeUntil(this._unsubscribeAll)).
+    subscribe((resp) => {
+      for (const answer of resp) {
+        this.responses.push(answer);
       }
     });
   }
@@ -249,6 +257,14 @@ export class NewSquealsComponent implements OnInit {
 
     });
     window.location.reload();
+  }
+
+  disableScroll(): void {
+    document.getElementsByClassName("posts").item(0)!.classList.add("stop-scrolling");
+  }
+
+  enableScroll(): void {
+    document.getElementsByClassName("posts").item(0)!.classList.remove("stop-scrolling");
   }
 
   addPost(): void {
