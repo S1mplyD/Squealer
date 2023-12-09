@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { getManagedUsers, getMe, postSqueal } from "../HTTPcalls";
 import { User } from "../utils/types";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import "react";
 import "leaflet/dist/leaflet.css";
+import { SearchField } from "./SearchBox.tsx";
+import L from "leaflet";
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+
 const CreateSqueal: React.FC = () => {
   const [checkbox, setCheckbox] = useState(true);
   const [location, setLocation] = useState({
@@ -15,6 +19,10 @@ const CreateSqueal: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
 
+  L.Marker.prototype.options.icon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+  });
   useEffect(() => {
     if ("geolocation" in navigator) {
       //geolocazione disponibile
@@ -25,6 +33,7 @@ const CreateSqueal: React.FC = () => {
         });
       });
     }
+
     async function fetchData() {
       const user: User = await getMe();
       const managed: User[] = await getManagedUsers(user.username);
@@ -145,6 +154,7 @@ const CreateSqueal: React.FC = () => {
                         A pretty CSS3 popup. <br /> Easily customizable.
                       </Popup>
                     </Marker>
+                    <SearchField />
                   </MapContainer>
                 </div>
               </div>
