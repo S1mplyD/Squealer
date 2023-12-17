@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Analytic, User } from "../utils/types.ts";
 import AnalyticComponent from "./Analytic.tsx";
-import { getMe, getManagedUsers, getAllUserAnalytics } from "../HTTPcalls.ts";
+import { getAllUserAnalytics, getManagedUsers, getMe } from "../HTTPcalls.ts";
 
 export function Analytics() {
   const [userAnalytics, setUserAnalytics] = useState<Analytic[]>();
@@ -20,6 +20,7 @@ export function Analytics() {
         setUserAnalytics(analytics);
       }
     }
+
     fetchData().then(() => {
       setIsLoading(false);
     });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../utils/types";
 import { getMe } from "../HTTPcalls";
@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
       const user = await getMe();
       setAuth(user);
     }
+
     fetchData().then(() => {
       setLoading(false);
     });

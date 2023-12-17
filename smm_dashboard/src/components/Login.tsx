@@ -30,7 +30,7 @@ const Login: React.FC = () => {
             onClick={() => {
               login(
                 (document.getElementById("mail") as HTMLInputElement).value,
-                (document.getElementById("password") as HTMLInputElement).value
+                (document.getElementById("password") as HTMLInputElement).value,
               ).then(() => {
                 location.reload();
               });
