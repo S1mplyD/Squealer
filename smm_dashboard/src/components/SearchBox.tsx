@@ -15,7 +15,7 @@ export const SearchField = () => {
   useEffect(() => {
     map.addControl(searchControl);
     return () => map.removeControl(searchControl);
-  }, []);
+  }, [map, searchControl]);
 
   return null;
 };
