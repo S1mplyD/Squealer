@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getManagedUsers, getMe, postSqueal } from "../HTTPcalls";
 import { User } from "../utils/types";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { SearchField } from "./SearchBox.tsx";
 import L from "leaflet";
@@ -18,11 +18,23 @@ const CreateSqueal: React.FC = () => {
   const [geo, setGeo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
-
+  const MapLoc = () => {
+    useMapEvents({
+      click(e) {
+        setLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+      },
+    });
+    return null;
+  };
+  const changeLocation = (lat: number, lng: number) => {
+    setLocation({ lat: lat, lng: lng });
+  };
   L.Marker.prototype.options.icon = L.icon({
     iconUrl: icon,
     shadowUrl: iconShadow,
+    iconAnchor: [11, 40],
   });
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       //geolocazione disponibile
@@ -50,11 +62,11 @@ const CreateSqueal: React.FC = () => {
       <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange ">
         <form className="mt-4">
           <div className="mb-4">
-            <label htmlFor="user" className="font-bold">
-              User
-            </label>
             {managedUsers.length > 0 ? (
               <div>
+                <label htmlFor="user" className="font-bold">
+                  User
+                </label>
                 <select id="user">
                   {managedUsers.map((el) => (
                     <option key={el.username}>{el.username}</option>
@@ -132,36 +144,24 @@ const CreateSqueal: React.FC = () => {
             ) : null}
             {geo ? (
               <div>
-                <div className="flex flex-row bg-grey rounded-lg p-4 my-4">
-                  <button className="rounded-lg bg-orange text-black p-4">
-                    Center
-                  </button>
-                </div>
                 <div id={"map"}>
                   <MapContainer
-                    center={[51.505, -0.09]}
+                    center={location}
                     zoom={13}
-                    scrollWheelZoom={false}
+                    scrollWheelZoom={true}
                     style={{ height: "500px", width: "50%" }}
                   >
+                    <MapLoc />
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <Marker position={[51.505, -0.09]}>
-                      <Popup>
-                        A pretty CSS3 popup. <br /> Easily customizable.
-                      </Popup>
-                    </Marker>
-                    <SearchField />
+                    <Marker position={location} />
+                    <SearchField changeLocation={changeLocation} />
                   </MapContainer>
                 </div>
               </div>
-            ) : (
-              <>
-                <p>not loaded</p>
-              </>
-            )}
+            ) : null}
           </div>
           <div className="mb-4">
             <label htmlFor="body" className="block mb-2 font-bold">
