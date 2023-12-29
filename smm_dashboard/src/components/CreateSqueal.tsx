@@ -142,8 +142,7 @@ const CreateSqueal: React.FC = () => {
                     center={[51.505, -0.09]}
                     zoom={13}
                     scrollWheelZoom={false}
-                    style={{ height: "300px", width: "50%" }}
-                    className={""}
+                    style={{ height: "500px", width: "50%" }}
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -182,16 +181,6 @@ const CreateSqueal: React.FC = () => {
             <input
               type="text"
               id="recipients"
-              className="w-full px-3 py-2 border rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="channels" className="block mb-2 font-bold">
-              Channels
-            </label>
-            <input
-              type="text"
-              id="channels"
               className="w-full px-3 py-2 border rounded"
             />
           </div>
