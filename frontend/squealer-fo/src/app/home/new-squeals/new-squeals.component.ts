@@ -8,6 +8,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { MediaService } from 'app/services/media.service';
 import { AuthService } from 'app/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as Leaflet from 'leaflet';
 
 @Component({
   selector: 'app-new-squeal',
@@ -28,6 +29,11 @@ export class NewSquealsComponent implements OnInit {
   responses: Squeal[] = [];
   recipients: string = '';
   answeredId: string = '';
+  initialMarker =
+  {
+    position: { lat: 44.35527821160296, lng: 11.260986328125 },
+    draggable: true
+  }
   newSqueal: Squeal = {
     author: '',
     body: '',
@@ -37,7 +43,9 @@ export class NewSquealsComponent implements OnInit {
     channels: [],
     type: '',
     _id: '',
-    originalSqueal: ''
+    originalSqueal: '',
+    lat: this.initialMarker.position.lat + '',
+    lng: this.initialMarker.position.lng + ''
   };
 
   newAnswer: Squeal = {
@@ -58,6 +66,18 @@ export class NewSquealsComponent implements OnInit {
   isPostFormOpen: boolean = false;
   isPopupOpen = false;
   isAnswerOpen = false;
+  map!: Leaflet.Map;
+  markers: Leaflet.Marker[] = [];
+  options = {
+    layers: [
+      Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      })
+    ],
+    zoom: 16,
+    center: { lat: 44.35527821160296, lng: 11.260986328125 }
+  }
+
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,
@@ -86,6 +106,41 @@ export class NewSquealsComponent implements OnInit {
       }
     });
   }
+
+  initMarkers() {
+      const data = this.initialMarker;
+      const marker = this.generateMarker(data, 0);
+      marker.addTo(this.map).bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
+      this.map.panTo(data.position);
+      this.markers.push(marker)
+  }
+
+  generateMarker(data: any, index: number) {
+    return Leaflet.marker(data.position, { draggable: data.draggable })
+      .on('click', (event) => this.markerClicked(event, index))
+      .on('dragend', (event) => this.markerDragEnd(event, index));
+  }
+  onMapReady($event: Leaflet.Map) {
+    this.map = $event;
+    this.initMarkers();
+  }
+
+  mapClicked($event: any) {
+    this.initialMarker.position.lat = $event.latlng.lat;
+    this.initialMarker.position.lng = $event.latlng.lng;
+    this.newSqueal.lat = $event.latlng.lat;
+    this.newSqueal.lng = $event.latlng.lng;
+    console.log($event.latlng.lat, $event.latlng.lng);
+  }
+
+  markerClicked($event: any, index: number) {
+    console.log($event.latlng.lat, $event.latlng.lng);
+  }
+
+  markerDragEnd($event: any, index: number) {
+    console.log($event.target.getLatLng());
+  }
+
 
   openPopup(): void {
     this.isPopupOpen = true;

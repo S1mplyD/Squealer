@@ -37,14 +37,12 @@
         </div>
       </mat-form-field>
       <div *ngIf="squealType === 'geo'">
-        <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
-          <mat-label>Latitude</mat-label>
-          <input matInput type="number" [(ngModel)]="newSqueal.lat">
-        </mat-form-field>
-        <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
-          <mat-label>Longitude</mat-label>
-          <input matInput type="number" [(ngModel)]="newSqueal.lng">
-        </mat-form-field>
+        <div class="map-container"
+          leaflet
+          [leafletOptions]="options"
+          (leafletMapReady)="onMapReady($event)"
+          (leafletClick)="mapClicked($event)">
+        </div>
       </div>
       <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
         <mat-label>Recipients (they must be separated by comma):</mat-label>

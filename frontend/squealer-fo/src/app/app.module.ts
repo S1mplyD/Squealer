@@ -28,6 +28,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatCheckboxModule,
     MatSliderModule,
     MatSelectModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    LeafletModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]
