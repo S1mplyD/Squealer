@@ -10,6 +10,7 @@ export async function postSqueal(
   type: string,
   lng?: string,
   lat?: string,
+  locationName?: string,
   time?: number,
   recipients?: string[],
 ) {
@@ -17,6 +18,7 @@ export async function postSqueal(
     body: body,
     lat: lat,
     lng: lng,
+    locationName: locationName,
     recipients: recipients,
     category: category,
     channels: channels,
@@ -89,4 +91,11 @@ export async function getAllUserAnalytics(username: string) {
   if (response.status === 200) {
     return response.data;
   }
+}
+
+export async function reverseGeocode(lat: number, lng: number) {
+  const response = await axios.get(
+    `https://nominatim.openstreetmap.org/reverse?format=geocodejson&lat=${lat}&lon=${lng}`,
+  );
+  return response.data;
 }
