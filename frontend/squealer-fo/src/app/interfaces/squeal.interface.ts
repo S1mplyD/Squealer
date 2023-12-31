@@ -17,4 +17,5 @@ export interface Squeal {
   time?: number;
   count?: number;
   originalSqueal: string;
+  locationName?: string;
 }

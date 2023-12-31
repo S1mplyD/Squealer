@@ -8,7 +8,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { MediaService } from 'app/services/media.service';
 import { AuthService } from 'app/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as Leaflet from 'leaflet';
+import * as L from 'leaflet';
+import axios from 'axios';
 
 @Component({
   selector: 'app-new-squeal',
@@ -31,8 +32,8 @@ export class NewSquealsComponent implements OnInit {
   answeredId: string = '';
   initialMarker =
   {
-    position: { lat: 44.35527821160296, lng: 11.260986328125 },
-    draggable: true
+    position: { lat: 0, lng: 0 },
+    draggable: false
   }
   newSqueal: Squeal = {
     author: '',
@@ -66,16 +67,35 @@ export class NewSquealsComponent implements OnInit {
   isPostFormOpen: boolean = false;
   isPopupOpen = false;
   isAnswerOpen = false;
-  map!: Leaflet.Map;
-  markers: Leaflet.Marker[] = [];
+  map!: L.Map;
+  markers: L.Marker[] = [];
   options = {
     layers: [
-      Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      })
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
     ],
-    zoom: 16,
-    center: { lat: 44.35527821160296, lng: 11.260986328125 }
+    zoom: 5,
+    center: L.latLng( 44.35527821160296, 11.260986328125)
+  };
+  layers = [
+    L.marker([ 44.35527821160296, 11.260986328125 ], {
+      icon: L.icon({
+        ...L.Icon.Default.prototype.options,
+        iconUrl: 'assets/marker-icon.png',
+        iconRetinaUrl: 'assets/marker-icon-2x.png',
+        shadowUrl: 'assets/marker-shadow.png'
+      }),
+      draggable: false
+    })
+  ];
+  layersControl = {
+    baseLayers: {
+      'Open Street Map': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' }),
+      'Open Cycle Map': L.tileLayer('https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+    },
+    overlays: {
+      'Big Circle': L.circle([ 46.95, -122 ], { radius: 5000 }),
+      'Big Square': L.polygon([[ 46.8, -121.55 ], [ 46.9, -121.55 ], [ 46.9, -121.7 ], [ 46.8, -121.7 ]])
+    }
   }
 
   private _unsubscribeAll: Subject<void> = new Subject<void>();
@@ -109,6 +129,15 @@ export class NewSquealsComponent implements OnInit {
 
   initMarkers() {
       const data = this.initialMarker;
+      if ("geolocation" in navigator) {
+        //geolocazione disponibile
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          data.position = { lat : pos.coords.latitude, lng: pos.coords.longitude }
+          let reverseGeocodeResult = await this.reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+          this.newSqueal.locationName = reverseGeocodeResult.features[0].properties.geocoding.city + ', ' + reverseGeocodeResult.features[0].properties.geocoding.county + ', '
+          + reverseGeocodeResult.features[0].properties.geocoding.state + ', ' + reverseGeocodeResult.features[0].properties.geocoding.country;
+        });
+      }
       const marker = this.generateMarker(data, 0);
       marker.addTo(this.map).bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
       this.map.panTo(data.position);
@@ -116,13 +145,22 @@ export class NewSquealsComponent implements OnInit {
   }
 
   generateMarker(data: any, index: number) {
-    return Leaflet.marker(data.position, { draggable: data.draggable })
+
+    return L.marker(data.position, { draggable: data.draggable })
       .on('click', (event) => this.markerClicked(event, index))
       .on('dragend', (event) => this.markerDragEnd(event, index));
   }
-  onMapReady($event: Leaflet.Map) {
+
+  onMapReady($event: L.Map) {
     this.map = $event;
     this.initMarkers();
+  }
+
+  async reverseGeocode(lat: number, lng: number) {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?format=geocodejson&lat=${lat}&lon=${lng}`,
+    );
+    return response.data;
   }
 
   mapClicked($event: any) {

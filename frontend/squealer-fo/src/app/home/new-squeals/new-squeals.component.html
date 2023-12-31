@@ -37,13 +37,14 @@
         </div>
       </mat-form-field>
       <div *ngIf="squealType === 'geo'">
-        <div class="map-container"
+        <div style="height: 300px;"
           leaflet
           [leafletOptions]="options"
-          (leafletMapReady)="onMapReady($event)"
-          (leafletClick)="mapClicked($event)">
+          [leafletLayersControl]="layersControl"
+          [leafletLayers]="layers">
         </div>
       </div>
+      <br>
       <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
         <mat-label>Recipients (they must be separated by comma):</mat-label>
         <input matInput [(ngModel)]="recipients">
@@ -94,7 +95,12 @@
           </div>
           <mat-card-title class="squealTitle" [routerLink]="['/following/'+ squeal.author]">{{ squeal.author }}</mat-card-title>
           <br>
-          <mat-card-subtitle class="squealText">{{ formatDate(squeal.date) }}</mat-card-subtitle>
+          <div *ngIf="squeal.locationName">
+            <mat-card-subtitle class="squealText">{{squeal.locationName}}, {{ formatDate(squeal.date) }}</mat-card-subtitle>
+          </div>
+          <div *ngIf="!squeal.locationName">
+            <mat-card-subtitle class="squealText">{{ formatDate(squeal.date) }}</mat-card-subtitle>
+          </div>
         </mat-card-header>
         <mat-card-content *ngIf="squeal.type !== 'media'">
           <p class="squealText">{{ squeal.body }}</p>
@@ -121,8 +127,14 @@
                     <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
                   </div>
                 <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
+
                 <br>
-                <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+                <div *ngIf="answer.locationName">
+                  <mat-card-subtitle class="squealText">{{answer.locationName}}, {{ formatDate(answer.date) }}</mat-card-subtitle>
+                </div>
+                <div *ngIf="!answer.locationName">
+                  <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+                </div>
                 </mat-card-header>
                 <mat-card-content *ngIf="squeal.type !== 'media'">
                   <p class="squealText">{{ answer.body }}</p>
@@ -180,7 +192,12 @@
                   </div>
                 <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
                 <br>
-                <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+                <div *ngIf="answer.locationName">
+                  <mat-card-subtitle class="squealText">{{answer.locationName}}, {{ formatDate(answer.date) }}</mat-card-subtitle>
+                </div>
+                <div *ngIf="!answer.locationName">
+                  <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+                </div>
                 </mat-card-header>
                 <mat-card-content *ngIf="squeal.type !== 'media'">
                   <p class="squealText">{{ answer.body }}</p>
