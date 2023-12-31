@@ -4,6 +4,7 @@ interface Squeal {
   body: string;
   lng?: string;
   lat?: string;
+  locationName?: string;
   recipients: string[];
   date: Date;
   positiveReactions?: string[];
@@ -27,6 +28,7 @@ const squealSchema = new Schema<SquealDocument>({
   body: { type: String, required: true }, //Corpo del messaggio (testo o url)
   lat: { type: String },
   lng: { type: String },
+  locationName: { type: String },
   recipients: { type: [String], required: true }, //Destinatari (individuo, canale o keyword)
   date: { type: Date, required: true }, //Data e ora messaggio
   positiveReactions: { type: [String] },
