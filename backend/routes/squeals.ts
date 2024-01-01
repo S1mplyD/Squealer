@@ -353,10 +353,9 @@ router.route("/smm/:username").post(async (req, res) => {
       const newSqueal: Squeal | SquealerError | undefined =
         await postSquealAsUser(
           req.params.username,
-          (req.user as User)._id,
+          (req.user as User).username,
           req.body,
         );
-
       if (!newSqueal) res.sendStatus(500);
       else if (newSqueal instanceof SquealerError)
         res.status(500).send(newSqueal);
