@@ -218,7 +218,6 @@ export async function postSqueal(squeal: Squeal, user: User) {
   const channels: null | Channel[] = await channelsModel.find({
     name: { $in: squeal.channels },
   });
-  if (!channels) return channels;
   let rec: string[] = [];
   if (squeal.recipients && squeal.recipients.length > 0) {
     for (let i of squeal.recipients) {
