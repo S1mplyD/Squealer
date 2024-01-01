@@ -5,6 +5,7 @@ import {
   cannot_delete,
   cannot_update,
   non_existent,
+  not_recived,
   SquealerError,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
@@ -219,7 +220,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
   });
   if (!channels) return channels;
   let rec: string[] = [];
-  if (squeal.recipients.length > 0) {
+  if (squeal.recipients && squeal.recipients.length > 0) {
     for (let i of squeal.recipients) {
       rec.push(i.replace(" ", ""));
     }
@@ -243,7 +244,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
 
   if (!newSqueal) return cannot_create;
   else {
-    if (newSqueal.type === "media") {
+    if (newSqueal.type === "media" || newSqueal.type === "geo") {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
         125,
@@ -255,7 +256,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     } else {
       const characters: SquealerError | Success = await updateDailyCharacters(
         user._id,
-        newSqueal.body.length,
+        newSqueal.body!.length,
       );
       if (characters instanceof SquealerError) {
         await squealModel.deleteOne({ _id: newSqueal._id });
@@ -272,7 +273,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
         }
       }
     }
-    if (newSqueal.recipients.length > 0) {
+    if (newSqueal.recipients && newSqueal.recipients.length > 0) {
       for (let i of newSqueal.recipients) {
         await createNotification(
           i.includes("@")
@@ -313,15 +314,16 @@ export async function deleteSqueal(id: string) {
  * @returns errori eventuali
  */
 export async function deleteMediaSqueal(squeal: Squeal) {
-  const file = squeal.body;
-  fs.unlink(resolve(publicUploadPath, file), (err) => {
-    if (err) {
-      return cannot_delete;
-    }
-  });
-  const deleted: any = await squealModel.deleteOne({ _id: squeal._id });
-  if (deleted.deletedCount < 1) return cannot_delete;
-  else return removed;
+  if (squeal.body) {
+    fs.unlink(resolve(publicUploadPath, squeal.body), (err) => {
+      if (err) {
+        return cannot_delete;
+      }
+    });
+    const deleted: any = await squealModel.deleteOne({ _id: squeal._id });
+    if (deleted.deletedCount < 1) return cannot_delete;
+    else return removed;
+  } else return not_recived;
 }
 
 /**

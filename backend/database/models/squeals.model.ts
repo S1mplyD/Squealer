@@ -1,11 +1,11 @@
 import { Schema, model, Document } from "mongoose";
 
 interface Squeal {
-  body: string;
+  body?: string;
   lng?: string;
   lat?: string;
   locationName?: string;
-  recipients: string[];
+  recipients?: string[];
   date: Date;
   positiveReactions?: string[];
   negativeReactions?: string[];
@@ -25,7 +25,7 @@ interface SquealDocument extends Squeal, Document {}
 
 const squealSchema = new Schema<SquealDocument>({
   //Visualizzabili
-  body: { type: String, required: true }, //Corpo del messaggio (testo o url)
+  body: { type: String }, //Corpo del messaggio (testo o url)
   lat: { type: String },
   lng: { type: String },
   locationName: { type: String },

@@ -2,11 +2,12 @@ import { SuccessCode, SuccessDescription } from "./success";
 
 // nuovo tipo Squeal
 export type Squeal = {
-  body: string;
+  _id: string;
+  body?: string;
   lng?: string;
   lat?: string;
   locationName?: string;
-  recipients: string[];
+  recipients?: string[];
   date: Date;
   positiveReactions?: string[];
   negativeReactions?: string[];
@@ -18,8 +19,7 @@ export type Squeal = {
   type: string;
   time?: number;
   count?: number;
-  originalSqueal?: string;
-  _id: string;
+  originalSqueal: string;
   responses?: string[];
 };
 
