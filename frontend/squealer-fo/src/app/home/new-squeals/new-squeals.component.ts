@@ -10,6 +10,7 @@ import { AuthService } from 'app/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
 import axios from 'axios';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-new-squeal',
@@ -25,6 +26,7 @@ export class NewSquealsComponent implements OnInit {
   selectedFile?: File = undefined;
   upvote: number = 0;
   downvote: number = 0;
+  mapOpened: boolean = false;
   selectedRef: string = '';
   selectedFileName: string = '';
   responses: Squeal[] = [];
@@ -32,8 +34,8 @@ export class NewSquealsComponent implements OnInit {
   answeredId: string = '';
   initialMarker =
   {
-    position: { lat: 0, lng: 0 },
-    draggable: false
+    position: { lat: 44.35527821160296, lng:  11.260986328125 },
+    draggable: true
   }
   newSqueal: Squeal = {
     author: '',
@@ -68,6 +70,7 @@ export class NewSquealsComponent implements OnInit {
   isPopupOpen = false;
   isAnswerOpen = false;
   map!: L.Map;
+  map2!: L.Map;
   markers: L.Marker[] = [];
   options = {
     layers: [
@@ -76,27 +79,12 @@ export class NewSquealsComponent implements OnInit {
     zoom: 5,
     center: L.latLng( 44.35527821160296, 11.260986328125)
   };
-  layers = [
-    L.marker([ 44.35527821160296, 11.260986328125 ], {
-      icon: L.icon({
-        ...L.Icon.Default.prototype.options,
-        iconUrl: 'assets/marker-icon.png',
-        iconRetinaUrl: 'assets/marker-icon-2x.png',
-        shadowUrl: 'assets/marker-shadow.png'
-      }),
-      draggable: false
-    })
-  ];
-  layersControl = {
-    baseLayers: {
-      'Open Street Map': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' }),
-      'Open Cycle Map': L.tileLayer('https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
-    },
-    overlays: {
-      'Big Circle': L.circle([ 46.95, -122 ], { radius: 5000 }),
-      'Big Square': L.polygon([[ 46.8, -121.55 ], [ 46.9, -121.55 ], [ 46.9, -121.7 ], [ 46.8, -121.7 ]])
-    }
-  }
+  options2 = {
+    layers: [
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+    ],
+    zoom: 5
+  };
 
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
@@ -144,9 +132,34 @@ export class NewSquealsComponent implements OnInit {
       this.markers.push(marker)
   }
 
-  generateMarker(data: any, index: number) {
+  generateSquealMap(lat: string, long: string, id: string) {
+    if (!this.mapOpened) {
+      this.mapOpened = true;
+    const data =  {
+      position: { lat: +lat, lng:  +long },
+      draggable: false
+    };
+    const marker = this.generateMarker(data, 0);
+    marker.addTo(this.map2).bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
+    this.map2.panTo(data.position);
+    this.markers.push(marker);
+    $('.'+ id).append('<div style="height: 300px;" leaflet [leafletOptions]="options2"></div>');
+    }
+  }
+  closeMap(id: string) {
+    if (this.mapOpened) {
+      this.mapOpened = false;
+      $('.'+ id).empty();
+    }
+  }
 
-    return L.marker(data.position, { draggable: data.draggable })
+  generateMarker(data: any, index: number) {
+    return L.marker(data.position, { icon: L.icon({
+      ...L.Icon.Default.prototype.options,
+      iconUrl: 'assets/marker-icon.png',
+      iconRetinaUrl: 'assets/marker-icon-2x.png',
+      shadowUrl: 'assets/marker-shadow.png'
+    }),draggable: data.draggable })
       .on('click', (event) => this.markerClicked(event, index))
       .on('dragend', (event) => this.markerDragEnd(event, index));
   }
@@ -307,7 +320,8 @@ export class NewSquealsComponent implements OnInit {
   }
 
   answer(id: string): void {
-    let numChar = this.newSqueal.body.length;
+    if (this.squealType === 'text') {
+      let numChar = this.newSqueal.body.length;
     if (this.dailyChars - numChar >= 0) {
       const answer: Squeal = {
         _id: '',
@@ -339,6 +353,7 @@ export class NewSquealsComponent implements OnInit {
         duration: 3000
       });
     }
+    }
   }
 
   addDownvote(squealId: string): void {
@@ -363,36 +378,70 @@ export class NewSquealsComponent implements OnInit {
   addPost(): void {
     console.log(this.dailyChars);
     let numChar = this.newSqueal.body.length;
-    if (this.dailyChars - numChar >= 0) {
-      const squeal: Squeal = {
-        _id: '',
-        author: this.username,
-        body: this.newSqueal.body,
-        date: new Date(),
-        lat: this.newSqueal.lat,
-        lng: this.newSqueal.lng,
-        time: this.newSqueal.time,
-        recipients: this.getRecipients(this.recipients),
-        channels: this.getChannels(this.newSqueal.body),
-        positiveReactions: this.newSqueal.positiveReactions,
-        negativeReactions: this.newSqueal.negativeReactions,
-        category: 'public',
-        type: this.squealType,
-        originalSqueal: ''
-      };
-      this.squealService.addSqueal(squeal)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        if (res) {
-          this.loadSqueals();
-        }
-      });
-      this.closePopup();
-    }
-    else {
-      this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-        duration: 3000
-      });
+    if (this.squealType === 'text') {
+      if (this.dailyChars - numChar >= 0) {
+        const squeal: Squeal = {
+          _id: '',
+          author: this.username,
+          body: this.newSqueal.body,
+          date: new Date(),
+          lat: this.newSqueal.lat,
+          lng: this.newSqueal.lng,
+          time: this.newSqueal.time,
+          recipients: this.getRecipients(this.recipients),
+          channels: this.getChannels(this.newSqueal.body),
+          positiveReactions: this.newSqueal.positiveReactions,
+          negativeReactions: this.newSqueal.negativeReactions,
+          category: 'public',
+          type: this.squealType,
+          originalSqueal: ''
+        };
+        this.squealService.addSqueal(squeal)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          if (res) {
+            this.loadSqueals();
+          }
+        });
+        this.closePopup();
+      }
+      else {
+        this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
+          duration: 3000
+        });
+      }
+    } else {
+      if (this.dailyChars - 125 >= 0) {
+        const squeal: Squeal = {
+          _id: '',
+          author: this.username,
+          body: this.newSqueal.body,
+          date: new Date(),
+          lat: this.newSqueal.lat,
+          lng: this.newSqueal.lng,
+          time: this.newSqueal.time,
+          recipients: this.getRecipients(this.recipients),
+          channels: this.getChannels(this.newSqueal.body),
+          positiveReactions: this.newSqueal.positiveReactions,
+          negativeReactions: this.newSqueal.negativeReactions,
+          category: 'public',
+          type: this.squealType,
+          originalSqueal: ''
+        };
+        this.squealService.addSqueal(squeal)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          if (res) {
+            this.loadSqueals();
+          }
+        });
+        this.closePopup();
+      }
+      else {
+        this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
+          duration: 3000
+        });
+      }
     }
   }
 }
