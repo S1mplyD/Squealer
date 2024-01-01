@@ -18,6 +18,7 @@ import {
   changeUserPlan,
   getManagedUsers,
   getProfessionalUsers,
+  getUserProfilePictureByUsername,
 } from "../database/querys/users";
 import { SquealerError, non_existent } from "../util/errors";
 import { updateSquealsUsername } from "../database/querys/squeals";
@@ -136,6 +137,16 @@ router
 
 router
   .route("/user/:username/profilePicture")
+  .get(async (req, res) => {
+    try {
+      const profilePicture = await getUserProfilePictureByUsername(
+        req.params.username,
+      );
+      res.send(profilePicture);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  })
   /**
    * chiamata per aggiornare il percorso della profile picture
    * DA USARE DOPO LA CHIAMATA POST /api/media

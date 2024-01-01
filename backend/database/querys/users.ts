@@ -440,3 +440,10 @@ export async function changeUserPlan(username: string, plan: string) {
     else return cannot_update;
   }
 }
+
+export async function getUserProfilePictureByUsername(username: string) {
+  const user: User | SquealerError = await getUserByUsername(username);
+  if (!(user instanceof SquealerError)) {
+    return user.profilePicture;
+  } else return user;
+}

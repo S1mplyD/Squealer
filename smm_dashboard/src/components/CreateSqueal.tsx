@@ -4,6 +4,7 @@ import {
   getMe,
   postSqueal,
   reverseGeocode,
+  uploadFile,
 } from "../HTTPcalls";
 import { User } from "../utils/types";
 import {
@@ -28,6 +29,8 @@ const CreateSqueal: React.FC = () => {
   const [locationName, setLocationName] = useState<string>();
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
+  const [text, setText] = useState(true);
+  const [media, setMedia] = useState(false);
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
   const MapLoc = () => {
@@ -58,6 +61,21 @@ const CreateSqueal: React.FC = () => {
     iconAnchor: [11, 40],
   });
 
+  const getChannelsFromBody = (body: string) => {
+    const channels: string[] = [];
+    body = body.replace(".", " ");
+    body = body.replace(",", " ");
+    body = body.replace(":", " ");
+    body = body.replace(";", " ");
+    const words: string[] = body.split(" ");
+    for (const word of words) {
+      if (word[0] === "@") channels.push(word);
+      if (word[0] === "§") channels.push(word);
+      if (word[0] === "#") channels.push(word);
+    }
+    return channels;
+  };
+
   useEffect(() => {
     async function fetchData() {
       if ("geolocation" in navigator) {
@@ -86,7 +104,6 @@ const CreateSqueal: React.FC = () => {
       setLoading(false);
     });
   }, []);
-
   if (!loading) {
     return (
       <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange ">
@@ -118,6 +135,8 @@ const CreateSqueal: React.FC = () => {
                   defaultChecked
                   onClick={() => {
                     setCheckbox(true);
+                    setText(true);
+                    setMedia(false);
                     setGeo(false);
                   }}
                 ></input>
@@ -131,6 +150,8 @@ const CreateSqueal: React.FC = () => {
                   name="type"
                   onClick={() => {
                     setCheckbox(false);
+                    setMedia(true);
+                    setText(false);
                     setGeo(false);
                   }}
                 ></input>
@@ -144,6 +165,8 @@ const CreateSqueal: React.FC = () => {
                   name="type"
                   onClick={() => {
                     setGeo(true);
+                    setMedia(false);
+                    setText(false);
                     setCheckbox(true);
                   }}
                 ></input>
@@ -172,6 +195,56 @@ const CreateSqueal: React.FC = () => {
                 ) : null}
               </div>
             ) : null}
+            {text ? (
+              <div>
+                <div className="mb-4">
+                  <label htmlFor="body" className="block mb-2 font-bold">
+                    Body
+                  </label>
+                  <textarea
+                    id="body"
+                    className="w-full px-3 py-2 border rounded"
+                    rows={4}
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="recipients" className="block mb-2 font-bold">
+                    Recipients
+                  </label>
+                  <input
+                    type="text"
+                    id="recipients"
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                </div>
+              </div>
+            ) : null}
+            {media ? (
+              <div>
+                <div>
+                  <div className="mb-4">
+                    <label htmlFor="body" className="block mb-2 font-bold">
+                      File
+                    </label>
+                    <input type={"file"} id={"file"} />
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="recipients"
+                      className="block mb-2 font-bold"
+                    >
+                      Recipients
+                    </label>
+                    <input
+                      type="text"
+                      id="recipients"
+                      className="w-full px-3 py-2 border rounded"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {geo ? (
               <div>
                 <div id={"map"}>
@@ -192,77 +265,111 @@ const CreateSqueal: React.FC = () => {
                     <SearchField changeLocation={changeLocation} />
                   </MapContainer>
                 </div>
+                <div className="mb-4">
+                  <label htmlFor="recipients" className="block mb-2 font-bold">
+                    Recipients
+                  </label>
+                  <input
+                    type="text"
+                    id="recipients"
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                </div>
               </div>
             ) : null}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="body" className="block mb-2 font-bold">
-              Body
-            </label>
-            <textarea
-              id="body"
-              className="w-full px-3 py-2 border rounded"
-              rows={4}
-              required
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="recipients" className="block mb-2 font-bold">
-              Recipients
-            </label>
-            <input
-              type="text"
-              id="recipients"
-              className="w-full px-3 py-2 border rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="category" className="block mb-2 font-bold">
-              Category
-            </label>
-            <input
-              type="text"
-              id="category"
-              className="w-full px-3 py-2 border rounded"
-            />
           </div>
           <button
             type="button"
             className="btn-orange bg-grey text-white px-4 py-2 rounded"
             onClick={async () => {
-              const body: string = (
-                document.getElementById("body") as HTMLInputElement
-              ).value;
-              const category: string = (
-                document.getElementById("category") as HTMLInputElement
-              ).value;
-              const channels: string = (
-                document.getElementById("channels") as HTMLInputElement
-              ).value.replaceAll(" ", "");
-              const channelsArray: string[] = channels.split(",");
-              const recipients: string = (
-                document.getElementById("recipients") as HTMLInputElement
-              ).value.replaceAll(" ", "");
-              const recipientsArray: string[] = recipients.split(",");
               const type = (document.querySelector(
                 'input[name="type"]:checked',
               ) as HTMLInputElement)!.value;
-              const user = document.getElementById("user") as HTMLSelectElement;
-              const newSqueal = await postSqueal(
-                body,
-                category,
-                channelsArray,
-                user.options[user.selectedIndex].text,
-                type,
-                geo ? location.lat.toString() : undefined,
-                geo ? location.lng.toString() : undefined,
-                geo ? locationName : undefined,
-                timed
-                  ? +(document.getElementById("time") as HTMLInputElement).value
-                  : undefined,
-                recipientsArray,
-              );
-              console.log(newSqueal);
+              if (type === "text") {
+                const body: string = (
+                  document.getElementById("body") as HTMLInputElement
+                ).value;
+                const recipients: string = (
+                  document.getElementById("recipients") as HTMLInputElement
+                ).value.replaceAll(" ", "");
+                const recipientsArray: string[] = recipients.split(",");
+                const user = document.getElementById(
+                  "user",
+                ) as HTMLSelectElement;
+                const channels = getChannelsFromBody(body);
+                const newSqueal = await postSqueal(
+                  recipientsArray.length > 0 ? "private" : "public",
+                  channels,
+                  user.options[user.selectedIndex].text,
+                  type,
+                  body,
+                  geo ? location.lat.toString() : undefined,
+                  geo ? location.lng.toString() : undefined,
+                  geo ? locationName : undefined,
+                  timed
+                    ? +(document.getElementById("time") as HTMLInputElement)
+                        .value
+                    : undefined,
+                  recipientsArray,
+                );
+                console.log(newSqueal);
+              } else if (type === "media") {
+                const files = document.querySelector(
+                  "#file",
+                ) as HTMLInputElement;
+                if (files.files && files.files.length > 0) {
+                  const file = files.files[0];
+                  const filename = await uploadFile(file);
+                  console.log(filename);
+                  const recipients: string = (
+                    document.getElementById("recipients") as HTMLInputElement
+                  ).value.replaceAll(" ", "");
+                  const recipientsArray: string[] = recipients.split(",");
+                  const user = document.getElementById(
+                    "user",
+                  ) as HTMLSelectElement;
+                  const newSqueal = await postSqueal(
+                    recipientsArray.length > 0 ? "public" : "private",
+                    [],
+                    user.options[user.selectedIndex].text,
+                    type,
+                    filename,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    recipientsArray,
+                  );
+                  if (newSqueal) {
+                    console.log(newSqueal);
+                    alert("squeal posted correctly");
+                  }
+                }
+              } else if (type === "geo") {
+                const recipients: string = (
+                  document.getElementById("recipients") as HTMLInputElement
+                ).value.replaceAll(" ", "");
+                const recipientsArray: string[] = recipients.split(",");
+                const user = document.getElementById(
+                  "user",
+                ) as HTMLSelectElement;
+                const newSqueal = await postSqueal(
+                  recipientsArray.length > 0 ? "public" : "private",
+                  [],
+                  user.options[user.selectedIndex].text,
+                  type,
+                  undefined,
+                  location.lng + "",
+                  location.lat + "",
+                  locationName,
+                  undefined,
+                  recipientsArray,
+                );
+                if (newSqueal) {
+                  console.log(newSqueal);
+                  alert("squeal posted correctly");
+                }
+              }
             }}
           >
             Submit

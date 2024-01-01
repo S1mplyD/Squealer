@@ -3,11 +3,11 @@ import { Squeal, User } from "./utils/types";
 const path: string = "http://localhost:3000";
 
 export async function postSqueal(
-  body: string,
   category: string,
   channels: string[],
   username: string,
   type: string,
+  body?: string,
   lng?: string,
   lat?: string,
   locationName?: string,
@@ -25,6 +25,7 @@ export async function postSqueal(
     type: type,
     time: time,
   };
+  console.log(requestBody);
   const newSqueal = await axios.post<Squeal>(
     `${path}/api/squeals/smm/${username}`,
     requestBody,
@@ -97,5 +98,14 @@ export async function reverseGeocode(lat: number, lng: number) {
   const response = await axios.get(
     `https://nominatim.openstreetmap.org/reverse?format=geocodejson&lat=${lat}&lon=${lng}`,
   );
+  return response.data;
+}
+
+export async function uploadFile(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await axios.post(`${path}/api/media`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 }
