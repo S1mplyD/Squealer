@@ -228,6 +228,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
     body: squeal.body,
     lat: squeal.lat,
     lng: squeal.lng,
+    locationName: squeal.locationName,
     recipients: rec,
     date: new Date(),
     category: squeal.category,

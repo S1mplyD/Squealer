@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { getManagedUsers, getMe, postSqueal } from "../HTTPcalls";
+import {
+  getManagedUsers,
+  getMe,
+  postSqueal,
+  reverseGeocode,
+} from "../HTTPcalls";
 import { User } from "../utils/types";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { SearchField } from "./SearchBox.tsx";
 import L from "leaflet";
@@ -14,20 +25,32 @@ const CreateSqueal: React.FC = () => {
     lat: 44.1420926,
     lng: 11.1478767,
   });
+  const [locationName, setLocationName] = useState<string>();
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
   const MapLoc = () => {
     useMapEvents({
-      click(e) {
+      async click(e) {
         setLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+        const reverseGeocodeResult = await reverseGeocode(
+          e.latlng.lat,
+          e.latlng.lng,
+        );
+        setLocationName(
+          reverseGeocodeResult.features[0].properties.geocoding.label,
+        );
       },
     });
     return null;
   };
-  const changeLocation = (lat: number, lng: number) => {
+  const changeLocation = async (lat: number, lng: number) => {
     setLocation({ lat: lat, lng: lng });
+    const reverseGeocodeResult = await reverseGeocode(lat, lng);
+    setLocationName(
+      reverseGeocodeResult.features[0].properties.geocoding.label,
+    );
   };
   L.Marker.prototype.options.icon = L.icon({
     iconUrl: icon,
@@ -36,17 +59,24 @@ const CreateSqueal: React.FC = () => {
   });
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      //geolocazione disponibile
-      navigator.geolocation.getCurrentPosition((position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      });
-    }
-
     async function fetchData() {
+      if ("geolocation" in navigator) {
+        //geolocazione disponibile
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          // @ts-ignore
+          const reverseGeocodeResult = await reverseGeocode(
+            position.coords.latitude,
+            position.coords.longitude,
+          );
+          setLocationName(
+            reverseGeocodeResult.features[0].properties.geocoding.label,
+          );
+        });
+      }
       const user: User = await getMe();
       const managed: User[] = await getManagedUsers(user.username);
       setManagedUsers(managed);
@@ -156,7 +186,9 @@ const CreateSqueal: React.FC = () => {
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-                    <Marker position={location} />
+                    <Marker position={location}>
+                      <Popup>{locationName}</Popup>
+                    </Marker>
                     <SearchField changeLocation={changeLocation} />
                   </MapContainer>
                 </div>
@@ -224,6 +256,7 @@ const CreateSqueal: React.FC = () => {
                 type,
                 geo ? location.lat.toString() : undefined,
                 geo ? location.lng.toString() : undefined,
+                geo ? locationName : undefined,
                 timed
                   ? +(document.getElementById("time") as HTMLInputElement).value
                   : undefined,

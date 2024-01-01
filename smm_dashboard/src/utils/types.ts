@@ -2,6 +2,7 @@ export type Squeal = {
   body: string;
   lng?: string;
   lat?: string;
+  locationName?: string;
   recipients: string[];
   date: Date;
   positiveReactions?: string[];
