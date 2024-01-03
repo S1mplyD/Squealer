@@ -207,6 +207,7 @@ const CreateSqueal: React.FC = () => {
                     rows={4}
                     required
                   ></textarea>
+                  {/*<TextArea />*/}
                 </div>
                 <div className="mb-4">
                   <label htmlFor="recipients" className="block mb-2 font-bold">
@@ -292,7 +293,11 @@ const CreateSqueal: React.FC = () => {
                 const recipients: string = (
                   document.getElementById("recipients") as HTMLInputElement
                 ).value.replaceAll(" ", "");
-                const recipientsArray: string[] = recipients.split(",");
+                let recipientsArray: string[] = recipients.split(",");
+                recipientsArray = recipientsArray.filter((el) => {
+                  return el !== "";
+                });
+                console.log(recipientsArray.length);
                 const user = document.getElementById(
                   "user",
                 ) as HTMLSelectElement;
@@ -329,7 +334,7 @@ const CreateSqueal: React.FC = () => {
                     "user",
                   ) as HTMLSelectElement;
                   const newSqueal = await postSqueal(
-                    recipientsArray.length > 0 ? "public" : "private",
+                    recipientsArray.length > 0 ? "private" : "public",
                     [],
                     user.options[user.selectedIndex].text,
                     type,
@@ -353,8 +358,9 @@ const CreateSqueal: React.FC = () => {
                 const user = document.getElementById(
                   "user",
                 ) as HTMLSelectElement;
+                console.log(recipientsArray.length);
                 const newSqueal = await postSqueal(
-                  recipientsArray.length > 0 ? "public" : "private",
+                  recipientsArray.length > 0 ? "private" : "public",
                   [],
                   user.options[user.selectedIndex].text,
                   type,
