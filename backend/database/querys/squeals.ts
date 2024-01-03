@@ -9,7 +9,11 @@ import {
   SquealerError,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
-import { addSquealToChannel } from "./channels";
+import {
+  addSquealToChannel,
+  checkChannelType,
+  createChannel,
+} from "./channels";
 import channelsModel from "../models/channels.model";
 import { resolve } from "path";
 import fs from "fs";
@@ -218,7 +222,15 @@ export async function postSqueal(squeal: Squeal, user: User) {
   const channels: null | Channel[] = await channelsModel.find({
     name: { $in: squeal.channels },
   });
+  console.log(channels);
   let rec: string[] = [];
+  if (!(channels.length > 0)) {
+    console.log(`here: ${channels}`);
+    for (let i of squeal.channels) {
+      console.log(`here2 : ${i}`);
+      await createChannel(i.substring(1), await checkChannelType(i), user);
+    }
+  }
   if (squeal.recipients && squeal.recipients.length > 0) {
     for (let i of squeal.recipients) {
       rec.push(i.replace(" ", ""));
@@ -262,6 +274,7 @@ export async function postSqueal(squeal: Squeal, user: User) {
         return cannot_update;
       }
     }
+    console.log(newSqueal.channels);
     if (newSqueal.channels.length > 0) {
       for (let i of newSqueal.channels) {
         for (let j of channels) {
