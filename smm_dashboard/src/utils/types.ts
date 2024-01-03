@@ -54,3 +54,13 @@ export type Analytic = {
   negativeReactions: number;
   author: string;
 };
+
+export type Channel = {
+  _id: string; // mongodb id
+  name: string; // nome del canale
+  squeals: string[]; // id degli squeals appartenenti al canale
+  allowedRead: string[];
+  allowedWrite: string[];
+  type: string;
+  channelAdmins: string[];
+};
