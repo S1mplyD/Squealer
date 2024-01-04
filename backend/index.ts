@@ -32,7 +32,7 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
@@ -81,7 +81,7 @@ app.get("/smm/*", (req, res) => {
 //BACKOFFICE
 app.use(
   "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo"))
+  express.static(path.join(__dirname, "../frontend/squealer-bo/views")),
 );
 
 // app.get("/*", (req, res) => {
