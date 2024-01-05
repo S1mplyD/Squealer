@@ -17,4 +17,4 @@ const blockUser = async (username, time) => {
   return response.data;
 };
 
-module.exports = { getAll, getByUsername };
+module.exports = { getAll, getByUsername, blockUser };
