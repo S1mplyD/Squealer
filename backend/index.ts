@@ -81,7 +81,7 @@ app.get("/smm/*", (req, res) => {
 //BACKOFFICE
 app.use(
   "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo/views")),
+  express.static(path.join(__dirname, "../frontend/squealer-bo")),
 );
 
 // app.get("/*", (req, res) => {
