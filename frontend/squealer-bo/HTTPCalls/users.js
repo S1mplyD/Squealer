@@ -1,4 +1,5 @@
 import axios from "axios";
+import { config } from "dotenv";
 
 const getAll = async () => {
   const response = await axios.get("/api/users");
@@ -15,6 +16,12 @@ const blockUser = async (username, time) => {
     params: { username, time },
   });
   return response.data;
+};
+
+const unblockUser = async (username) => {
+  const response = await axios.post("/api/users/unblock", null, {
+    params: { username },
+  });
 };
 
 module.exports = { getAll, getByUsername, blockUser };
