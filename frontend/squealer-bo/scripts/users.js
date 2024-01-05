@@ -1,5 +1,7 @@
-import getAll from "../HTTPCalls/users";
+import userFunctions from "../HTTPCalls/users";
 
 const createUserTable = async () => {
-  const users = await getAll();
+  const users = await userFunctions.getAll();
 };
+
+module.exports = { createUserTable };
