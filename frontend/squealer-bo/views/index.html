@@ -1,29 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Moderator Dashboard</title>
-</head>
-<body>
-    <nav>
+    <script src="../scripts/auth.js"></script>
+  </head>
+  <body>
+    <header>
+      <nav>
         <ul>
-            <li>
-                <button>
-                    Users
-                </button>
-            </li>
-            <li>
-                <button>
-                    Squeals
-                </button>
-            </li>
-            <li>
-                <button>
-                    Official Channels
-                </button>
-            </li>
+          <li>
+            <button>Users</button>
+          </li>
+          <li>
+            <button>Squeals</button>
+          </li>
+          <li>
+            <button>Official Channels</button>
+          </li>
         </ul>
-    </nav>
-</body>
-<script src=""></script>
+      </nav>
+    </header>
+    <main>
+      <h1>Login</h1>
+      <form>
+        <label for="mail">E-mail:</label>
+        <input type="email" name="mail" id="mail" placeholder="E-mail" />
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Password"
+        />
+        <input
+          type="button"
+          value="login"
+          onclick="login(document.getElementById('mail').value, document.getElementById('password').value)"
+        />
+      </form>
+    </main>
+  </body>
 </html>
