@@ -19,6 +19,7 @@ import {
   getManagedUsers,
   getProfessionalUsers,
   getUserProfilePictureByUsername,
+  addCharactersToUser,
 } from "../database/querys/users";
 import { SquealerError, non_existent } from "../util/errors";
 import { updateSquealsUsername } from "../database/querys/squeals";
@@ -276,6 +277,22 @@ router.route("/user/:username/changeplan").post(async (req, res) => {
   }
 });
 
+router.route("/user/:username/addcharacters").post(async (req, res) => {
+  try {
+    if (req.user && (req.user as User).plan === "admin") {
+      const update = await addCharactersToUser(
+        req.params.username,
+        req.body.dailyCharacters,
+        req.body.weeklyCharacters,
+        req.body.monthlyCharacters,
+      );
+      res.sendStatus(200);
+    } else res.sendStatus(401);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
 router
   .route("/revokePermissions")
   /**
@@ -286,7 +303,7 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await revokePermissions(
-          req.query.id as string,
+          req.query.username as string,
         );
         if (update instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
@@ -307,7 +324,7 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const update: SquealerError | Success = await grantPermissions(
-          req.query.id as string,
+          req.query.username as string,
         );
         if (update instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
@@ -327,7 +344,7 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const banned: SquealerError | Success = await ban(
-          req.query.id as string,
+          req.query.username as string,
         );
         if (banned instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
@@ -347,7 +364,7 @@ router
     try {
       if ((req.user as User).plan === "admin") {
         const unban: SquealerError | Success = await unbanUser(
-          req.query.id as string,
+          req.query.username as string,
         );
         if (unban instanceof SquealerError) res.sendStatus(500);
         else res.sendStatus(200);
