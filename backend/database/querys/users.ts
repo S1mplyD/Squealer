@@ -447,3 +447,25 @@ export async function getUserProfilePictureByUsername(username: string) {
     return user.profilePicture;
   } else return user;
 }
+
+export async function addCharactersToUser(
+  username: string,
+  dailyCharacters: number,
+  weeklyCharacters: number,
+  monthlyCharacters: number,
+) {
+  const update = await userModel.updateOne(
+    { username },
+    {
+      $inc: {
+        dailyCharacters: dailyCharacters,
+        weeklyCharacters: weeklyCharacters,
+        monthlyCharacters: monthlyCharacters,
+      },
+    },
+  );
+
+  if (update.modifiedCount > 0) {
+    return updated;
+  } else throw new Error("Cannot update");
+}
