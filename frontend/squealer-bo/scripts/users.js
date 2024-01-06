@@ -22,25 +22,44 @@ const unblockUser = async (username) => {
 };
 
 const createUserTable = async () => {
-  const users = await getAll();
-  const newMain = document.getElementById("usertable");
-  newMain.html(
-    "<table id='table'>" +
+  const me = await getMe();
+  if (me.status !== 404 && me.data.plan === "admin") {
+    const users = await getAll();
+    const newMain = document.getElementById("usertable");
+    newMain.innerHTML =
+      "<table id='table'>" +
       "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
-      "</table>",
-  );
-  for (let i of users) {
-    newMain.append(
-      "<tr>" +
-        "<td>i.name</td>" +
-        "<td>i.username</td>" +
-        "<td>i.mail</td>" +
-        "<td>i.plan</td>" +
-        "<td>i.status</td>" +
-        "<td>i.dailycharacters</td>" +
-        "<td>i.weeklycharacters</td>" +
-        "<td>i.monthlycharacters</td>" +
-        "</tr>",
-    );
+      "</table>";
+    for (let i of users) {
+      newMain.innerHTML +=
+        "<tr>" +
+        "<td>" +
+        i.name +
+        "</td>" +
+        "<td>" +
+        i.username +
+        "</td>" +
+        "<td>" +
+        i.mail +
+        "</td>" +
+        "<td>" +
+        i.plan +
+        "</td>" +
+        "<td>" +
+        i.status +
+        "</td>" +
+        "<td>" +
+        i.dailyCharacters +
+        "</td>" +
+        "<td>" +
+        i.weeklyCharacters +
+        "</td>" +
+        "<td>" +
+        i.monthlyCharacters +
+        "</td>" +
+        "</tr>";
+    }
+  } else {
+    await createLoginForm("usermain");
   }
 };
