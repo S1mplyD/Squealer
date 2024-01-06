@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/squeals.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body onload="createSquealTable()">
+<header>
+    <nav>
+        <ul>
+            <li>
+                <button onclick="document.location.replace('users.html')">
+                    Users
+                </button>
+            </li>
+            <li>
+                <button onclick="document.location.replace('squeals.html') ">
+                    Squeals
+                </button>1
+            </li>
+            <li>
+                <button
+                        onclick="document.location.replace('officialChannels.html')"
+                >
+                    Official Channels
+                </button>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main id="squealmain">
+<div id="squealtable"></div>
+</main>
+</body>
+</html>

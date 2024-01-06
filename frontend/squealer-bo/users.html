@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Users</title>
-    <script src="../scripts/users.js"></script>
-    <script src="../scripts/auth.js"></script>
+    <script src="scripts/users.js"></script>
+    <script src="scripts/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body onload="createUserTable()">
@@ -12,24 +12,23 @@
     <nav>
         <ul>
             <li>
-                <button onclick="document.location.href = '/backoffice/users'">
+                <button onclick="document.location.href = 'users.html'">
                     Users
                 </button>
             </li>
             <li>
-                <button onclick="document.location.href = '/backoffice/squeals'">
+                <button onclick="document.location.href = 'squeals.html'">
                     Squeals
                 </button>
             </li>
             <li>
                 <button
-                        onclick="document.location.href = '/backoffice/officialchannels'"
+                        onclick="document.location.href = 'officialChannels.html'"
                 >
                     Official Channels
                 </button>
             </li>
         </ul>
-    </nav>
 </header>
 <main id="usermain">
     <div id="usertable"></div>
