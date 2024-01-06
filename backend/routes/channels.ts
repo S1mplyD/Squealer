@@ -44,7 +44,7 @@ router
         const returnValue: SquealerError | Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
-          req.user as User
+          req.user as User,
         );
         if (returnValue instanceof SquealerError) res.sendStatus(500);
         else res.status(201).send(returnValue);
@@ -56,7 +56,7 @@ router
         const newChannel: SquealerError | Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
-          req.user as User
+          req.user as User,
         );
         if (newChannel instanceof SquealerError) res.sendStatus(500);
         res.status(201).send(newChannel);
@@ -79,7 +79,7 @@ router
       ) {
         const returnValue: SquealerError | Success = await deleteChannel(
           req.query.name as string,
-          req.user as User
+          req.user as User,
         );
         if (returnValue instanceof SquealerError) res.sendStatus(500);
         res.status(200).send(returnValue);
@@ -101,7 +101,7 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         const channel: Channel | SquealerError = await getChannel(
-          req.params.name
+          req.params.name,
         );
         if (channel instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(channel);
@@ -120,11 +120,10 @@ router
   .get(async (req, res) => {
     try {
       if (req.user && (req.user as User).status !== "ban") {
-        const userchannel: Channel[] | SquealerError = await getAllUserChannel(
-          req.user as User
+        const userchannel: Channel[] = await getAllUserChannel(
+          req.user as User,
         );
-        if (userchannel instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(userchannel);
+        res.status(200).send(userchannel);
       } else if (!req.user) res.sendStatus(401);
       else res.sendStatus(401);
     } catch (error) {
@@ -145,7 +144,7 @@ router
       ) {
         const retValue: SquealerError | Success = await addUserToUserChannel(
           req.body.username,
-          req.body.channelName
+          req.body.channelName,
         );
         if (retValue instanceof SquealerError) {
           if (retValue.code === 20) res.sendStatus(404);
@@ -171,7 +170,7 @@ router
       ) {
         const retValue: SquealerError | Success = await removeUserFromChannel(
           req.body.username,
-          req.body.channelName
+          req.body.channelName,
         );
         if (retValue instanceof SquealerError) {
           if (retValue.code === 20) res.sendStatus(404);
@@ -192,10 +191,8 @@ router
   .get(async (req, res) => {
     try {
       if ((req.user as User).status !== "ban") {
-        const officialChannels: Channel[] | SquealerError =
-          await getAllOfficialChannel();
-        if (officialChannels instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(officialChannels);
+        const officialChannels: Channel[] = await getAllOfficialChannel();
+        res.status(200).send(officialChannels);
       } else res.sendStatus(401);
     } catch (error) {
       console.log(error);
@@ -213,11 +210,8 @@ router
 
     try {
       if ((req.user as User).status !== "ban") {
-        const keywordChannel: Channel[] | SquealerError =
-          await getAllKeywordChannel();
-        if (keywordChannel instanceof SquealerError)
-          res.status(404).send("DBT");
-        else res.status(200).send(keywordChannel);
+        const keywordChannel: Channel[] = await getAllKeywordChannel();
+        res.status(200).send(keywordChannel);
       } else res.sendStatus(401);
     } catch (error) {
       console.log(error);
@@ -233,10 +227,10 @@ router
   .get(async (req, res) => {
     try {
       if ((req.user as User).status !== "ban") {
-        const mentionChannel: Channel[] | SquealerError =
-          await getAllMentionChannel(req.user as User);
-        if (mentionChannel instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(mentionChannel);
+        const mentionChannel: Channel[] = await getAllMentionChannel(
+          req.user as User,
+        );
+        res.status(200).send(mentionChannel);
       } else res.sendStatus(401);
     } catch (error) {
       console.log(error);
@@ -255,7 +249,7 @@ router
         const squeals: Squeal[] | SquealerError =
           await getAllSquealsFromChannel(
             req.query.name as string,
-            (req.user as User)._id
+            (req.user as User)._id,
           );
         if (squeals instanceof SquealerError) res.sendStatus(404);
         else res.status(200).send(squeals);

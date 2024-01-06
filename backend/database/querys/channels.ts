@@ -45,7 +45,7 @@ export async function getAllUserChannel(user: User) {
     type: "userchannel",
     allowedRead: user._id,
   });
-  if (!userChannels) return non_existent;
+  if (!userChannels) return [];
   else return userChannels;
 }
 
@@ -58,7 +58,7 @@ export async function getAllOfficialChannel() {
     type: "officialchannel",
   });
   console.log(channels);
-  if (!channels) return non_existent;
+  if (!channels) return [];
   else return channels;
 }
 
@@ -70,7 +70,7 @@ export async function getAllKeywordChannel() {
   const channels: Channel[] | null = await channelsModel.find({
     type: "keyword",
   });
-  if (!channels) return non_existent;
+  if (!channels) return [];
   else return channels;
 }
 
@@ -84,7 +84,7 @@ export async function getAllMentionChannel(user: User) {
     allowedRead: user._id,
     allowedWrite: user._id,
   });
-  if (!channels) return non_existent;
+  if (!channels) return [];
   else return channels;
 }
 
@@ -120,6 +120,8 @@ export async function getAllSquealsFromChannel(
 /**
  * funzione che crea un canale
  * @param channelName nome del canale da creare
+ * @param type tipo del canale da creare
+ * @param user utente che crea il canale
  * @returns SquealerError | Success
  */
 export async function createChannel(
@@ -329,3 +331,21 @@ export async function deleteChannel(name: string, user: User) {
 }
 
 export async function deleteUserChannel(channelName: string) {}
+
+export async function checkChannelType(channelName: string) {
+  if (channelName.startsWith("@")) {
+    return "mention";
+  } else if (channelName.startsWith("#")) {
+    return "keyword";
+  } else if (
+    channelName.startsWith("§") &&
+    channelName === channelName.toLowerCase()
+  ) {
+    return "userchannel";
+  } else if (
+    channelName.startsWith("§") &&
+    channelName === channelName.toUpperCase()
+  ) {
+    return "officialchannel";
+  } else return "";
+}

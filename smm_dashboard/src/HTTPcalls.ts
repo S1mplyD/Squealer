@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Squeal, User } from "./utils/types";
+
 const path: string = "http://localhost:3000";
 
 export async function postSqueal(
@@ -107,5 +108,26 @@ export async function uploadFile(file: File) {
   const response = await axios.post(`${path}/api/media`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+  return response.data;
+}
+
+export async function getAllUserChannels() {
+  const response = await axios.get(`${path}/api/channels/userchannel`);
+  console.log(response.data);
+  return response.data;
+}
+
+export async function getOfficialChannels() {
+  const response = await axios.get(`${path}/api/channels/official`);
+  return response.data;
+}
+
+export async function getAllKeywordChannels() {
+  const response = await axios.get(`${path}/api/channels/keyword`);
+  return response.data;
+}
+
+export async function getAllMentionsChannel() {
+  const response = await axios.get(`${path}/api/channels/mention`);
   return response.data;
 }

@@ -21,7 +21,7 @@ import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
 const CreateSqueal: React.FC = () => {
-  const [checkbox, setCheckbox] = useState(true);
+  // const [checkbox, setCheckbox] = useState(true);
   const [location, setLocation] = useState({
     lat: 44.1420926,
     lng: 11.1478767,
@@ -78,6 +78,7 @@ const CreateSqueal: React.FC = () => {
 
   useEffect(() => {
     async function fetchData() {
+      setTimed(false);
       if ("geolocation" in navigator) {
         //geolocazione disponibile
         navigator.geolocation.getCurrentPosition(async (position) => {
@@ -134,7 +135,7 @@ const CreateSqueal: React.FC = () => {
                   name="type"
                   defaultChecked
                   onClick={() => {
-                    setCheckbox(true);
+                    // setCheckbox(true);
                     setText(true);
                     setMedia(false);
                     setGeo(false);
@@ -149,7 +150,7 @@ const CreateSqueal: React.FC = () => {
                   id="media"
                   name="type"
                   onClick={() => {
-                    setCheckbox(false);
+                    // setCheckbox(false);
                     setMedia(true);
                     setText(false);
                     setGeo(false);
@@ -167,34 +168,34 @@ const CreateSqueal: React.FC = () => {
                     setGeo(true);
                     setMedia(false);
                     setText(false);
-                    setCheckbox(true);
+                    // setCheckbox(true);
                   }}
                 ></input>
               </div>
             </div>
-            {checkbox ? (
-              <div>
-                <label htmlFor="timed">Timed</label>
-                <input
-                  type="checkbox"
-                  value={"timed"}
-                  id="timed"
-                  onClick={() => {
-                    setTimed(!timed);
-                  }}
-                ></input>
-                {timed ? (
-                  <div>
-                    <input
-                      type="number"
-                      name="time"
-                      id="time"
-                      placeholder="Time"
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            {/*{checkbox ? (*/}
+            {/*  <div>*/}
+            {/*    <label htmlFor="timed">Timed</label>*/}
+            {/*    <input*/}
+            {/*      type="checkbox"*/}
+            {/*      value={"timed"}*/}
+            {/*      id="timed"*/}
+            {/*      onClick={() => {*/}
+            {/*        setTimed(!timed);*/}
+            {/*      }}*/}
+            {/*    ></input>*/}
+            {/*    {timed ? (*/}
+            {/*      <div>*/}
+            {/*        <input*/}
+            {/*          type="number"*/}
+            {/*          name="time"*/}
+            {/*          id="time"*/}
+            {/*          placeholder="Time"*/}
+            {/*        />*/}
+            {/*      </div>*/}
+            {/*    ) : null}*/}
+            {/*  </div>*/}
+            {/*) : null}*/}
             {text ? (
               <div>
                 <div className="mb-4">
@@ -207,6 +208,7 @@ const CreateSqueal: React.FC = () => {
                     rows={4}
                     required
                   ></textarea>
+                  {/*<TextArea />*/}
                 </div>
                 <div className="mb-4">
                   <label htmlFor="recipients" className="block mb-2 font-bold">
@@ -292,7 +294,10 @@ const CreateSqueal: React.FC = () => {
                 const recipients: string = (
                   document.getElementById("recipients") as HTMLInputElement
                 ).value.replaceAll(" ", "");
-                const recipientsArray: string[] = recipients.split(",");
+                let recipientsArray: string[] = recipients.split(",");
+                recipientsArray = recipientsArray.filter((el) => {
+                  return el !== "";
+                });
                 const user = document.getElementById(
                   "user",
                 ) as HTMLSelectElement;
@@ -312,7 +317,10 @@ const CreateSqueal: React.FC = () => {
                     : undefined,
                   recipientsArray,
                 );
-                console.log(newSqueal);
+                if (newSqueal) {
+                  console.log(newSqueal);
+                  alert("squeal posted correctly");
+                }
               } else if (type === "media") {
                 const files = document.querySelector(
                   "#file",
@@ -320,7 +328,6 @@ const CreateSqueal: React.FC = () => {
                 if (files.files && files.files.length > 0) {
                   const file = files.files[0];
                   const filename = await uploadFile(file);
-                  console.log(filename);
                   const recipients: string = (
                     document.getElementById("recipients") as HTMLInputElement
                   ).value.replaceAll(" ", "");
@@ -329,7 +336,7 @@ const CreateSqueal: React.FC = () => {
                     "user",
                   ) as HTMLSelectElement;
                   const newSqueal = await postSqueal(
-                    recipientsArray.length > 0 ? "public" : "private",
+                    recipientsArray.length > 0 ? "private" : "public",
                     [],
                     user.options[user.selectedIndex].text,
                     type,
@@ -341,7 +348,6 @@ const CreateSqueal: React.FC = () => {
                     recipientsArray,
                   );
                   if (newSqueal) {
-                    console.log(newSqueal);
                     alert("squeal posted correctly");
                   }
                 }
@@ -354,7 +360,7 @@ const CreateSqueal: React.FC = () => {
                   "user",
                 ) as HTMLSelectElement;
                 const newSqueal = await postSqueal(
-                  recipientsArray.length > 0 ? "public" : "private",
+                  recipientsArray.length > 0 ? "private" : "public",
                   [],
                   user.options[user.selectedIndex].text,
                   type,
@@ -366,7 +372,6 @@ const CreateSqueal: React.FC = () => {
                   recipientsArray,
                 );
                 if (newSqueal) {
-                  console.log(newSqueal);
                   alert("squeal posted correctly");
                 }
               }
