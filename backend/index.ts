@@ -32,7 +32,7 @@ app.use(
     cookie: { maxAge: maxAge },
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 
 //Controllo se la cartella per gli uploads esiste altrimenti la creo
@@ -63,10 +63,10 @@ app.use(express.static(path.join(__dirname, "../public")));
 // pagina principale APP
 app.use(
   "/",
-   express.static(
-     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo")
-   )
- );
+  express.static(
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo"),
+  ),
+);
 
 app.use("/smm", express.static(path.join(__dirname, "../smm_dashboard/dist")));
 
@@ -81,13 +81,13 @@ app.get("/smm/*", (req, res) => {
 //BACKOFFICE
 app.use(
   "/backoffice",
-  express.static(path.join(__dirname, "../frontend/squealer-bo"))
+  express.static(path.join(__dirname, "../frontend/squealer-bo")),
 );
 
 app.get("/*", (req, res) => {
   res.sendFile(
-     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html")
-   );
+    path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html"),
+  );
 });
 
 mongoose.set("strictQuery", false);

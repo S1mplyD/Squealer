@@ -1,27 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Management System</title>
-</head>
-<body>
-  <h1>User Management System</h1>
-
-  <div id="userList">
-    <h2>User List</h2>
-    <ul id="users"></ul>
-  </div>
-
-  <div id="userInfo">
-    <h2>User Information</h2>
-    <div id="userDetails"></div>
-    <button id="banUser">Ban User</button>
-    <button id="blockUser">Block User</button>
-    <button id="timeLimit">Set Time Limit</button>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Moderator Dashboard</title>
+    <script src="scripts/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body onload="createLoginForm('main')">
+    <header>
+      <nav>
+        <ul>
+          <li>
+            <button onclick="document.location.href = 'views/users.html'">
+              Users
+            </button>
+          </li>
+          <li>
+            <button onclick="document.location.href = 'views/squeals.html'">
+              Squeals
+            </button>
+          </li>
+          <li>
+            <button
+              onclick="document.location.href = 'views/officialChannels.html'"
+            >
+              Official Channels
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main"></main>
+  </body>
 </html>
