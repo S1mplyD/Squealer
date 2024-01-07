@@ -19,6 +19,21 @@ const unblockUser = async (username) => {
   const response = await axios.post("/api/users/unblock", null, {
     params: { username },
   });
+  return response.data;
+};
+
+const ban = async (username) => {
+  const response = await axios.post("/api/users/ban", null, {
+    params: username,
+  });
+  return response.data;
+};
+
+const unban = async (username) => {
+  const response = await axios.post("/api/users/unban", null, {
+    params: username,
+  });
+  return response.data;
 };
 
 const createUserTable = async () => {
@@ -62,4 +77,34 @@ const createUserTable = async () => {
   } else {
     await createLoginForm("usermain");
   }
+};
+
+const addCharactersToUser = async (
+  username,
+  dailyCharacters,
+  weeklyCharacters,
+  monthlyCharacters,
+) => {
+  const response = await axios.post(
+    `/api/users/user/${username}/addcharacters`,
+    {
+      dailyCharacters: dailyCharacters,
+      weeklyCharacters: weeklyCharacters,
+      monthlyCharacters: monthlyCharacters,
+    },
+  );
+  return response.data;
+};
+
+const grantPermission = async (username) => {
+  const response = await axios.post("/api/users/grantPermissions", null, {
+    params: username,
+  });
+  return response.data;
+};
+const revokePermission = async (username) => {
+  const response = await axios.post("/api/users/revokePermissions", null, {
+    params: username,
+  });
+  return response.data;
 };
