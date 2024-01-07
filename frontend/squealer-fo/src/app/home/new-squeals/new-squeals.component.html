@@ -30,11 +30,13 @@
         </div>
         <div *ngIf="squealType === 'media'">
           <mat-label color="primary">What do you want to show to the world?</mat-label>
-          <mat-toolbar>
-            <input matInput [value]="selectedFileName ? selectedFileName : 'Select Image'" />
-            <button mat-flat-button color="primary" [disabled]="!selectedFile" (click)="uploadFiles()"> Upload</button>
-          </mat-toolbar>
-          <input type="file" id="fileInput" name="fileInput" accept="image/*" (change)="selectFiles($event)"/>
+          <input type="file" class="file-input" (change)="onFileSelectedSqueal($event)" #fileUpload>
+        <div class="file-upload">
+          {{fileNameSqueal || "No file uploaded yet."}}
+          <button mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+        </div>
         </div>
         <div *ngIf="squealType === 'geo'">
           <mat-label color="primary">Where are you?</mat-label>
@@ -83,11 +85,13 @@
         </div>
         <div *ngIf="squealType === 'media'">
           <mat-label color="primary">What do you want to show to the world?</mat-label>
-          <mat-toolbar>
-            <input matInput [value]="selectedFileName ? selectedFileName : 'Select Image'" />
-            <button mat-flat-button color="primary" [disabled]="!selectedFile" (click)="uploadFiles()"> Upload</button>
-          </mat-toolbar>
-          <input type="file" id="fileInput" name="fileInput" accept="image/*" (change)="selectFiles($event)"/>
+          <input type="file" class="file-input" (change)="onFileSelectedAnswer($event)" #fileUpload>
+        <div class="file-upload">
+          {{fileNameAnswer || "No file uploaded yet."}}
+          <button mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+        </div>
         </div>
         <div *ngIf="squealType === 'geo'">
           <mat-label color="primary">Where are you?</mat-label>
@@ -124,8 +128,10 @@
     <mat-card id="squeal" *ngIf="squeal.originalSqueal === ''">
       <mat-card-header>
         <div mat-card-avatar class="profile-image">
-          <!--<img *ngIf="squeal?.profileImage" [src]="squeal?.profileImage" [alt]="'profile image of ' + squeal?.username" />-->
-          <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+          <div *ngFor="let account of accounts">
+            <img *ngIf="squeal?.author === account?.username && account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
+            <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+          </div>
         </div>
         <mat-card-title class="squealTitle" [routerLink]="['/following/'+ squeal.author]">{{ squeal.author }}</mat-card-title>
         <br>
@@ -152,8 +158,10 @@
             <mat-card id="answer">
               <mat-card-header>
                 <div mat-card-avatar class="profile-image">
-                  <!-- <img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" /> -->
-                  <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  <div *ngFor="let account of accounts">
+                    <img *ngIf="squeal?.author === account?.username && account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
+                    <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  </div>
                 </div>
               <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
 
@@ -237,8 +245,10 @@
             <mat-card id="answer">
               <mat-card-header>
                 <div mat-card-avatar class="profile-image">
-                  <!--<img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" />-->
-                  <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  <div *ngFor="let account of accounts">
+                    <img *ngIf="squeal?.author === account?.username && account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
+                    <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  </div>
                 </div>
               <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
               <br>
@@ -331,8 +341,10 @@
             <mat-card id="answer">
               <mat-card-header>
                 <div mat-card-avatar class="profile-image">
-                  <!--<img *ngIf="answer?.profileImage" [src]="answer?.profileImage" [alt]="'profile image of ' + answer?.username" />-->
-                  <img src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  <div *ngFor="let account of accounts">
+                    <img *ngIf="squeal?.author === account?.username && account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
+                    <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + squeal?.author + ', but it seems to not be working properly...'" />
+                  </div>
                 </div>
               <mat-card-title class="squealTitle" [routerLink]="['/following/'+ answer.author]">{{ answer.author }}</mat-card-title>
               <br>

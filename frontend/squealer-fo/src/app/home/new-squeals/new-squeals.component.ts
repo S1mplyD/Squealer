@@ -19,6 +19,8 @@ import * as $ from 'jquery';
 })
 export class NewSquealsComponent implements OnInit {
   squeals: Squeal[] = [];
+  fileNameSqueal = '';
+  fileNameAnswer = '';
   accounts: User[] = [];
   squealType: string = 'text';
   dailyChars: number = 9999;
@@ -101,6 +103,13 @@ export class NewSquealsComponent implements OnInit {
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((res) => {
       this.accounts = res;
+      for (const acc of this.accounts) {
+        this.userService.getProfilePicture(acc.username)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          acc.profilePicture = res;
+        });
+      }
     });
     this.authService.isAuthenticated()
     .pipe(takeUntil(this._unsubscribeAll))
@@ -114,6 +123,47 @@ export class NewSquealsComponent implements OnInit {
       }
     });
   }
+
+  onFileSelectedSqueal(event: any) {
+
+    const file:File = event.target.files[0];
+
+    if (file) {
+
+        this.fileNameSqueal = file.name;
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        this.userService.changeProfilePicture(formData)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          this.newSqueal.body = res;
+        });
+    }
+}
+
+onFileSelectedAnswer(event: any) {
+
+  const file:File = event.target.files[0];
+
+  if (file) {
+
+      this.fileNameAnswer = file.name;
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      this.userService.changeProfilePicture(formData)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.newAnswer.body = res;
+      });
+  }
+}
+
 
   initMarkers() {
       const data = this.initialMarker;

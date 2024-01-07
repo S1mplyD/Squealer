@@ -17,6 +17,7 @@ export class UserPageComponent implements OnInit {
   account: User | undefined;
   loggedUser: User | undefined;
   users!: User[];
+  fileName ='';
   recentPosts!: Squeal[];
   taggedPosts!: Squeal[];
   userName!: string;
@@ -67,6 +68,31 @@ export class UserPageComponent implements OnInit {
   formatDate(date: Date | undefined): string | null{
     return this.datePipe.transform(date, 'dd/MM/yyyy'); // Change the format pattern as per your requirement
   }
+
+  onFileSelected(event: any) {
+
+    const file:File = event.target.files[0];
+
+    if (file) {
+
+        this.fileName = file.name;
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        this.usersService.changeProfilePicture(formData)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          console.log(res);
+          if (this.account) {
+            this.usersService.updateProfilePicture(this.account?.username, res)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(res => console.log(res));
+          }
+        });
+    }
+}
 
   reloadPage(){
     setTimeout(()=>{

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from 'app/interfaces/account.interface';
 
@@ -11,6 +11,8 @@ export class UsersService {
   private apiUrl = 'http://localhost:3000/api/users'; // Replace with your authentication API URL
 
   private followApiUrl = 'http://localhost:3000/api/follow';
+
+  private mediaApiUrl = 'http://localhost:3000/api/media';
 
 
   constructor(private http: HttpClient) {}
@@ -117,5 +119,18 @@ export class UsersService {
   following(username: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.followApiUrl}/following/${username}`);
   }
+  getProfilePicture(username: string): Observable<string> {
+    return this.http.get<string>(`${this.apiUrl}/${username}/profilePicture`);
+  }
 
+  changeProfilePicture(image: FormData): Observable<string> {
+    return this.http.post<string>(`${this.mediaApiUrl}`, image);
+  }
+
+  updateProfilePicture(username: string, fileName: string): Observable<string> {
+    const params = {
+      'filename': fileName + ''
+    }
+    return this.http.patch<string>(`${this.apiUrl}/${username}/profilePicture`, {params: params});
+  }
 }

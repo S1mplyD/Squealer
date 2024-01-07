@@ -15,7 +15,13 @@
       <p><mat-icon>people_outline</mat-icon>&nbsp; Followers: {{ account?.followers?.length }}</p>
       <p><mat-icon>people</mat-icon>&nbsp; Following: {{ account?.following?.length }}</p>
       <p><mat-icon>cake</mat-icon>&nbsp; Joined: {{ formatDate(account?.createdAt) }}</p>
-      <!--<button *ngIf="un === account?.username" mat-raised-button (click)="" style="background-color: #ebcc67;">Change profile image</button>-->
+      <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
+      <div class="file-upload">
+        {{fileName || "No file uploaded yet."}}
+        <button *ngIf="un === account?.username" mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;">
+          <mat-icon>attach_file</mat-icon>
+        </button>
+      </div>
       <button *ngIf="un !== account?.username && !isFollowed" mat-raised-button (click)="follow()" style="background-color: #ebcc67;">Follow user</button>
       <button *ngIf="un !== account?.username && isFollowed" mat-raised-button (click)="unfollow()" style="background-color: #ebcc67;">Unfollow user</button>
     </mat-card-content>
