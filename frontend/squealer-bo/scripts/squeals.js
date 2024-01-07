@@ -13,35 +13,64 @@ const createSquealTable = async () => {
       "</table>";
     for (let i of squeals) {
       if (i.type === "media") {
+        newMain.innerHTML +=
+          "<tr>" +
+          "<td>" +
+          "<img src='/" +
+          i.body +
+          "'/>" +
+          "</td>" +
+          "<td>" +
+          i.author +
+          "</td>" +
+          "<td>" +
+          i.type +
+          "</td>" +
+          "<td>" +
+          i.recipients +
+          "</td>" +
+          "<td>" +
+          i.channels +
+          "</td>" +
+          "<td>" +
+          i.locationName +
+          "</td>" +
+          "<td>" +
+          i.positiveReactions +
+          "</td>" +
+          "<td>" +
+          i.negativeReactions +
+          "</td>" +
+          "</tr>";
       } else {
+        newMain.innerHTML +=
+          "<tr>" +
+          "<td>" +
+          i.body +
+          "</td>" +
+          "<td>" +
+          i.author +
+          "</td>" +
+          "<td>" +
+          i.type +
+          "</td>" +
+          "<td>" +
+          i.recipients +
+          "</td>" +
+          "<td>" +
+          i.channels +
+          "</td>" +
+          "<td>" +
+          i.locationName +
+          "</td>" +
+          "<td>" +
+          i.positiveReactions +
+          "</td>" +
+          "<td>" +
+          i.negativeReactions +
+          "</td>" +
+          "</tr>";
       }
-      newMain.innerHTML +=
-        "<tr>" +
-        "<td>" +
-        i.body +
-        "</td>" +
-        "<td>" +
-        i.username +
-        "</td>" +
-        "<td>" +
-        i.mail +
-        "</td>" +
-        "<td>" +
-        i.plan +
-        "</td>" +
-        "<td>" +
-        i.status +
-        "</td>" +
-        "<td>" +
-        i.dailyCharacters +
-        "</td>" +
-        "<td>" +
-        i.weeklyCharacters +
-        "</td>" +
-        "<td>" +
-        i.monthlyCharacters +
-        "</td>" +
-        "</tr>";
     }
   } else {
     await createLoginForm("squealmain");
