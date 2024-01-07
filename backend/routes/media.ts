@@ -4,7 +4,7 @@ import { resolve, join } from "path";
 import { User } from "../util/types";
 import fs from "fs";
 
-const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
+const publicUploadPath = resolve(__dirname, "../..", "public/");
 
 export const router = express.Router();
 
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
         "-" +
         uniqueSuffix +
         "." +
-        file.originalname.split(".").pop()
+        file.originalname.split(".").pop(),
     );
   },
 });
