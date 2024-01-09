@@ -222,12 +222,9 @@ export async function postSqueal(squeal: Squeal, user: User) {
   const channels: null | Channel[] = await channelsModel.find({
     name: { $in: squeal.channels },
   });
-  console.log(channels);
   let rec: string[] = [];
   if (!(channels.length > 0)) {
-    console.log(`here: ${channels}`);
     for (let i of squeal.channels) {
-      console.log(`here2 : ${i}`);
       await createChannel(i.substring(1), await checkChannelType(i), user);
     }
   }
