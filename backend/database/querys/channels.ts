@@ -11,6 +11,7 @@ import { Channel, Squeal, Success, User } from "../../util/types";
 import channelsModel from "../models/channels.model";
 import { getSquealById } from "./squeals";
 import { getUserByUsername } from "./users";
+import { UpdateWriteOpResult } from "mongoose";
 
 /**
  * funzione che ritorna tutti i canali
@@ -208,9 +209,38 @@ export async function removeUserFromChannel(
   }
 }
 
+export async function editOfficialChannel(
+  name: string,
+  newName: string,
+  allowedRead: string[],
+  allowedWrite: string[],
+  channelAdmins: string[],
+): Promise<Success> {
+  const update: UpdateWriteOpResult = await channelsModel.updateOne(
+    { name: name },
+    {
+      name: newName,
+      allowedRead: allowedRead,
+      allowedWrite: allowedWrite,
+      channelAdmins: channelAdmins,
+    },
+  );
+  if (update.modifiedCount > 0) return updated;
+  else throw new Error("Cannot Update");
+}
+
+export async function updateOfficialSqueals(name: string, squeals: string[]) {
+  const update: UpdateWriteOpResult = await channelsModel.updateOne(
+    { name: name },
+    { squeals: squeals },
+  );
+  if (update.modifiedCount > 0) return updated;
+  else throw new Error("Cannot Update");
+}
+
 //ESEGUIRE OGNI VOLTA CHE UN ACCOUNT VIENE CREATO
 /**
- * funzione che aggiunge un utente ad un canale ufficiale
+ * funzione che aggiunge un utente a un canale ufficiale
  * @param userId id dell'utente
  * @param channelName nome del canale
  * @returns Success | SquealerError
