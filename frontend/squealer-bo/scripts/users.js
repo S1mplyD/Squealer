@@ -1,3 +1,6 @@
+let nameAsc = true;
+let typeAsc = true;
+let popularAsc = true;
 const getAll = async () => {
   const response = await axios.get("/api/users");
   return response.data;
@@ -45,35 +48,7 @@ const createUserTable = async () => {
       "<table id='table'>" +
       "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
       "</table>";
-    for (let i of users) {
-      newMain.innerHTML +=
-        "<tr>" +
-        "<td>" +
-        i.name +
-        "</td>" +
-        "<td>" +
-        i.username +
-        "</td>" +
-        "<td>" +
-        i.mail +
-        "</td>" +
-        "<td>" +
-        i.plan +
-        "</td>" +
-        "<td>" +
-        i.status +
-        "</td>" +
-        "<td>" +
-        i.dailyCharacters +
-        "</td>" +
-        "<td>" +
-        i.weeklyCharacters +
-        "</td>" +
-        "<td>" +
-        i.monthlyCharacters +
-        "</td>" +
-        "</tr>";
-    }
+    fillTable(users);
   } else {
     await createLoginForm("usermain");
   }
@@ -106,5 +81,99 @@ const revokePermission = async (username) => {
   const response = await axios.post("/api/users/revokePermissions", null, {
     params: username,
   });
+  return response.data;
+};
+
+const orderByName = async () => {
+  const orderedUsers = nameAsc
+    ? await getUsersByNameAsc()
+    : await getUsersByNameDesc();
+  nameAsc = !nameAsc;
+  const newMain = document.getElementById("usertable");
+  newMain.innerHTML =
+    "<table id='table'>" +
+    "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
+    "</table>";
+  fillTable(orderedUsers);
+};
+const orderByType = async () => {
+  const orderedUsers = typeAsc
+    ? await getUsersByTypeAsc()
+    : await getUsersByTypeDesc();
+  nameAsc = !nameAsc;
+  const newMain = document.getElementById("usertable");
+  newMain.innerHTML =
+    "<table id='table'>" +
+    "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
+    "</table>";
+  fillTable(orderedUsers);
+};
+
+const orderByPopularity = async () => {
+  const orderedUsers = popularAsc
+    ? await getUsersByPopularityAsc()
+    : await getUsersByPopularityDesc();
+  nameAsc = !nameAsc;
+  const newMain = document.getElementById("usertable");
+  newMain.innerHTML =
+    "<table id='table'>" +
+    "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
+    "</table>";
+  fillTable(orderedUsers);
+};
+const fillTable = (items) => {
+  const table = document.getElementById("table");
+  for (let i of items) {
+    table.innerHTML +=
+      "<tr>" +
+      "<td>" +
+      i.name +
+      "</td>" +
+      "<td>" +
+      i.username +
+      "</td>" +
+      "<td>" +
+      i.mail +
+      "</td>" +
+      "<td>" +
+      i.plan +
+      "</td>" +
+      "<td>" +
+      i.status +
+      "</td>" +
+      "<td>" +
+      i.dailyCharacters +
+      "</td>" +
+      "<td>" +
+      i.weeklyCharacters +
+      "</td>" +
+      "<td>" +
+      i.monthlyCharacters +
+      "</td>" +
+      "</tr>";
+  }
+};
+const getUsersByNameAsc = async () => {
+  const response = await axios.get("/api/users/name/asc");
+  return response.data;
+};
+const getUsersByNameDesc = async () => {
+  const response = await axios.get("/api/users/name/desc");
+  return response.data;
+};
+const getUsersByTypeAsc = async () => {
+  const response = await axios.get("/api/users/asc");
+  return response.data;
+};
+const getUsersByTypeDesc = async () => {
+  const response = await axios.get("/api/users/asc");
+  return response.data;
+};
+const getUsersByPopularityAsc = async () => {
+  const response = await axios.get("/api/users/asc");
+  return response.data;
+};
+const getUsersByPopularityDesc = async () => {
+  const response = await axios.get("/api/users/asc");
   return response.data;
 };
