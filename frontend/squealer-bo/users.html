@@ -31,7 +31,14 @@
         </ul>
 </header>
 <main id="usermain">
-    <div id="usertable"></div>
+    <div id="usertable">
+        <label for="filters">Filters</label>
+        <div id="filters">
+            <button onclick="orderByName()">Name</button>
+            <button onclick="orderByType()">Type</button>
+            <button onclick="orderByPopularity()">Popularity</button>
+        </div>
+    </div>
     <div id="block">
         <form>
             <label for="username">Username</label>
