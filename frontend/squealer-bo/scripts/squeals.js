@@ -76,3 +76,19 @@ const createSquealTable = async () => {
     await createLoginForm("squealmain");
   }
 };
+
+const changeSquealRecipients = async (squealId, recipients) => {
+  const response = await axios.post(
+    `/api/squeals/recipients/${squealId}`,
+    recipients.replaceAll(" ", "").split(","),
+  );
+  return response.data;
+};
+
+const changeReactions = async (
+  squealId,
+  positiveReactions,
+  negativeReactions,
+) => {
+  console.log(positiveReactions);
+};
