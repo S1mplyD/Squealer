@@ -69,9 +69,9 @@ const editChannel = async (
   const response = await axios.patch("/api/channels/official", {
     name: name,
     newName: newName,
-    allowedRead: allowedRead,
-    allowedWrite: allowedWrite,
-    channelAdmins: channelAdmins,
+    allowedRead: allowedRead.replaceAll(" ", "").split(","),
+    allowedWrite: allowedWrite.replaceAll(" ", "").split(","),
+    channelAdmins: channelAdmins.replaceAll(" ", "").split(","),
   });
   return response.data;
 };
@@ -79,7 +79,7 @@ const editChannel = async (
 const updateChannelSqueals = async (channelName, squeals) => {
   const response = await axios.patch(
     `/api/channels/official/${channelName}`,
-    squeals,
+    squeals.replaceAll(" ", "").split(","),
   );
   return response.data;
 };
