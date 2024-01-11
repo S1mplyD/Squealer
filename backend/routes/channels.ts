@@ -11,9 +11,12 @@ import {
   getAllMentionChannel,
   addUserToUserChannel,
   removeUserFromChannel,
+  editOfficialChannel,
+  updateOfficialSqueals,
 } from "../database/querys/channels";
 import { SquealerError, catchError } from "../util/errors";
 import { Channel, Squeal, Success, User } from "../util/types";
+import channelsModel from "../database/models/channels.model";
 
 export const router = express.Router();
 
@@ -110,7 +113,6 @@ router
       console.log(error);
     }
   });
-
 router
   .route("/userchannel")
   /**
@@ -197,7 +199,42 @@ router
     } catch (error) {
       console.log(error);
     }
+  })
+  .patch(async (req, res) => {
+    try {
+      if (req.user) {
+        if (
+          req.body.channelType === "officialchannel" &&
+          (req.user as User).plan === "admin"
+        ) {
+          const update: Success = await editOfficialChannel(
+            req.body.name,
+            req.body.newName,
+            req.body.allowedRead,
+            req.body.allowedWrite,
+            req.body.channelAdmins,
+          );
+          if (update) res.sendStatus(200);
+        }
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
   });
+
+router.route("/official/:name").patch(async (req, res) => {
+  try {
+    if (req.user && (req.user as User).plan === "admin") {
+      const update = await updateOfficialSqueals(
+        req.params.name,
+        req.body.squeals,
+      );
+      if (update) res.sendStatus(200);
+    } else res.sendStatus(401);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
 
 router
   .route("/keyword")

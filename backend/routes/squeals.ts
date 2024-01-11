@@ -20,11 +20,13 @@ import {
   postSquealAsUser,
   postResponse,
   getSquealResponses,
+  updateSquealRecipients,
 } from "../database/querys/squeals";
 import express from "express";
 import { Squeal, Success, User } from "../util/types";
 import { SquealerError } from "../util/errors";
 import { startTimer } from "../API/timers";
+import { changeUserPlan } from "../database/querys/users";
 
 export const router = express.Router();
 
@@ -280,6 +282,16 @@ router
     }
   });
 
+router.route("/recipients/:id").post(async (req, res) => {
+  try {
+    if (req.user && (req.user as User).plan === "admin") {
+      await updateSquealRecipients(req.params.id, req.body.recipients);
+      res.sendStatus(200);
+    } else res.sendStatus(401);
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
 router
   .route("/reactions")
   /**

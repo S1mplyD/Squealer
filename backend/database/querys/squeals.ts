@@ -562,3 +562,16 @@ export async function getSquealResponses(id: string) {
     return responses;
   } else return null;
 }
+
+export async function updateSquealRecipients(
+  squealId: string,
+  recipients: string[],
+) {
+  const update = await squealModel.updateOne(
+    { _id: squealId },
+    { recipients: recipients },
+  );
+  if (update.modifiedCount < 1) {
+    throw new Error("Cannot Update");
+  } else return updated;
+}
