@@ -34,11 +34,10 @@ export class NewSquealsComponent implements OnInit {
   responses: Squeal[] = [];
   recipients: string = '';
   answeredId: string = '';
-  initialMarker =
-  {
-    position: { lat: 44.35527821160296, lng:  11.260986328125 },
-    draggable: true
-  }
+  initialMarker = {
+    position: { lat: 44.35527821160296, lng: 11.260986328125 },
+    draggable: true,
+  };
   newSqueal: Squeal = {
     author: '',
     body: '',
@@ -50,7 +49,7 @@ export class NewSquealsComponent implements OnInit {
     _id: '',
     originalSqueal: '',
     lat: this.initialMarker.position.lat + '',
-    lng: this.initialMarker.position.lng + ''
+    lng: this.initialMarker.position.lng + '',
   };
 
   newAnswer: Squeal = {
@@ -62,7 +61,7 @@ export class NewSquealsComponent implements OnInit {
     channels: [],
     type: '',
     _id: '',
-    originalSqueal: ''
+    originalSqueal: '',
   };
 
   isLoggedIn: boolean = false;
@@ -76,16 +75,23 @@ export class NewSquealsComponent implements OnInit {
   markers: L.Marker[] = [];
   options = {
     layers: [
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '...',
+      }),
     ],
     zoom: 5,
-    center: L.latLng( 44.35527821160296, 11.260986328125)
+    center: L.latLng(44.35527821160296, 11.260986328125),
   };
   options2 = {
     layers: [
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '...',
+      }),
     ],
-    zoom: 5
+    zoom: 5,
+    center: L.latLng(21.212343, 10.235),
   };
 
   private _unsubscribeAll: Subject<void> = new Subject<void>();
@@ -95,121 +101,140 @@ export class NewSquealsComponent implements OnInit {
     private userService: UsersService,
     private mediaService: MediaService,
     private authService: AuthService,
-    private _snackBar: MatSnackBar) {}
+    private _snackBar: MatSnackBar,
+  ) {}
 
   ngOnInit(): void {
     this.loadSqueals();
-    this.userService.getAllUsers()
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      this.accounts = res;
-      for (const acc of this.accounts) {
-        this.userService.getProfilePicture(acc.username)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((res) => {
-          acc.profilePicture = res;
-        });
-      }
-    });
-    this.authService.isAuthenticated()
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      if (res !== 'Not Found') {
-        this.isLoggedIn = true;
-        this.username = res.username + '';
-        this.plan = res.plan + '';
-        this.dailyChars = res.dailyCharacters;
-        console.log(this.dailyChars);
-      }
-    });
+    this.userService
+      .getAllUsers()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.accounts = res;
+        for (const acc of this.accounts) {
+          this.userService
+            .getProfilePicture(acc.username)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res) => {
+              acc.profilePicture = res;
+            });
+        }
+      });
+    this.authService
+      .isAuthenticated()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        if (res !== 'Not Found') {
+          this.isLoggedIn = true;
+          this.username = res.username + '';
+          this.plan = res.plan + '';
+          this.dailyChars = res.dailyCharacters;
+          console.log(this.dailyChars);
+        }
+      });
   }
 
   onFileSelectedSqueal(event: any) {
-
-    const file:File = event.target.files[0];
+    const file: File = event.target.files[0];
 
     if (file) {
+      this.fileNameSqueal = file.name;
 
-        this.fileNameSqueal = file.name;
+      const formData = new FormData();
 
-        const formData = new FormData();
+      formData.append('file', file);
 
-        formData.append("file", file);
-
-        this.userService.changeProfilePicture(formData)
+      this.userService
+        .changeProfilePicture(formData)
         .pipe(takeUntil(this._unsubscribeAll))
         .subscribe((res) => {
           this.newSqueal.body = res;
         });
     }
-}
+  }
 
-onFileSelectedAnswer(event: any) {
+  onFileSelectedAnswer(event: any) {
+    const file: File = event.target.files[0];
 
-  const file:File = event.target.files[0];
-
-  if (file) {
-
+    if (file) {
       this.fileNameAnswer = file.name;
 
       const formData = new FormData();
 
-      formData.append("file", file);
+      formData.append('file', file);
 
-      this.userService.changeProfilePicture(formData)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        this.newAnswer.body = res;
-      });
+      this.userService
+        .changeProfilePicture(formData)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          this.newAnswer.body = res;
+        });
+    }
   }
-}
-
 
   initMarkers() {
-      const data = this.initialMarker;
-      if ("geolocation" in navigator) {
-        //geolocazione disponibile
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          data.position = { lat : pos.coords.latitude, lng: pos.coords.longitude }
-          let reverseGeocodeResult = await this.reverseGeocode(pos.coords.latitude, pos.coords.longitude);
-          this.newSqueal.locationName = reverseGeocodeResult.features[0].properties.geocoding.city + ', ' + reverseGeocodeResult.features[0].properties.geocoding.county + ', '
-          + reverseGeocodeResult.features[0].properties.geocoding.state + ', ' + reverseGeocodeResult.features[0].properties.geocoding.country;
-        });
-      }
-      const marker = this.generateMarker(data, 0);
-      marker.addTo(this.map).bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
-      this.map.panTo(data.position);
-      this.markers.push(marker)
+    const data = this.initialMarker;
+    if ('geolocation' in navigator) {
+      //geolocazione disponibile
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        data.position = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        let reverseGeocodeResult = await this.reverseGeocode(
+          pos.coords.latitude,
+          pos.coords.longitude,
+        );
+        this.newSqueal.locationName =
+          reverseGeocodeResult.features[0].properties.geocoding.city +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.county +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.state +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.country;
+      });
+    }
+    const marker = this.generateMarker(data, 0);
+    marker
+      .addTo(this.map)
+      .bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
+    this.map.panTo(data.position);
+    this.markers.push(marker);
   }
 
   generateSquealMap(lat: string, long: string, id: string) {
     if (!this.mapOpened) {
       this.mapOpened = true;
-    const data =  {
-      position: { lat: +lat, lng:  +long },
-      draggable: false
-    };
-    const marker = this.generateMarker(data, 0);
-    marker.addTo(this.map2).bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
-    this.map2.panTo(data.position);
-    this.markers.push(marker);
-    $('.'+ id).append('<div style="height: 300px;" leaflet [leafletOptions]="options2"></div>');
+      const data = {
+        position: { lat: +lat, lng: +long },
+        draggable: false,
+      };
+      const marker = this.generateMarker(data, 0);
+      marker
+        .addTo(this.map2)
+        .bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
+      this.map2.panTo(data.position);
+      this.markers.push(marker);
+      $('.' + id).append(
+        '<div style="height: 300px;" leaflet [leafletOptions]="options2"></div>',
+      );
     }
   }
   closeMap(id: string) {
     if (this.mapOpened) {
       this.mapOpened = false;
-      $('.'+ id).empty();
+      $('.' + id).empty();
     }
   }
 
   generateMarker(data: any, index: number) {
-    return L.marker(data.position, { icon: L.icon({
-      ...L.Icon.Default.prototype.options,
-      iconUrl: 'assets/marker-icon.png',
-      iconRetinaUrl: 'assets/marker-icon-2x.png',
-      shadowUrl: 'assets/marker-shadow.png'
-    }),draggable: data.draggable })
+    return L.marker(data.position, {
+      icon: L.icon({
+        ...L.Icon.Default.prototype.options,
+        iconUrl: 'assets/marker-icon.png',
+        iconRetinaUrl: 'assets/marker-icon-2x.png',
+        shadowUrl: 'assets/marker-shadow.png',
+      }),
+      draggable: data.draggable,
+    })
       .on('click', (event) => this.markerClicked(event, index))
       .on('dragend', (event) => this.markerDragEnd(event, index));
   }
@@ -242,7 +267,6 @@ onFileSelectedAnswer(event: any) {
     console.log($event.target.getLatLng());
   }
 
-
   openPopup(): void {
     this.isPopupOpen = true;
   }
@@ -261,7 +285,7 @@ onFileSelectedAnswer(event: any) {
     this.isAnswerOpen = false;
   }
 
-  formatDate(date: Date): string | null{
+  formatDate(date: Date): string | null {
     return this.datePipe.transform(date, 'dd-MM-yyyy'); // Change the format pattern as per your requirement
   }
 
@@ -282,37 +306,58 @@ onFileSelectedAnswer(event: any) {
   }
 
   loadSqueals(): void {
-    this.squealService.getAllSqueals()
-    .pipe(takeUntil(this._unsubscribeAll)).
-    subscribe((res) => {
-      this.squeals = res;
-      for (const squeal of this.squeals) {
-        this.loadAnswers(squeal._id);
-      }
-    });
+    this.squealService
+      .getAllSqueals()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.squeals = res;
+        for (const squeal of this.squeals) {
+          this.loadAnswers(squeal._id);
+        }
+      });
   }
 
   loadAnswers(id: string): void {
-    this.responses = []
-    this.squealService.getResponses(id)
-    .pipe(takeUntil(this._unsubscribeAll)).
-    subscribe((resp) => {
-      for (const answer of resp) {
-        this.responses.push(answer);
-      }
-    });
+    this.responses = [];
+    this.squealService
+      .getResponses(id)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((resp) => {
+        for (const answer of resp) {
+          this.responses.push(answer);
+        }
+      });
   }
 
   closePostForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [], originalSqueal: '' };
+    this.newSqueal = {
+      _id: '',
+      author: '',
+      body: '',
+      date: new Date(),
+      recipients: [],
+      category: '',
+      type: '',
+      channels: [],
+      originalSqueal: '',
+    };
   }
 
   closeAnswerForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = { _id: '', author: '', body: '', date: new Date(),  recipients: [], category: '', type: '', channels: [], originalSqueal: '' };
+    this.newSqueal = {
+      _id: '',
+      author: '',
+      body: '',
+      date: new Date(),
+      recipients: [],
+      category: '',
+      type: '',
+      channels: [],
+      originalSqueal: '',
+    };
   }
-
 
   uploadFiles(): void {
     if (this.selectedFile) {
@@ -323,9 +368,10 @@ onFileSelectedAnswer(event: any) {
 
   upload(file: File): void {
     if (file) {
-      this.mediaService.postMediaFile(file)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe(res => this.selectedFileName = res);
+      this.mediaService
+        .postMediaFile(file)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => (this.selectedFileName = res));
     }
   }
 
@@ -355,74 +401,85 @@ onFileSelectedAnswer(event: any) {
   }
 
   getRecipients(rec: string): string[] {
-    rec.replace('/\s+/g', '');
+    rec.replace('/s+/g', '');
     return rec.split(',');
   }
 
   addUpvote(squealId: string): void {
     console.log(squealId);
-    this.squealService.addUpvote(squealId)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      console.log(res);
-    });
+    this.squealService
+      .addUpvote(squealId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        console.log(res);
+      });
     window.location.reload();
   }
 
   answer(id: string): void {
     if (this.squealType === 'text') {
       let numChar = this.newSqueal.body.length;
-    if (this.dailyChars - numChar >= 0) {
-      const answer: Squeal = {
-        _id: '',
-        author: this.username,
-        body: this.newAnswer.body,
-        date: new Date(),
-        lat: this.newAnswer.lat,
-        lng: this.newAnswer.lng,
-        time: this.newAnswer.time,
-        recipients: this.getRecipients(this.recipients),
-        channels: this.getChannels(this.newAnswer.body),
-        positiveReactions: this.newAnswer.positiveReactions,
-        negativeReactions: this.newAnswer.negativeReactions,
-        category: 'public',
-        type: this.squealType,
-        originalSqueal: ''
-      };
-      this.squealService.addResponse(answer, id)
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        if (res) {
-          this.loadSqueals();
-        }
-      });
-      this.closeAnswer();
-    }
-    else {
-      this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-        duration: 3000
-      });
-    }
+      if (this.dailyChars - numChar >= 0) {
+        const answer: Squeal = {
+          _id: '',
+          author: this.username,
+          body: this.newAnswer.body,
+          date: new Date(),
+          lat: this.newAnswer.lat,
+          lng: this.newAnswer.lng,
+          time: this.newAnswer.time,
+          recipients: this.getRecipients(this.recipients),
+          channels: this.getChannels(this.newAnswer.body),
+          positiveReactions: this.newAnswer.positiveReactions,
+          negativeReactions: this.newAnswer.negativeReactions,
+          category: 'public',
+          type: this.squealType,
+          originalSqueal: '',
+        };
+        this.squealService
+          .addResponse(answer, id)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((res) => {
+            if (res) {
+              this.loadSqueals();
+            }
+          });
+        this.closeAnswer();
+      } else {
+        this._snackBar.open(
+          'You finished your daily chars! Try again tomorrow, loser!',
+          'Close',
+          {
+            duration: 3000,
+          },
+        );
+      }
     }
   }
 
   addDownvote(squealId: string): void {
     console.log(squealId);
-    this.squealService.addDownvote(squealId)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((res) => {
-      console.log(res);
-
-    });
+    this.squealService
+      .addDownvote(squealId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        console.log(res);
+      });
     window.location.reload();
   }
 
   disableScroll(): void {
-    document.getElementsByClassName("posts").item(0)!.classList.add("stop-scrolling");
+    document
+      .getElementsByClassName('posts')
+      .item(0)!
+      .classList.add('stop-scrolling');
   }
 
   enableScroll(): void {
-    document.getElementsByClassName("posts").item(0)!.classList.remove("stop-scrolling");
+    document
+      .getElementsByClassName('posts')
+      .item(0)!
+      .classList.remove('stop-scrolling');
   }
 
   addPost(): void {
@@ -444,21 +501,25 @@ onFileSelectedAnswer(event: any) {
           negativeReactions: this.newSqueal.negativeReactions,
           category: 'public',
           type: this.squealType,
-          originalSqueal: ''
+          originalSqueal: '',
         };
-        this.squealService.addSqueal(squeal)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((res) => {
-          if (res) {
-            this.loadSqueals();
-          }
-        });
+        this.squealService
+          .addSqueal(squeal)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((res) => {
+            if (res) {
+              this.loadSqueals();
+            }
+          });
         this.closePopup();
-      }
-      else {
-        this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-          duration: 3000
-        });
+      } else {
+        this._snackBar.open(
+          'You finished your daily chars! Try again tomorrow, loser!',
+          'Close',
+          {
+            duration: 3000,
+          },
+        );
       }
     } else {
       if (this.dailyChars - 125 >= 0) {
@@ -476,21 +537,25 @@ onFileSelectedAnswer(event: any) {
           negativeReactions: this.newSqueal.negativeReactions,
           category: 'public',
           type: this.squealType,
-          originalSqueal: ''
+          originalSqueal: '',
         };
-        this.squealService.addSqueal(squeal)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((res) => {
-          if (res) {
-            this.loadSqueals();
-          }
-        });
+        this.squealService
+          .addSqueal(squeal)
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe((res) => {
+            if (res) {
+              this.loadSqueals();
+            }
+          });
         this.closePopup();
-      }
-      else {
-        this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-          duration: 3000
-        });
+      } else {
+        this._snackBar.open(
+          'You finished your daily chars! Try again tomorrow, loser!',
+          'Close',
+          {
+            duration: 3000,
+          },
+        );
       }
     }
   }
