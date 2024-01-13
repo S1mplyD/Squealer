@@ -55,7 +55,7 @@ export class NewSquealsComponent implements OnInit {
     originalSqueal: '',
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
-    locationName: ''
+    locationName: '',
   };
 
   newAnswer: Squeal = {
@@ -70,7 +70,7 @@ export class NewSquealsComponent implements OnInit {
     originalSqueal: '',
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
-    locationName: ''
+    locationName: '',
   };
 
   isLoggedIn: boolean = false;
@@ -258,6 +258,8 @@ export class NewSquealsComponent implements OnInit {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         this.loc.lat = pos.coords.latitude;
         this.loc.lng = pos.coords.longitude;
+        this.newSqueal.lat = pos.coords.latitude + '';
+        this.newSqueal.lng = pos.coords.longitude + '';
         let reverseGeocodeResult = await this.reverseGeocode(
           pos.coords.latitude,
           pos.coords.longitude,
@@ -562,7 +564,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
-          locationName: this.newSqueal.locationName
+          locationName: this.newSqueal.locationName,
         };
         this.squealService
           .addSqueal(squeal)
@@ -599,7 +601,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
-          locationName: this.newSqueal.locationName
+          locationName: this.newSqueal.locationName,
         };
         this.squealService
           .addSqueal(squeal)
