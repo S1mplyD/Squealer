@@ -341,86 +341,6 @@
                     </button>
                   </div>
                 </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'media'">
-                  <img [src]="answer.body" />
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'geo'">
-                  <div class="button-group" *ngIf="answer.lat && answer.lng">
-                    <div *ngIf="answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map on {{ answer.locationName }}
-                      </button>
-                    </div>
-                    <div *ngif="!answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map
-                      </button>
-                    </div>
-                  </div>
-                  <div class="squealMap"></div>
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
               </mat-card>
             </div>
           </div>
@@ -524,86 +444,6 @@
                     </button>
                   </div>
                 </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'media'">
-                  <img [src]="squeal.body" />
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'geo'">
-                  <div class="button-group" *ngIf="answer.lat && answer.lng">
-                    <div *ngIf="answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map on {{ answer.locationName }}
-                      </button>
-                    </div>
-                    <div *ngif="!answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map
-                      </button>
-                    </div>
-                  </div>
-                  <div class="squealMap"></div>
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
               </mat-card>
             </div>
           </div>
@@ -628,24 +468,24 @@
                 Close
               </button>
             </div>
-<!--            <div *ngif="!answer.locationName">-->
-<!--              <button-->
-<!--                mat-raised-button-->
-<!--                color="primary"-->
-<!--                *ngIf="!mapOpened"-->
-<!--                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"-->
-<!--              >-->
-<!--                Generate map-->
-<!--              </button>-->
-<!--              <button-->
-<!--                mat-raised-button-->
-<!--                color="primary"-->
-<!--                *ngIf="mapOpened"-->
-<!--                (click)="closeMap(squeal._id)"-->
-<!--              >-->
-<!--                Close <Map></Map>-->
-<!--              </button>-->
-<!--            </div>-->
+            <div *ngif="!squeal.locationName">
+              <button
+                mat-raised-button
+                color="primary"
+               *ngIf="!mapOpened"
+                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"
+                >
+                Generate map
+                </button>
+                <button
+                mat-raised-button
+                color="primary"
+                *ngIf="mapOpened"
+                (click)="closeMap(squeal._id)"
+                >
+                  Close <Map></Map>
+                </button>
+              </div>
           </div>
             <div *ngIf="checkMapOpened(squeal._id)" [id]="squeal._id" style="height: 300px;"
                  leaflet [leafletOptions]="createOptions(squeal.lat+'', squeal.lng+'',squeal._id)" (leafletMapReady)="addMarker($event,squeal.lat+'', squeal.lng+'',squeal._id)">
@@ -722,86 +562,6 @@
                 </mat-card-header>
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <p class="squealText">{{ answer.body }}</p>
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'media'">
-                  <img [src]="squeal.body" />
-                  <div class="button-group">
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addUpvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.positiveReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_up</mat-icon>
-                    </button>
-                    <button
-                      class="upvote"
-                      mat-raised-button
-                      color="primary"
-                      (click)="addDownvote(answer._id)"
-                    >
-                      <p class="upvoteText">
-                        {{ answer.negativeReactions?.length }}
-                      </p>
-                      <mat-icon>thumb_down</mat-icon>
-                    </button>
-                  </div>
-                </mat-card-content>
-                <mat-card-content *ngIf="answer.type === 'geo'">
-                  <div class="button-group" *ngIf="answer.lat && answer.lng">
-                    <div *ngIf="answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map on {{ answer.locationName }}
-                      </button>
-                    </div>
-                    <div *ngif="!answer.locationName">
-                      <button
-                        mat-raised-button
-                        color="primary"
-                        *ngIf="!mapOpened"
-                        (click)="
-                          generateSquealMap(answer.lat, answer.lng, 'squealMap')
-                        "
-                      >
-                        Generate map
-                      </button>
-                    </div>
-                  </div>
-                  <div class="squealMap"></div>
                   <div class="button-group">
                     <button
                       class="upvote"

@@ -55,6 +55,7 @@ export class NewSquealsComponent implements OnInit {
     originalSqueal: '',
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
+    locationName: ''
   };
 
   newAnswer: Squeal = {
@@ -67,6 +68,9 @@ export class NewSquealsComponent implements OnInit {
     type: '',
     _id: '',
     originalSqueal: '',
+    lat: this.initialMarker.position.lat + '',
+    lng: this.initialMarker.position.lng + '',
+    locationName: ''
   };
 
   isLoggedIn: boolean = false;
@@ -229,20 +233,6 @@ export class NewSquealsComponent implements OnInit {
   generateSquealMap(lat: string, long: string, id: string) {
     if (!this.mapOpened.includes(id)) {
       this.mapOpened.push(id);
-      // const data = {
-      //   position: { lat: +lat, lng: +long },
-      //   draggable: false,
-      // };
-      // const newMap = L.Map
-      // const marker = this.generateMarker(data, 0);
-      // marker
-      //   .addTo(newMap)
-      //   .bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
-      // this.markers.push(marker);
-      // const newOptions = this.createOptions(lat,long)
-      // $('#' + id).append(
-      //   `<div style="height: 300px" leaflet [leafletOptions]=${newOptions}></div>`,
-      // );
     }
   }
 
@@ -268,8 +258,21 @@ export class NewSquealsComponent implements OnInit {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         this.loc.lat = pos.coords.latitude;
         this.loc.lng = pos.coords.longitude;
+        let reverseGeocodeResult = await this.reverseGeocode(
+          pos.coords.latitude,
+          pos.coords.longitude,
+        );
+        this.newSqueal.locationName =
+          reverseGeocodeResult.features[0].properties.geocoding.city +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.county +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.state +
+          ', ' +
+          reverseGeocodeResult.features[0].properties.geocoding.country;
       });
     }
+    console.log(this.newSqueal.locationName);
   }
   closeMap(id: string) {
     if (this.mapOpened.includes(id)) {
@@ -491,7 +494,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
-          locationName: '',
+          locationName: this.newAnswer.locationName,
         };
         this.squealService
           .addResponse(answer, id)
@@ -559,6 +562,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
+          locationName: this.newSqueal.locationName
         };
         this.squealService
           .addSqueal(squeal)
@@ -595,6 +599,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
+          locationName: this.newSqueal.locationName
         };
         this.squealService
           .addSqueal(squeal)
