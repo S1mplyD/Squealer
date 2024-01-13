@@ -12,6 +12,7 @@ import * as L from 'leaflet';
 import { LatLng, TileLayer } from 'leaflet';
 import axios from 'axios';
 import * as $ from 'jquery';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-new-squeal',
@@ -438,7 +439,7 @@ export class NewSquealsComponent implements OnInit {
 
   selectFiles(event: any): void {
     this.selectedFileName = '';
-    this.selectedFile = event.target.file;
+    this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.readAsDataURL(this.selectedFile);
@@ -586,32 +587,73 @@ export class NewSquealsComponent implements OnInit {
       }
     } else {
       if (this.dailyChars - 125 >= 0) {
-        const squeal: Squeal = {
-          _id: '',
-          author: this.username,
-          body: this.newSqueal.body,
-          date: new Date(),
-          lat: this.newSqueal.lat,
-          lng: this.newSqueal.lng,
-          time: this.newSqueal.time,
-          recipients: this.getRecipients(this.recipients),
-          channels: this.getChannels(this.newSqueal.body),
-          positiveReactions: this.newSqueal.positiveReactions,
-          negativeReactions: this.newSqueal.negativeReactions,
-          category: 'public',
-          type: this.squealType,
-          originalSqueal: '',
-          locationName: this.newSqueal.locationName,
-        };
-        this.squealService
-          .addSqueal(squeal)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((res) => {
-            if (res) {
-              this.loadSqueals();
-            }
-          });
-        this.closePopup();
+        if (this.squealType === 'media') {
+          if (this.selectedFile) {
+            // const newFileName = this.mediaService.postMediaFile(
+            //   this.selectedFile,
+            // );
+            this.mediaService
+              .postMediaFile(this.selectedFile)
+              .pipe(takeUntil(this._unsubscribeAll))
+              .subscribe((res) => {
+                this.selectedFileName = res;
+
+                const squeal: Squeal = {
+                  _id: '',
+                  author: this.username,
+                  body: this.selectedFileName + '',
+                  date: new Date(),
+                  lat: this.newSqueal.lat,
+                  lng: this.newSqueal.lng,
+                  time: this.newSqueal.time,
+                  recipients: this.getRecipients(this.recipients),
+                  channels: this.getChannels(this.newSqueal.body),
+                  positiveReactions: this.newSqueal.positiveReactions,
+                  negativeReactions: this.newSqueal.negativeReactions,
+                  category: 'public',
+                  type: this.squealType,
+                  originalSqueal: '',
+                  locationName: this.newSqueal.locationName,
+                };
+                this.squealService
+                  .addSqueal(squeal)
+                  .pipe(takeUntil(this._unsubscribeAll))
+                  .subscribe((res) => {
+                    if (res) {
+                      this.loadSqueals();
+                    }
+                  });
+                this.closePopup();
+              });
+          }
+        } else {
+          const squeal: Squeal = {
+            _id: '',
+            author: this.username,
+            body: this.newSqueal.body,
+            date: new Date(),
+            lat: this.newSqueal.lat,
+            lng: this.newSqueal.lng,
+            time: this.newSqueal.time,
+            recipients: this.getRecipients(this.recipients),
+            channels: this.getChannels(this.newSqueal.body),
+            positiveReactions: this.newSqueal.positiveReactions,
+            negativeReactions: this.newSqueal.negativeReactions,
+            category: 'public',
+            type: this.squealType,
+            originalSqueal: '',
+            locationName: this.newSqueal.locationName,
+          };
+          this.squealService
+            .addSqueal(squeal)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res) => {
+              if (res) {
+                this.loadSqueals();
+              }
+            });
+          this.closePopup();
+        }
       } else {
         this._snackBar.open(
           'You finished your daily chars! Try again tomorrow, loser!',
