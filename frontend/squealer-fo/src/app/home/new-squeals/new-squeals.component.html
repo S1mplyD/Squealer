@@ -614,46 +614,42 @@
               <button
                 mat-raised-button
                 color="primary"
-                *ngIf="!mapOpened"
-                (click)="generateSquealMap(squeal.lat, squeal.lng, 'squealMap')"
+                *ngIf="!checkMapOpened(squeal._id)"
+                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"
               >
                 Generate map on {{ squeal.locationName }}
               </button>
               <button
                 mat-raised-button
                 color="primary"
-                *ngIf="mapOpened"
-                (click)="closeMap('squealMap')"
+                *ngIf="checkMapOpened(squeal._id)"
+                (click)="closeMap(squeal._id)"
               >
-                Close <Map></Map>
+                Close
               </button>
             </div>
-            <div *ngif="!answer.locationName">
-              <button
-                mat-raised-button
-                color="primary"
-                *ngIf="!mapOpened"
-                (click)="generateSquealMap(squeal.lat, squeal.lng, 'squealMap')"
-              >
-                Generate map
-              </button>
-              <button
-                mat-raised-button
-                color="primary"
-                *ngIf="mapOpened"
-                (click)="closeMap('squealMap')"
-              >
-                Close <Map></Map>
-              </button>
+<!--            <div *ngif="!answer.locationName">-->
+<!--              <button-->
+<!--                mat-raised-button-->
+<!--                color="primary"-->
+<!--                *ngIf="!mapOpened"-->
+<!--                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"-->
+<!--              >-->
+<!--                Generate map-->
+<!--              </button>-->
+<!--              <button-->
+<!--                mat-raised-button-->
+<!--                color="primary"-->
+<!--                *ngIf="mapOpened"-->
+<!--                (click)="closeMap(squeal._id)"-->
+<!--              >-->
+<!--                Close <Map></Map>-->
+<!--              </button>-->
+<!--            </div>-->
+          </div>
+            <div *ngIf="checkMapOpened(squeal._id)" [id]="squeal._id" style="height: 300px;"
+                 leaflet [leafletOptions]="createOptions(squeal.lat+'', squeal.lng+'',squeal._id)" (leafletMapReady)="addMarker($event,squeal.lat+'', squeal.lng+'',squeal._id)">
             </div>
-          </div>
-          <div class="squealMap">
-            <div
-              style="height: 300px"
-              leaflet
-              [leafletOptions]="options2"
-            ></div>
-          </div>
           <div class="button-group">
             <button
               class="upvote"

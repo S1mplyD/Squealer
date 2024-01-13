@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { Squeal } from 'app/interfaces/squeal.interface';
-import { SquealService } from 'app/services/squeal.service';
-import { DatePipe } from '@angular/common';
-import { User } from 'app/interfaces/account.interface';
-import { UsersService } from 'app/services/users.service';
-import { Subject, takeUntil } from 'rxjs';
-import { MediaService } from 'app/services/media.service';
-import { AuthService } from 'app/services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Component, OnInit} from '@angular/core';
+import {Squeal} from 'app/interfaces/squeal.interface';
+import {SquealService} from 'app/services/squeal.service';
+import {DatePipe} from '@angular/common';
+import {User} from 'app/interfaces/account.interface';
+import {UsersService} from 'app/services/users.service';
+import {Subject, takeUntil} from 'rxjs';
+import {MediaService} from 'app/services/media.service';
+import {AuthService} from 'app/services/auth.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import * as L from 'leaflet';
+import {LatLng, TileLayer} from 'leaflet';
 import axios from 'axios';
 import * as $ from 'jquery';
 
@@ -28,14 +29,14 @@ export class NewSquealsComponent implements OnInit {
   selectedFile?: File = undefined;
   upvote: number = 0;
   downvote: number = 0;
-  mapOpened: boolean = false;
+  mapOpened: string[] = [];
   selectedRef: string = '';
   selectedFileName: string = '';
   responses: Squeal[] = [];
   recipients: string = '';
   answeredId: string = '';
   initialMarker = {
-    position: { lat: 44.35527821160296, lng: 11.260986328125 },
+    position: {lat: 44.35527821160296, lng: 11.260986328125},
     draggable: true,
   };
   newSqueal: Squeal = {
@@ -91,10 +92,10 @@ export class NewSquealsComponent implements OnInit {
       }),
     ],
     zoom: 5,
-    center: L.latLng(21.212343, 10.235),
   };
 
   private _unsubscribeAll: Subject<void> = new Subject<void>();
+
   constructor(
     private squealService: SquealService,
     private datePipe: DatePipe,
@@ -102,7 +103,21 @@ export class NewSquealsComponent implements OnInit {
     private mediaService: MediaService,
     private authService: AuthService,
     private _snackBar: MatSnackBar,
-  ) {}
+  ) {
+  }
+
+  createOptions(lat: string, lng: string, id: string): { center: LatLng, layers: TileLayer[], zoom: number } {
+    return {
+      layers: [
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '...',
+        }),
+      ],
+      zoom: 13,
+      center: L.latLng(+lat, +lng),
+    }
+  }
 
   ngOnInit(): void {
     this.loadSqueals();
@@ -135,6 +150,7 @@ export class NewSquealsComponent implements OnInit {
   }
 
   onFileSelectedSqueal(event: any) {
+    console.log(event)
     const file: File = event.target.files[0];
 
     if (file) {
@@ -177,7 +193,7 @@ export class NewSquealsComponent implements OnInit {
     if ('geolocation' in navigator) {
       //geolocazione disponibile
       navigator.geolocation.getCurrentPosition(async (pos) => {
-        data.position = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        data.position = {lat: pos.coords.latitude, lng: pos.coords.longitude};
         let reverseGeocodeResult = await this.reverseGeocode(
           pos.coords.latitude,
           pos.coords.longitude,
@@ -201,28 +217,43 @@ export class NewSquealsComponent implements OnInit {
   }
 
   generateSquealMap(lat: string, long: string, id: string) {
-    if (!this.mapOpened) {
-      this.mapOpened = true;
-      const data = {
-        position: { lat: +lat, lng: +long },
-        draggable: false,
-      };
-      const marker = this.generateMarker(data, 0);
-      marker
-        .addTo(this.map2)
-        .bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
-      this.map2.panTo(data.position);
-      this.markers.push(marker);
-      $('.' + id).append(
-        '<div style="height: 300px;" leaflet [leafletOptions]="options2"></div>',
-      );
+    if (!this.mapOpened.includes(id)) {
+      this.mapOpened.push(id);
+      // const data = {
+      //   position: { lat: +lat, lng: +long },
+      //   draggable: false,
+      // };
+      // const newMap = L.Map
+      // const marker = this.generateMarker(data, 0);
+      // marker
+      //   .addTo(newMap)
+      //   .bindPopup(`<b>${data.position.lat},  ${data.position.lng}</b>`);
+      // this.markers.push(marker);
+      // const newOptions = this.createOptions(lat,long)
+      // $('#' + id).append(
+      //   `<div style="height: 300px" leaflet [leafletOptions]=${newOptions}></div>`,
+      // );
     }
   }
+
+  addMarker(map: L.Map,lat:string,lng:string,id:string){
+      L.marker([+lat, +lng],{
+        icon: L.icon({
+          ...L.Icon.Default.prototype.options,
+          iconUrl: 'assets/marker-icon.png',
+          iconRetinaUrl: 'assets/marker-icon-2x.png',
+          shadowUrl: 'assets/marker-shadow.png',
+        }}).addTo(map);
+  }
+
   closeMap(id: string) {
-    if (this.mapOpened) {
-      this.mapOpened = false;
-      $('.' + id).empty();
+    if (this.mapOpened.includes(id)) {
+      this.mapOpened = this.mapOpened.filter(el => el !== id);
     }
+  }
+
+  checkMapOpened(id: string): boolean {
+    return this.mapOpened.includes(id)
   }
 
   generateMarker(data: any, index: number) {
@@ -435,6 +466,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
+          locationName: ''
         };
         this.squealService
           .addResponse(answer, id)
