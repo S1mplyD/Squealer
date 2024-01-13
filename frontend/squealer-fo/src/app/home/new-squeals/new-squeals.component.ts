@@ -1,15 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {Squeal} from 'app/interfaces/squeal.interface';
-import {SquealService} from 'app/services/squeal.service';
-import {DatePipe} from '@angular/common';
-import {User} from 'app/interfaces/account.interface';
-import {UsersService} from 'app/services/users.service';
-import {Subject, takeUntil} from 'rxjs';
-import {MediaService} from 'app/services/media.service';
-import {AuthService} from 'app/services/auth.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { Component, OnInit } from '@angular/core';
+import { Squeal } from 'app/interfaces/squeal.interface';
+import { SquealService } from 'app/services/squeal.service';
+import { DatePipe } from '@angular/common';
+import { User } from 'app/interfaces/account.interface';
+import { UsersService } from 'app/services/users.service';
+import { Subject, takeUntil } from 'rxjs';
+import { MediaService } from 'app/services/media.service';
+import { AuthService } from 'app/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
-import {LatLng, TileLayer} from 'leaflet';
+import { LatLng, TileLayer } from 'leaflet';
 import axios from 'axios';
 import * as $ from 'jquery';
 
@@ -36,8 +36,12 @@ export class NewSquealsComponent implements OnInit {
   recipients: string = '';
   answeredId: string = '';
   initialMarker = {
-    position: {lat: 44.35527821160296, lng: 11.260986328125},
+    position: { lat: 44.35527821160296, lng: 11.260986328125 },
     draggable: true,
+  };
+  loc = {
+    lat: 44.35527821160296,
+    lng: 11.260986328125,
   };
   newSqueal: Squeal = {
     author: '',
@@ -103,10 +107,13 @@ export class NewSquealsComponent implements OnInit {
     private mediaService: MediaService,
     private authService: AuthService,
     private _snackBar: MatSnackBar,
-  ) {
-  }
+  ) {}
 
-  createOptions(lat: string, lng: string, id: string): { center: LatLng, layers: TileLayer[], zoom: number } {
+  createOptions(
+    lat: string,
+    lng: string,
+    id: string,
+  ): { center: LatLng; layers: TileLayer[]; zoom: number } {
     return {
       layers: [
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -116,7 +123,7 @@ export class NewSquealsComponent implements OnInit {
       ],
       zoom: 13,
       center: L.latLng(+lat, +lng),
-    }
+    };
   }
 
   ngOnInit(): void {
@@ -147,10 +154,11 @@ export class NewSquealsComponent implements OnInit {
           console.log(this.dailyChars);
         }
       });
+    this.getPosition();
   }
 
   onFileSelectedSqueal(event: any) {
-    console.log(event)
+    console.log(event);
     const file: File = event.target.files[0];
 
     if (file) {
@@ -193,7 +201,9 @@ export class NewSquealsComponent implements OnInit {
     if ('geolocation' in navigator) {
       //geolocazione disponibile
       navigator.geolocation.getCurrentPosition(async (pos) => {
-        data.position = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+        data.position = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        this.loc.lat = pos.coords.latitude;
+        this.loc.lng = pos.coords.longitude;
         let reverseGeocodeResult = await this.reverseGeocode(
           pos.coords.latitude,
           pos.coords.longitude,
@@ -236,24 +246,39 @@ export class NewSquealsComponent implements OnInit {
     }
   }
 
-  addMarker(map: L.Map,lat:string,lng:string,id:string){
-      L.marker([+lat, +lng],{
-        icon: L.icon({
-          ...L.Icon.Default.prototype.options,
-          iconUrl: 'assets/marker-icon.png',
-          iconRetinaUrl: 'assets/marker-icon-2x.png',
-          shadowUrl: 'assets/marker-shadow.png',
-        }}).addTo(map);
+  addMarker(map: L.Map, lat: string, lng: string, id: string) {
+    L.marker([+lat, +lng], {
+      icon: L.icon({
+        ...L.Icon.Default.prototype.options,
+        iconUrl: 'assets/marker-icon.png',
+        iconRetinaUrl: 'assets/marker-icon-2x.png',
+        shadowUrl: 'assets/marker-shadow.png',
+      }),
+    }).addTo(map);
   }
 
+  getCoords() {
+    console.log(this.loc);
+    return this.loc;
+  }
+  getPosition() {
+    console.log('here');
+    if ('geolocation' in navigator) {
+      //geolocazione disponibile
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        this.loc.lat = pos.coords.latitude;
+        this.loc.lng = pos.coords.longitude;
+      });
+    }
+  }
   closeMap(id: string) {
     if (this.mapOpened.includes(id)) {
-      this.mapOpened = this.mapOpened.filter(el => el !== id);
+      this.mapOpened = this.mapOpened.filter((el) => el !== id);
     }
   }
 
   checkMapOpened(id: string): boolean {
-    return this.mapOpened.includes(id)
+    return this.mapOpened.includes(id);
   }
 
   generateMarker(data: any, index: number) {
@@ -466,7 +491,7 @@ export class NewSquealsComponent implements OnInit {
           category: 'public',
           type: this.squealType,
           originalSqueal: '',
-          locationName: ''
+          locationName: '',
         };
         this.squealService
           .addResponse(answer, id)
