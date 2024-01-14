@@ -11,7 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
 import { LatLng, TileLayer } from 'leaflet';
 import axios from 'axios';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-new-squeal',
