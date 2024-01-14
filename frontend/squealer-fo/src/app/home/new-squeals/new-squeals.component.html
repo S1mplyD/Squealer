@@ -27,29 +27,8 @@
         <mat-radio-button value="geo">Geo</mat-radio-button>
       </mat-radio-group>
       <mat-form-field class="full-width" appearance="outline" color="primary">
-        <div *ngIf="squealType === 'text'">
-          <mat-label color="primary">What are you thinking?</mat-label>
-          <input color="primary" matInput [(ngModel)]="newSqueal.body" />
-          <label for="timed">This squeal is:</label>
-          <section id="timed" aria-labelledby="timed">
-            <mat-checkbox [(ngModel)]="squealSubType">Timed</mat-checkbox>
-          </section>
-          <div *ngIf="squealSubType">
-            <mat-label color="primary"
-              >Set the frequency of the post (in seconds):</mat-label
-            >
-            <mat-slider
-              min="10"
-              max="60"
-              step="1"
-              showTickMarks
-              discrete
-              [displayWith]="formatLabel"
-            >
-              <input matSliderThumb />
-            </mat-slider>
-          </div>
-        </div>
+        <mat-label *ngIf="squealType === 'text'">What are you thinking?</mat-label>
+        <input *ngIf="squealType === 'text'" matInput [(ngModel)]="newSqueal.body" />
         <div *ngIf="squealType === 'media'">
           <mat-label color="primary"
             >What do you want to show to the world?</mat-label
@@ -61,28 +40,31 @@
           </div>
         <div *ngIf="squealType === 'geo'" >
           <mat-label color="primary">Where are you?</mat-label>
-          <div style="height: 300px" leaflet [leafletOptions]="options" (leafletMapReady)="addMarker($event,getCoords().lat+'',getCoords().lng+'','')" ></div>
-          <label id="example-check-group-label">This squeal is:</label>
-          <section aria-labelledby="example-check-group-label">
-            <mat-checkbox [(ngModel)]="squealSubType">Timed</mat-checkbox>
-          </section>
-          <div *ngIf="squealSubType">
-            <mat-label color="primary"
-              >Set the frequency of the post (in seconds):</mat-label
-            >
-            <mat-slider
-              min="10"
-              max="60"
-              step="1"
-              showTickMarks
-              discrete
-              [displayWith]="formatLabel"
-            >
-              <input matSliderThumb />
-            </mat-slider>
-          </div>
+          <div style="height: 300px" leaflet [leafletOptions]="options" (leafletMapReady)="addMarker($event, this.getCoords().lat + '', this.getCoords().lng + '', '')" ></div>
         </div>
       </mat-form-field>
+      <br />
+      <div class="tick">
+      <label for="timed">This squeal is:</label>
+      <section id="timed" aria-labelledby="timed">
+        <mat-checkbox [(ngModel)]="squealSubType">Timed</mat-checkbox>
+      </section>
+      <div *ngIf="squealSubType">
+        <mat-label color="primary"
+          >Set the frequency of the post (in seconds):</mat-label
+        >
+        <mat-slider
+          min="0"
+          max="60"
+          step="5"
+          showTickMarks
+          discrete
+          [displayWith]="formatLabel"
+        >
+          <input matSliderThumb [(ngModel)]="newSqueal.time"/>
+        </mat-slider>
+      </div>
+    </div>
       <br />
       <mat-form-field
         class="thirtythree-width"
@@ -119,8 +101,6 @@
         [(ngModel)]="squealType"
       >
         <mat-radio-button value="text">Text</mat-radio-button>
-        <mat-radio-button value="media">Media</mat-radio-button>
-        <mat-radio-button value="geo">Geo</mat-radio-button>
       </mat-radio-group>
       <mat-form-field class="full-width" appearance="outline" color="primary">
         <div *ngIf="squealType === 'text'">
@@ -253,6 +233,7 @@
             <button
               class="upvote"
               mat-raised-button
+              color="primary"
               (click)="openAnswer(squeal._id)"
             >
               <mat-icon>question_answer</mat-icon>
@@ -357,6 +338,7 @@
             <button
               class="upvote"
               mat-raised-button
+              color="primary"
               (click)="openAnswer(squeal._id)"
             >
               <mat-icon>question_answer</mat-icon>
@@ -483,6 +465,7 @@
             <button
               class="upvote"
               mat-raised-button
+              color="primary"
               (click)="addUpvote(squeal._id)"
             >
               <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
@@ -499,6 +482,7 @@
             </button>
             <button
               class="upvote"
+              color="primary"
               mat-raised-button
               (click)="openAnswer(squeal._id)"
             >

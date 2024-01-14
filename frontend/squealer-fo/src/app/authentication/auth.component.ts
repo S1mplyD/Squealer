@@ -91,7 +91,9 @@ export class AuthComponent implements OnInit, OnDestroy{
 
     },
     (error) => {
-      this._snackBar.open('Email or password are not correct! Retry,', 'Close');
+      this._snackBar.open('Email or password are not correct! Retry.', 'Close', {
+        duration: 3000
+      });
     });
   }
 

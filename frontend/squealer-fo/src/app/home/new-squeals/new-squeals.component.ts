@@ -11,8 +11,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
 import { LatLng, TileLayer } from 'leaflet';
 import axios from 'axios';
-import * as $ from 'jquery';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-new-squeal',
@@ -57,6 +55,7 @@ export class NewSquealsComponent implements OnInit {
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
     locationName: '',
+    time: 0
   };
 
   newAnswer: Squeal = {
@@ -72,6 +71,7 @@ export class NewSquealsComponent implements OnInit {
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
     locationName: '',
+    time: 0
   };
 
   isLoggedIn: boolean = false;
@@ -252,6 +252,7 @@ export class NewSquealsComponent implements OnInit {
     console.log(this.loc);
     return this.loc;
   }
+
   getPosition() {
     console.log('here');
     if ('geolocation' in navigator) {
@@ -330,6 +331,9 @@ export class NewSquealsComponent implements OnInit {
   }
 
   openPopup(): void {
+    this.newSqueal.time = 0;
+    this.squealSubType = false;
+    this.newSqueal.body = '';
     this.isPopupOpen = true;
   }
 
@@ -408,7 +412,7 @@ export class NewSquealsComponent implements OnInit {
 
   closeAnswerForm() {
     this.isPostFormOpen = false;
-    this.newSqueal = {
+    this.newAnswer = {
       _id: '',
       author: '',
       body: '',
