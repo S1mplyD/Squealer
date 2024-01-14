@@ -154,11 +154,12 @@ router
    */
   .patch(async (req, res) => {
     try {
+      console.log(req.body)
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
           const update: SquealerError | Success = await updateProfilePicture(
             req.params.username,
-            req.query.filename as string,
+            req.body.filename as string,
           );
           if (update instanceof SquealerError) res.sendStatus(500);
           else res.sendStatus(200);
@@ -166,7 +167,7 @@ router
           if (req.params.username === (req.user as User).username) {
             const update: SquealerError | Success = await updateProfilePicture(
               req.params.username,
-              req.query.filename as string,
+              req.body.filename as string,
             );
             if (update instanceof SquealerError) res.sendStatus(500);
             else res.sendStatus(200);
