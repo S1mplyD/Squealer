@@ -15,7 +15,7 @@
       <p><mat-icon>people_outline</mat-icon>&nbsp; Followers: {{ account?.followers?.length }}</p>
       <p><mat-icon>people</mat-icon>&nbsp; Following: {{ account?.following?.length }}</p>
       <p><mat-icon>cake</mat-icon>&nbsp; Joined: {{ formatDate(account?.createdAt) }}</p>
-      <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
+      <input type="file"  (change)="onFileSelected($event)" #fileUpload>
       <div class="file-upload">
         {{fileName || "No file uploaded yet."}}
         <button *ngIf="un === account?.username" mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;">
