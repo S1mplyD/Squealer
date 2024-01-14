@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { User } from 'app/interfaces/account.interface';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {User} from 'app/interfaces/account.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,8 @@ export class UsersService {
   private mediaApiUrl = 'http://localhost:3000/api/media';
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
@@ -119,18 +120,23 @@ export class UsersService {
   following(username: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.followApiUrl}/following/${username}`);
   }
+
   getProfilePicture(username: string): Observable<string> {
     return this.http.get<string>(`${this.apiUrl}/${username}/profilePicture`);
   }
 
-  changeProfilePicture(image: FormData): Observable<string> {
-    return this.http.post<string>(`${this.mediaApiUrl}`, image);
+  changeProfilePicture(formaData: FormData): Observable<string> {
+    const headers = new HttpHeaders({Accept: 'text/plain'});
+    return this.http.post(`${this.mediaApiUrl}`, formaData, {
+      headers,
+      responseType: 'text'
+    });
   }
 
   updateProfilePicture(username: string, fileName: string): Observable<string> {
-    const params = {
-      'filename': fileName + ''
-    }
-    return this.http.patch<string>(`${this.apiUrl}/${username}/profilePicture`, {params: params});
+    // const params = {
+    //   'filename': fileName + ''
+    // }
+    return this.http.patch<string>(`${this.apiUrl}/user/${username}/profilePicture`, {filename: fileName+''});
   }
 }
