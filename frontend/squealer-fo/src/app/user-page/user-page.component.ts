@@ -86,7 +86,7 @@ export class UserPageComponent implements OnInit {
         .subscribe((res) => {
           console.log(res);
           if (this.account) {
-            this.usersService.updateProfilePicture(this.account?.username, res)
+            this.usersService.updateProfilePicture(this.account.username, res)
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(res => console.log(res));
           }
