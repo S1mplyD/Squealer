@@ -2,7 +2,7 @@ import express, {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from "express";
-import { Success, User } from "../util/types";
+import { User } from "../util/types";
 import {
   addCharactersToUser,
   addSMM,
@@ -53,19 +53,11 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const deleted: SquealerError | Success = await deleteAccount(
-            req.body.mail,
-            "",
-            true,
-          );
+          await deleteAccount(req.body.mail, "", true);
           res.sendStatus(200);
         } else {
           if ((req.user as User)._id === req.query.id) {
-            const deleted: SquealerError | Success = await deleteAccount(
-              req.body.mail,
-              req.body.password,
-              false,
-            );
+            await deleteAccount(req.body.mail, req.body.password, false);
             res.sendStatus(200);
           } else res.sendStatus(401);
         }
@@ -153,14 +145,14 @@ router
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const update: Success = await updateProfilePicture(
+          await updateProfilePicture(
             req.params.username,
             req.body.filename as string,
           );
           res.sendStatus(200);
         } else {
           if (req.params.username === (req.user as User).username) {
-            const update: SquealerError | Success = await updateProfilePicture(
+            await updateProfilePicture(
               req.params.username,
               req.body.filename as string,
             );
@@ -208,16 +200,13 @@ router
           (req.user as User).plan === "professional") ||
         (req.user as User).plan === "admin"
       ) {
-        const update: Success | undefined = await addSMM(
-          req.params.username,
-          (req.user as User)._id,
-        );
+        await addSMM(req.params.username, (req.user as User)._id);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
       if (error instanceof SquealerError) {
         if (error === non_existent) res.sendStatus(404);
-      } else if (!error) res.sendStatus(500);
+      } else res.status(500).send(error);
     }
   })
   .delete(async (req: ExpressRequest, res: ExpressResponse) => {
@@ -228,10 +217,7 @@ router
         ((req.user as User).plan === "professional" ||
           (req.user as User).plan) === "admin"
       ) {
-        const update: Success | undefined = await removeSMM(
-          (req.user as User)._id,
-          req.params.username,
-        );
+        await removeSMM((req.user as User)._id, req.params.username);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
@@ -249,13 +235,10 @@ router
         (req.user as User).status !== "block"
       ) {
         if ((req.user as User).plan === "admin") {
-          console.log(req.params, req.body);
-          const update: Success | SquealerError | undefined =
-            await changeUserPlan(req.params.username as string, req.body.plan);
+          await changeUserPlan(req.params.username as string, req.body.plan);
           res.sendStatus(200);
         } else {
-          const update: Success | SquealerError | undefined =
-            await changeUserPlan((req.user as User).username, req.body.plan);
+          await changeUserPlan((req.user as User).username, req.body.plan);
           res.sendStatus(200);
         }
       }
@@ -269,7 +252,7 @@ router
   .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (req.user && (req.user as User).plan === "admin") {
-        const update = await addCharactersToUser(
+        await addCharactersToUser(
           req.params.username,
           req.body.dailyCharacters,
           req.body.weeklyCharacters,
@@ -291,9 +274,7 @@ router
   .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await revokePermissions(
-          req.query.username as string,
-        );
+        await revokePermissions(req.query.username as string);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
@@ -308,12 +289,9 @@ router
    * chiamata per garantire i permessi da admin ad un utente
    */
   .patch(async (req: ExpressRequest, res: ExpressResponse) => {
-    console.log(req.user);
     try {
       if ((req.user as User).plan === "admin") {
-        const update: Success = await grantPermissions(
-          req.query.username as string,
-        );
+        await grantPermissions(req.query.username as string);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
@@ -330,7 +308,7 @@ router
   .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const banned: Success = await ban(req.query.username as string);
+        await ban(req.query.username as string);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
@@ -347,9 +325,7 @@ router
   .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const unban: SquealerError | Success = await unbanUser(
-          req.query.username as string,
-        );
+        await unbanUser(req.query.username as string);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
@@ -366,7 +342,7 @@ router
   .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await blockUser(
+        await blockUser(
           req.query.username as string,
           req.query.time as unknown as number,
         );
@@ -382,9 +358,7 @@ router
   .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await unblockUser(
-          req.query.username as string,
-        );
+        await unblockUser(req.query.username as string);
         res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
