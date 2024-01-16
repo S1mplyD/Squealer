@@ -1,32 +1,32 @@
 import { getDefaultCharacters } from "../../API/characters";
 import {
-  SquealerError,
   cannot_create,
   cannot_delete,
   cannot_update,
   non_existent,
+  SquealerError,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import { Timeout, User } from "../../util/types";
 import userModel from "../models/users.model";
 import fs from "fs";
-import { resolve, join } from "path";
+import { join, resolve } from "path";
 
 const publicUploadPath = resolve(__dirname, "../../..", "public/uploads/");
 
-var intervals: Array<Timeout> = [];
+let intervals: Array<Timeout> = [];
 
 /**
  * Ritorna tutti gli utenti
  */
 export async function getAllUsers() {
   const users: User[] | null = await userModel.find();
-  if (users.length < 1) return non_existent;
+  if (users.length < 1) throw non_existent;
   else return users;
 }
 
 export async function getManagedUsers(username: string): Promise<User[]> {
-  var managedUsers: User[] = [];
+  let managedUsers: User[] = [];
   const user: User | SquealerError = await getUserByUsername(username);
   if (!(user instanceof SquealerError)) {
     for (let i of user.managedAccounts) {
@@ -36,7 +36,6 @@ export async function getManagedUsers(username: string): Promise<User[]> {
       }
     }
   }
-
   return managedUsers;
 }
 
@@ -47,7 +46,7 @@ export async function getManagedUsers(username: string): Promise<User[]> {
  */
 export async function getUser(id: string) {
   const user: User | null = await userModel.findOne({ _id: id });
-  if (!user) return non_existent;
+  if (!user) throw non_existent;
   else return user;
 }
 
@@ -58,13 +57,13 @@ export async function getUser(id: string) {
  */
 export async function getUserByUsername(username: string) {
   const user: User | null = await userModel.findOne({ username: username });
-  if (!user) return non_existent;
+  if (!user) throw non_existent;
   else return user;
 }
 
 export async function getProfessionalUsers() {
   const users: User[] | null = await userModel.find({ plan: "professional" });
-  if (!users) return non_existent;
+  if (!users) throw non_existent;
   else return users;
 }
 
@@ -89,7 +88,7 @@ export async function createDefaultUser(
     createdAt: new Date(),
     profilePicture: "/public/default.png",
   });
-  if (!doc) return cannot_create;
+  if (!doc) throw cannot_create;
   else return doc;
 }
 
@@ -120,7 +119,7 @@ export async function createUserUsingGoogle(
     followingCount: 0,
     createdAt: createdAt,
   });
-  if (!newUser) return cannot_create;
+  if (!newUser) throw cannot_create;
   else return newUser;
 }
 
@@ -139,7 +138,7 @@ export async function updateUser(username: string, user: User) {
     },
     { returnDocument: "after" },
   );
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else {
     const newUser = await getUser((oldUser as User)._id);
     return newUser;
@@ -157,7 +156,7 @@ export async function updateProfilePicture(username: string, filename: string) {
     { username: username },
     { profilePicture: filename },
   );
-  if (user.modifiedCount < 1) return cannot_update;
+  if (user.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
@@ -168,11 +167,11 @@ export async function updateProfilePicture(username: string, filename: string) {
 export async function deleteProfilePicture(username: string) {
   const user: User | null = await userModel.findOne({ username: username });
 
-  if (!user) return non_existent;
+  if (!user) throw non_existent;
   else {
     if (user.profilePicture !== undefined) {
       fs.unlink(join(publicUploadPath, user.profilePicture), async (err) => {
-        if (err) return cannot_delete;
+        if (err) throw cannot_delete;
         else {
           await userModel.updateOne(
             { _id: user._id },
@@ -197,22 +196,25 @@ export async function deleteAccount(
   isAdmin: boolean,
 ) {
   const user: User | null = await userModel.findOne({ mail: mail });
-  if (!user) return non_existent;
+  if (!user) throw non_existent;
   if (user.profilePicture !== "default.png") {
     fs.unlink(publicUploadPath + user.profilePicture, (err) => {
-      if (err) console.log(err);
+      if (err) {
+        console.log(err);
+        throw cannot_delete;
+      }
     });
   }
 
   if (isAdmin) {
     const user = await userModel.deleteOne({ mail: mail });
-    if (user.deletedCount < 1) return cannot_delete;
+    if (user.deletedCount < 1) throw cannot_delete;
     else return removed;
   } else {
     const user = await userModel.deleteOne({
       $and: [{ mail: mail }, { password: password }],
     });
-    if (user.deletedCount < 1) return cannot_delete;
+    if (user.deletedCount < 1) throw cannot_delete;
     else return removed;
   }
 }
@@ -227,7 +229,7 @@ export async function updateResetToken(mail: string, token: string) {
     { mail: mail },
     { resetToken: token },
   );
-  if (result.modifiedCount < 1) return cannot_update;
+  if (result.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
@@ -240,10 +242,10 @@ export async function updatePassword(mail: string, password: string) {
   const newDoc: User | null = await userModel
     .findOneAndUpdate({ mail: mail }, { password: password, resetToken: "" })
     .lean();
-  if (!newDoc) return non_existent;
+  if (!newDoc) throw non_existent;
   else {
     if (newDoc.password !== password) return updated;
-    else return cannot_update;
+    else throw cannot_update;
   }
 }
 
@@ -254,7 +256,7 @@ export async function updatePassword(mail: string, password: string) {
  */
 export async function grantPermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "admin" });
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
@@ -265,7 +267,7 @@ export async function grantPermissions(userId: string) {
  */
 export async function revokePermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "base" });
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
@@ -275,36 +277,33 @@ export async function revokePermissions(userId: string) {
  * @returns non_existent | cannot_update | updated
  */
 export async function ban(id: string) {
-  const user: User | SquealerError = await getUser(id);
-  if (user instanceof SquealerError) return user;
+  const user: User = await getUser(id);
+  const update = await userModel.updateOne({ _id: id }, { status: "ban" });
+  if (update.modifiedCount < 1) throw cannot_update;
+  //Rimuovo l'smm o un account managed
   else {
-    const update = await userModel.updateOne({ _id: id }, { status: "ban" });
-    if (update.modifiedCount < 1) return cannot_update;
-    //Rimuovo l'smm o un account managed
-    else {
-      if (user.SMM !== "" || user.SMM === undefined) {
-        //Rimuovo l'SMM all'utente bannato
-        const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
-        if (updateUser.modifiedCount < 1) return cannot_update;
-        // Rimuovo all'smm dell'utente bannato l'account gestito
+    if (user.SMM !== "" || user.SMM === undefined) {
+      //Rimuovo l'SMM all'utente bannato
+      const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
+      if (updateUser.modifiedCount < 1) throw cannot_update;
+      // Rimuovo all'smm dell'utente bannato l'account gestito
 
-        const updateSMM = await userModel.updateOne(
-          { _id: user.SMM },
-          { $pull: { managedAccounts: user._id } },
-        );
-        if (updateSMM.modifiedCount < 1) return cannot_update;
-        else return updated;
-      } else if (user.managedAccounts.length > 0) {
-        const len = user.managedAccounts.length;
-        let count = 0;
-        for (let i of user.managedAccounts) {
-          const updateUser = await userModel.updateOne({ _id: i }, { SMM: "" });
-          if (updateUser.modifiedCount > 0) count++;
-        }
-        if (count === len) return updated;
-        else return cannot_update;
-      } else return updated;
-    }
+      const updateSMM = await userModel.updateOne(
+        { _id: user.SMM },
+        { $pull: { managedAccounts: user._id } },
+      );
+      if (updateSMM.modifiedCount < 1) throw cannot_update;
+      else return updated;
+    } else if (user.managedAccounts.length > 0) {
+      const len = user.managedAccounts.length;
+      let count = 0;
+      for (let i of user.managedAccounts) {
+        const updateUser = await userModel.updateOne({ _id: i }, { SMM: "" });
+        if (updateUser.modifiedCount > 0) count++;
+      }
+      if (count === len) return updated;
+      else throw cannot_update;
+    } else return updated;
   }
 }
 
@@ -315,7 +314,7 @@ export async function ban(id: string) {
  */
 export async function unbanUser(id: string) {
   const update = await userModel.updateOne({ _id: id }, { status: "normal" });
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
@@ -331,7 +330,7 @@ export async function blockUser(username: string, time: number) {
     { status: "block", blockedFor: time },
   );
   let timeout: NodeJS.Timeout;
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else {
     timeout = setTimeout(async () => {
       await userModel.updateOne(
@@ -353,9 +352,9 @@ export async function unblockUser(username: string) {
     { username: username },
     { status: "normal", blockedFor: 0 },
   );
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else {
-    stopTimer(username);
+    await stopTimer(username);
     return updated;
   }
 }
@@ -369,10 +368,7 @@ async function findInterval(username: string) {
 
 async function stopTimer(username: string) {
   clearInterval(await findInterval(username));
-  const newIntervals = intervals.filter(
-    (interval) => interval.username !== username,
-  );
-  intervals = newIntervals;
+  intervals = intervals.filter((interval) => interval.username !== username);
 }
 
 /**
@@ -384,22 +380,19 @@ async function stopTimer(username: string) {
 //TODO managed accounts
 //TODO controllo che smm sia vuoto
 export async function addSMM(username: string, id: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (user instanceof SquealerError) return user;
-  else {
-    const updateUser = await userModel.updateOne(
-      { _id: id },
-      { SMM: user.username },
-    );
-    const updateSMM = await userModel.updateOne(
-      {
-        _id: user._id,
-      },
-      { $push: { managedAccounts: id } },
-    );
-    if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
-      return updated;
-  }
+  const user: User = await getUserByUsername(username);
+  const updateUser = await userModel.updateOne(
+    { _id: id },
+    { SMM: user.username },
+  );
+  const updateSMM = await userModel.updateOne(
+    {
+      _id: user._id,
+    },
+    { $push: { managedAccounts: id } },
+  );
+  if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
+    return updated;
 }
 
 /**
@@ -409,19 +402,16 @@ export async function addSMM(username: string, id: string) {
  * @returns cannot_update | updated
  */
 export async function removeSMM(id: string, username: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (user instanceof SquealerError) return user;
-  else {
-    const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
-    const updateSMM = await userModel.updateOne(
-      {
-        _id: user._id,
-      },
-      { $pull: { managedAccounts: id } },
-    );
-    if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
-      return updated;
-  }
+  const user: User = await getUserByUsername(username);
+  const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
+  const updateSMM = await userModel.updateOne(
+    {
+      _id: user._id,
+    },
+    { $pull: { managedAccounts: id } },
+  );
+  if (updateUser.modifiedCount > 0 && updateSMM.modifiedCount > 0)
+    return updated;
 }
 
 export async function changeUserPlan(username: string, plan: string) {
@@ -437,15 +427,13 @@ export async function changeUserPlan(username: string, plan: string) {
       },
     );
     if (update.modifiedCount > 0) return updated;
-    else return cannot_update;
+    else throw cannot_update;
   }
 }
 
 export async function getUserProfilePictureByUsername(username: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (!(user instanceof SquealerError)) {
-    return user.profilePicture;
-  } else return user;
+  const user: User = await getUserByUsername(username);
+  return user.profilePicture;
 }
 
 export async function addCharactersToUser(
@@ -467,5 +455,5 @@ export async function addCharactersToUser(
 
   if (update.modifiedCount > 0) {
     return updated;
-  } else throw new Error("Cannot update");
+  } else throw cannot_update;
 }
