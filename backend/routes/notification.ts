@@ -9,23 +9,31 @@ export const router = express.Router();
 router
   .route("/")
   .get(async (req, res) => {
-    if (
-      req.user &&
-      ((req.user as User).status != "ban" ||
-        (req.user as User).status != "block")
-    ) {
-      const notification: Notification[] = await getNotifications(
-        req.user as User,
-      );
-      res.status(200).send(notification);
-    } else res.sendStatus(401);
+    try {
+      if (
+        req.user &&
+        ((req.user as User).status != "ban" ||
+          (req.user as User).status != "block")
+      ) {
+        const notification: Notification[] = await getNotifications(
+          req.user as User,
+        );
+        res.status(200).send(notification);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
   })
   .patch(async (req, res) => {
-    if (
-      req.user &&
-      ((req.user as User).status != "ban" ||
-        (req.user as User).status != "block")
-    ) {
-      await setNotificationRead(req.query.id as string);
-    } else res.sendStatus(401);
+    try {
+      if (
+        req.user &&
+        ((req.user as User).status != "ban" ||
+          (req.user as User).status != "block")
+      ) {
+        await setNotificationRead(req.query.id as string);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
   });

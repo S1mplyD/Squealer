@@ -159,7 +159,7 @@ router.get("/logout", (req, res) => {
     });
     res.status(200).redirect("/");
   } catch (error: any) {
-    console.log(error);
+    res.status(500).send(error);
   }
 });
 router
@@ -182,21 +182,17 @@ router
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
    */
   .post(async (req, res) => {
+    try {
+    } catch (e) {
+      res.status(500).send(e);
+    }
     const token: any = req.body.token;
     const mail: any = req.query.mail;
     const user: any = await userModel.findOne({ mail: mail });
     const password: any = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      const ret: SquealerError | Success = await updatePassword(
-        mail,
-        encryptedPassword,
-      );
-      console.log(ret);
-      if (ret instanceof SquealerError) {
-        res.sendStatus(500);
-      } else {
-        res.sendStatus(200);
-      }
+      const ret: Success = await updatePassword(mail, encryptedPassword);
+      res.sendStatus(200);
     }
   });

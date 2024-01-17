@@ -1,11 +1,10 @@
 import {
-  SquealerError,
   cannot_create,
   cannot_delete,
   cannot_update,
   non_existent,
-  unauthorized,
   not_valid,
+  unauthorized,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
 import { Channel, Squeal, Success, User } from "../../util/types";
@@ -267,8 +266,18 @@ export async function addAdminToOfficialChannel(
 }
 
 //TODO funzione equivalente a quella sopra per rimuovere un utente dagli admin degli official channels
+export async function removeAdminToOfficialChannel(
+  adminId: string,
+  channelName: string,
+) {}
+export async function checkChannel(
+  channelName: string,
+): Promise<Channel | null> {
+  return channelsModel.findOne({
+    name: channelName,
+  });
+}
 
-//TODO check canale non esistente
 /**
  * funzione che aggiunge uno squeal ad un canale
  * @param channelName nome del canale
@@ -282,16 +291,15 @@ export async function addSquealToChannel(
   user: User,
 ) {
   const channel: Channel = await getChannel(channelName);
-  if (channel instanceof SquealerError) {
+  if (!(await checkChannel(channelName))) {
     const squeal: Squeal = await getSquealById(squealId);
     //Se il canale non esiste ma è una keyword creo il canale e poi aggiungo lo squeal
     for (let i of squeal.channels) {
       if (i.includes("#")) {
         await createChannel(i, "keyword", user);
         await addSquealToChannel(i, squeal._id, user);
-      }
+      } else throw cannot_create;
     }
-    throw cannot_create;
   } else {
     //canali con richiesta di scrittura
     if (
@@ -302,14 +310,14 @@ export async function addSquealToChannel(
         { name: channelName },
         { $push: { squeals: squealId } },
       );
-      if (update.modifiedCount < 1) return cannot_update;
+      if (update.modifiedCount < 1) throw cannot_update;
       else return updated;
     } else {
       const update = await channelsModel.updateOne(
         { name: channelName },
         { $push: { squeals: squealId } },
       );
-      if (update.modifiedCount < 1) return cannot_update;
+      if (update.modifiedCount < 1) throw cannot_update;
       else return updated;
     }
   }

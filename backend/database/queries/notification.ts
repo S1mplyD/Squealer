@@ -1,22 +1,20 @@
-import { SquealerError } from "../../util/errors";
+import { cannot_create, SquealerError } from "../../util/errors";
 import { updated } from "../../util/success";
-import { Channel, Notification, User } from "../../util/types";
+import { Channel, Notification, Success, User } from "../../util/types";
 import notificationModel from "../models/notification.model";
 import userModel from "../models/users.model";
 import { checkChannelType, getChannel } from "./channels";
 import { getUserByUsername } from "./users";
 
-// TODO funzione per checkare se recipients è canale o utente
 /**
  * funzione che crea una notifica e la inserisce in un utente
  * @param notification testo della notifica
- * @param channelName nome del canale
  * @param recipient nome del destinatario
  */
 export async function createNotification(
   notification: string,
   recipient: string,
-) {
+): Promise<Success> {
   if (recipient) {
     const type = await checkChannelType(recipient);
     //Recipient è un utente
@@ -38,7 +36,7 @@ export async function createNotification(
       }
       return updated;
     }
-  }
+  } else throw cannot_create;
 }
 
 /**
@@ -50,7 +48,6 @@ export async function getNotifications(user: User) {
   const notification: Notification[] = await notificationModel.find({
     _id: { $in: user.notification },
   });
-
   return notification;
 }
 

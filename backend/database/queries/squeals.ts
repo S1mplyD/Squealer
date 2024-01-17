@@ -7,6 +7,7 @@ import {
   non_existent,
   not_recived,
   SquealerError,
+  unauthorized,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import {
@@ -422,7 +423,10 @@ export async function editReaction(
   else return updated;
 }
 
-export async function addPositiveReaction(squealId: string, userId?: string) {
+export async function addPositiveReaction(
+  squealId: string,
+  userId?: string,
+): Promise<Success> {
   const squeal: Squeal = await getSquealById(squealId);
   if (!userId) {
     const update = await squealModel.updateOne(
@@ -443,18 +447,16 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
     );
     if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else {
-    if (!squeal.positiveReactions?.includes(userId)) {
-      const update = await squealModel.updateOne(
-        { _id: squealId },
-        {
-          $push: { positiveReactions: userId },
-        },
-      );
-      if (update.modifiedCount < 1) throw cannot_update;
-      else return updated;
-    }
-  }
+  } else if (!squeal.positiveReactions?.includes(userId)) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { positiveReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) throw cannot_update;
+    else return updated;
+  } else throw cannot_update;
 }
 
 export async function addNegativeReaction(squealId: string, userId?: string) {
@@ -466,7 +468,7 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
         $push: { negativeReactions: "guest" },
       },
     );
-    if (update.modifiedCount < 1) return cannot_update;
+    if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
   } else if (squeal.positiveReactions?.includes(userId)) {
     const update = await squealModel.updateOne(
@@ -478,18 +480,16 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
     );
     if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else {
-    if (!squeal.negativeReactions?.includes(userId)) {
-      const update = await squealModel.updateOne(
-        { _id: squealId },
-        {
-          $push: { negativeReactions: userId },
-        },
-      );
-      if (update.modifiedCount < 1) throw cannot_update;
-      else return updated;
-    }
-  }
+  } else if (!squeal.negativeReactions?.includes(userId)) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { negativeReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) throw cannot_update;
+    else return updated;
+  } else throw cannot_update;
 }
 
 export async function updateSquealsUsername(
@@ -520,7 +520,7 @@ export async function postSquealAsUser(
   if (user.SMM == smm) {
     const newSqueal: Squeal = await postSqueal(squeal, user);
     return newSqueal;
-  }
+  } else throw unauthorized;
 }
 
 export async function getSquealResponses(id: string) {
