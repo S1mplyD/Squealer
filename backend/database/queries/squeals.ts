@@ -26,10 +26,9 @@ const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
- * @returns Squeal[] | non_existent
  */
-export async function getAllSqueals() {
-  const squeals: Squeal[] = await squealModel.find().sort({ date: -1 });
+export async function getAllSqueals(): Promise<Squeal[]> {
+  const squeals: Squeal[] | null = await squealModel.find().sort({ date: -1 });
   if (squeals.length < 1) throw non_existent;
   else return squeals;
 }
@@ -37,9 +36,8 @@ export async function getAllSqueals() {
 /**
  * funzione che ritorna tutti gli squeals postati da un utente
  * @param username username dell'utente
- * @returns Squeal [] | non_existent
  */
-export async function getAllUserSqueals(username: string) {
+export async function getAllUserSqueals(username: string): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({ author: username })
     .sort({ date: -1 });
@@ -49,12 +47,11 @@ export async function getAllUserSqueals(username: string) {
 
 /**
  * funzione che ritorna tutti gli squeals temporizzati
- * @returns non_existent | TimedSqueal []
  */
-export async function getAllTimedSqueals() {
+export async function getAllTimedSqueals(): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({
-      type: "timed",
+      time: { $gt: 0 },
     })
     .sort({ date: -1 });
   if (!squeals) throw non_existent;
@@ -63,9 +60,8 @@ export async function getAllTimedSqueals() {
 
 /**
  * funzione che ritorna tutti gli squeals temporizzati
- * @returns non_existent | TimedSqueal []
  */
-export async function getAllMediaSqueals() {
+export async function getAllMediaSqueals(): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({
       type: "media",
@@ -144,7 +140,7 @@ export async function getTextSqueal(id: string) {
  */
 export async function getTimedSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
-    $and: [{ _id: id }, { type: "timed" }],
+    $and: [{ _id: id }, { time: { $gt: 0 } }],
   });
   if (!squeal) throw non_existent;
   else return squeal;
