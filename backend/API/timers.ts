@@ -5,90 +5,70 @@ import {
   postSqueal,
 } from "../database/queries/squeals";
 import { getUserByUsername } from "../database/queries/users";
-import {
-  no_timers,
-  cannot_create,
-  SquealerError,
-  cannot_update,
-  non_existent,
-} from "../util/errors";
+import { cannot_create, cannot_update, SquealerError } from "../util/errors";
 import { created, updated } from "../util/success";
-import { Interval, Success, Squeal, User } from "../util/types";
+import { Interval, Squeal, Success, User } from "../util/types";
 
-var intervals: Array<Interval> = [];
+let intervals: Array<Interval> = [];
 
 /**
  * funzione che attiva tutti i timer (da usare all'avvio del server)
  */
 export async function startAllTimer() {
   console.log("[STARTING TIMERS...]");
-  const squeals: Squeal[] | SquealerError = await getAllTimedSqueals();
-  if (squeals instanceof SquealerError) {
-    return squeals as SquealerError;
-  } else {
-    for (let i of squeals) {
-      if (i.originalSqueal === undefined || i.originalSqueal == "")
-        await startTimer(i);
-    }
+  const squeals: Squeal[] = await getAllTimedSqueals();
+  for (let i of squeals) {
+    if (i.originalSqueal == "") await startTimer(i);
   }
 }
 
 /**
  * funzione che inizializza un timer per uno squeal automatizzato
  * @param squeal lo squeal da postare
- * @param time il tempo necessario per postare uno squeal
- * @param id id dello squeal
  * @returns no_timers | Success | Error
  */
-export async function startTimer(squeal: Squeal) {
+export async function startTimer(s_squeal: Squeal) {
   let interval: NodeJS.Timeout;
-  const existingInterval = await findInterval(squeal);
-  if (existingInterval) return new Error("Timed squeal is already on");
-  interval = setInterval(async () => {
-    const newSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
-    if (newSqueal instanceof SquealerError) return no_timers;
-    else {
+  const existingInterval = await findInterval(s_squeal);
+  if (existingInterval) {
+    throw new Error("Timed squeal is already on");
+  } else {
+    interval = setInterval(async () => {
+      const newSqueal: Squeal = await getTimedSqueal(s_squeal._id);
       const user: SquealerError | User = await getUserByUsername(
         newSqueal.author,
       );
-
-      if (user instanceof SquealerError) return non_existent;
-      else {
-        let squeal: Squeal = {
-          body: newSqueal.body,
-          lat: newSqueal.lat,
-          lng: newSqueal.lng,
-          recipients: newSqueal.recipients,
-          date: new Date(),
-          category: newSqueal.category,
-          channels: newSqueal.channels,
-          author: newSqueal.author,
-          type: "auto",
-          originalSqueal: newSqueal._id,
-          _id: "",
-        };
-        await postSqueal(squeal, user);
-        await updateCount(newSqueal._id);
-      }
-    }
-  }, squeal.time as number);
-  const ret: SquealerError | Success = await setSquealInterval(
-    interval,
-    squeal._id,
-  );
-  return ret;
+      let squeal: Squeal = {
+        body: newSqueal.body,
+        lat: newSqueal.lat,
+        lng: newSqueal.lng,
+        recipients: newSqueal.recipients,
+        date: new Date(),
+        category: newSqueal.category,
+        channels: newSqueal.channels,
+        author: newSqueal.author,
+        type: newSqueal.type,
+        originalSqueal: newSqueal._id,
+        _id: "",
+      };
+      await postSqueal(squeal, user);
+      await updateCount(newSqueal._id);
+    }, s_squeal.time as number);
+    const ret: SquealerError | Success = await setSquealInterval(
+      interval,
+      s_squeal._id,
+    );
+    return ret;
+  }
 }
 
 /**
  * funzione che ferma un post automatico
- * @param TimedSqueal squeal automatico da fermare
+ * @param squeal automatico da fermare
  */
 export async function stopTimer(squeal: Squeal) {
   clearInterval(await findInterval(squeal));
-  const newIntervals = intervals.filter(
-    (interval) => interval.id !== squeal._id,
-  );
-  intervals = newIntervals;
+  intervals = intervals.filter((interval) => interval.id !== squeal._id);
 }
 
 /**
