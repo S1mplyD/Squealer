@@ -93,8 +93,7 @@ app.get("/*", (req, res) => {
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
   console.log("[CONNECTED TO MONGOOSE]");
-  const ret: SquealerError | undefined = await startAllTimer();
-  console.log(ret);
+  await startAllTimer();
   await updateAnalyticTimer();
   await resetCharactersScheduler();
 });
