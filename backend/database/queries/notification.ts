@@ -3,9 +3,10 @@ import { updated } from "../../util/success";
 import { Channel, Notification, User } from "../../util/types";
 import notificationModel from "../models/notification.model";
 import userModel from "../models/users.model";
-import { getChannel } from "./channels";
+import { checkChannelType, getChannel } from "./channels";
 import { getUserByUsername } from "./users";
 
+// TODO funzione per checkare se recipients è canale o utente
 /**
  * funzione che crea una notifica e la inserisce in un utente
  * @param notification testo della notifica
@@ -17,9 +18,10 @@ export async function createNotification(
   recipient: string,
 ) {
   if (recipient) {
+    const type = await checkChannelType(recipient);
     //Recipient è un utente
-    const user: User | SquealerError = await getUserByUsername(recipient);
-    if (!(user instanceof SquealerError)) {
+    if (type === "mention") {
+      const user: User = await getUserByUsername(recipient);
       await userModel.updateOne(
         { _id: user._id },
         { $push: { notification: notification } },
@@ -27,16 +29,14 @@ export async function createNotification(
       return updated;
     } else {
       //recipient è un canale
-      const channel: Channel | SquealerError = await getChannel(recipient);
-      if (!(channel instanceof SquealerError)) {
-        for (let i of channel.allowedRead) {
-          await userModel.updateOne(
-            { _id: i },
-            { $push: { notification: notification } },
-          );
-        }
-        return updated;
+      const channel: Channel = await getChannel(recipient);
+      for (let i of channel.allowedRead) {
+        await userModel.updateOne(
+          { _id: i },
+          { $push: { notification: notification } },
+        );
       }
+      return updated;
     }
   }
 }
