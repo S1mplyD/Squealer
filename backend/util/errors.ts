@@ -29,6 +29,7 @@ export enum ErrorCodes {
   no_characters = 22,
   not_supported = 30,
   not_recived = 31,
+  not_valid = 32,
   browser_not_supported = 32,
   unauthorized = 40,
 }
@@ -41,6 +42,7 @@ export enum ErrorDescriptions {
   cannot_delete = "Cannot delete!",
   not_supported = "File format not supported!",
   not_recived = "Nothing has been recived, check post request!",
+  not_valid = "Not valid",
   unauthorized = "You don't have enough permissions to perform this action!",
   cannot_send = "Cannot send email!",
   no_characters = "Not enough characters",
@@ -57,6 +59,14 @@ export const cannot_create = new SquealerError(
 export const non_existent = new SquealerError(
   ErrorDescriptions.non_existent,
   ErrorCodes.non_existent,
+);
+
+/**
+ * Not Valid
+ */
+export const not_valid = new SquealerError(
+  ErrorDescriptions.not_valid,
+  ErrorCodes.not_valid,
 );
 
 export const cannot_update = new SquealerError(
