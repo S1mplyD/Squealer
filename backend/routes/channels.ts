@@ -144,17 +144,14 @@ router
         (req.user as User).status !== "ban" ||
         (req.user as User).status !== "block"
       ) {
-        const retValue: SquealerError | Success = await addUserToUserChannel(
-          req.body.username,
-          req.body.channelName,
-        );
-        if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
+        await addUserToUserChannel(req.body.username, req.body.channelName);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error.code === 20) res.sendStatus(404);
+        else res.sendStatus(500);
+      }
     }
   });
 
@@ -170,17 +167,14 @@ router
         (req.user as User).status !== "ban" ||
         (req.user as User).status !== "block"
       ) {
-        const retValue: SquealerError | Success = await removeUserFromChannel(
-          req.body.username,
-          req.body.channelName,
-        );
-        if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
+        await removeUserFromChannel(req.body.username, req.body.channelName);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error.code === 20) res.sendStatus(404);
+        else res.status(500).send(error);
+      }
     }
   });
 
