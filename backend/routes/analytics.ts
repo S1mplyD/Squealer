@@ -1,6 +1,9 @@
 import express from "express";
 import { Analytic, User } from "../util/types";
-import { getAllUserAnalytics, getAnalytic } from "../database/querys/analytics";
+import {
+  getAllUserAnalytics,
+  getAnalytic,
+} from "../database/queries/analytics";
 import { SquealerError, catchError, unauthorized } from "../util/errors";
 
 export const router = express.Router();

@@ -13,7 +13,7 @@ import {
   removeUserFromChannel,
   editOfficialChannel,
   updateOfficialSqueals,
-} from "../database/querys/channels";
+} from "../database/queries/channels";
 import { SquealerError, catchError } from "../util/errors";
 import { Channel, Squeal, Success, User } from "../util/types";
 import channelsModel from "../database/models/channels.model";

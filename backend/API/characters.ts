@@ -1,5 +1,5 @@
 import userModel from "../database/models/users.model";
-import { getAllUsers, getUser } from "../database/querys/users";
+import { getAllUsers, getUser } from "../database/queries/users";
 import {
   defaultCharactersBase,
   defaultCharactersJournalist,

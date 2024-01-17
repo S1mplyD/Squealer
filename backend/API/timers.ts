@@ -3,8 +3,8 @@ import {
   getAllTimedSqueals,
   getTimedSqueal,
   postSqueal,
-} from "../database/querys/squeals";
-import { getUserByUsername } from "../database/querys/users";
+} from "../database/queries/squeals";
+import { getUserByUsername } from "../database/queries/users";
 import {
   no_timers,
   cannot_create,

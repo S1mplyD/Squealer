@@ -14,7 +14,7 @@ import { router as userRoute } from "./routes/users";
 import { router as analyticsRoute } from "./routes/analytics";
 import { router as followRoute } from "./routes/follow";
 import fs from "fs";
-import { updateAnalyticTimer } from "./database/querys/analytics";
+import { updateAnalyticTimer } from "./database/queries/analytics";
 import { SquealerError } from "./util/errors";
 import { resetCharactersScheduler } from "./API/characters";
 

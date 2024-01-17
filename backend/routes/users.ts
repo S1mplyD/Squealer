@@ -23,9 +23,9 @@ import {
   unblockUser,
   updateProfilePicture,
   updateUser,
-} from "../database/querys/users";
+} from "../database/queries/users";
 import { non_existent, SquealerError } from "../util/errors";
-import { updateSquealsUsername } from "../database/querys/squeals";
+import { updateSquealsUsername } from "../database/queries/squeals";
 
 export const router = express.Router();
 /**

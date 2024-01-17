@@ -2,7 +2,7 @@ import express from "express";
 import {
   getNotifications,
   setNotificationRead,
-} from "../database/querys/notification";
+} from "../database/queries/notification";
 import { Notification, User } from "../util/types";
 export const router = express.Router();
 
@@ -15,7 +15,7 @@ router
         (req.user as User).status != "block")
     ) {
       const notification: Notification[] = await getNotifications(
-        req.user as User
+        req.user as User,
       );
       res.status(200).send(notification);
     } else res.sendStatus(401);
