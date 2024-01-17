@@ -1,14 +1,3 @@
-//   code: ErrorCodes;
-// }
-// export class MyError extends Error {
-//   message: string;
-//   code: number;
-//   constructor(message: string, code: number) {
-//     super(message);
-//     this.code = code;
-//   }
-// }
-
 export class SquealerError {
   message: ErrorDescriptions;
   code: ErrorCodes;
@@ -41,13 +30,13 @@ export enum ErrorDescriptions {
   no_timers = "No timer found!",
   cannot_delete = "Cannot delete!",
   not_supported = "File format not supported!",
-  not_recived = "Nothing has been recived, check post request!",
+  not_received = "Nothing has been received, check post request!",
   not_valid = "Not valid",
   unauthorized = "You don't have enough permissions to perform this action!",
   cannot_send = "Cannot send email!",
   no_characters = "Not enough characters",
   cannot_get_location = "Cannot get location",
-  browser_not_supported = "Browser is not supportes",
+  browser_not_supported = "Browser is not supported",
   cannot_login = "Cannot login",
 }
 
@@ -90,7 +79,7 @@ export const not_supported = new SquealerError(
 );
 
 export const not_recived = new SquealerError(
-  ErrorDescriptions.not_recived,
+  ErrorDescriptions.not_received,
   ErrorCodes.not_recived,
 );
 
