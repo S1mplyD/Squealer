@@ -106,7 +106,7 @@ router
           res.status(200).send(update);
         } else {
           if ((req.user as User)._id === req.query.id) {
-            const update: SquealerError | User = await updateUser(
+            const update: User = await updateUser(
               req.query.username as string,
               req.body,
             );
