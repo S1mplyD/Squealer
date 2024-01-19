@@ -36,7 +36,7 @@ export async function createNotification(
       }
       return updated;
     }
-  } else throw cannot_create;
+  } else throw new Error("Cannot create notification");
 }
 
 /**

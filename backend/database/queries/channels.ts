@@ -132,7 +132,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) throw cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   } else if (type === "officialchannel" && user.plan === "admin") {
     const newChannel = await channelsModel.create({
@@ -142,7 +142,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) throw cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   } else {
     const newChannel = await channelsModel.create({
@@ -152,7 +152,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) throw cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   }
 }

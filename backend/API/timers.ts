@@ -15,16 +15,20 @@ let intervals: Array<Interval> = [];
  * funzione che attiva tutti i timer (da usare all'avvio del server)
  */
 export async function startAllTimer() {
-  console.log("[STARTING TIMERS...]");
-  const squeals: Squeal[] = await getAllTimedSqueals();
-  for (let i of squeals) {
-    if (i.originalSqueal == "") await startTimer(i);
+  try {
+    console.log("[STARTING TIMERS...]");
+    const squeals: Squeal[] = await getAllTimedSqueals();
+    for (let i of squeals) {
+      if (i.originalSqueal == "") await startTimer(i);
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
 /**
  * funzione che inizializza un timer per uno squeal automatizzato
- * @param squeal lo squeal da postare
+ * @param s_squeal lo squeal da postare
  * @returns no_timers | Success | Error
  */
 export async function startTimer(s_squeal: Squeal) {
@@ -35,9 +39,7 @@ export async function startTimer(s_squeal: Squeal) {
   } else {
     interval = setInterval(async () => {
       const newSqueal: Squeal = await getTimedSqueal(s_squeal._id);
-      const user: SquealerError | User = await getUserByUsername(
-        newSqueal.author,
-      );
+      const user: User = await getUserByUsername(newSqueal.author);
       let squeal: Squeal = {
         body: newSqueal.body,
         lat: newSqueal.lat,
@@ -95,7 +97,6 @@ export async function setSquealInterval(timeout: NodeJS.Timeout, id: string) {
     id: id,
   };
   intervals.push(newInterval);
-  console.log(newInterval.timeout);
 
   if (intervals.length > len) {
     return created;

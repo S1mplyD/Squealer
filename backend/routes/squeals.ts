@@ -99,11 +99,11 @@ router
       ) {
         switch (req.body.type) {
           case "timed":
-            const newSqueal: SquealerError | Squeal | null = await postSqueal(
+            const newSqueal: Squeal | undefined = await postSqueal(
               req.body,
               req.user as User,
             );
-            if (newSqueal instanceof SquealerError) res.sendStatus(404);
+            if (!newSqueal) res.sendStatus(404);
             else if (newSqueal) {
               const ret: SquealerError | Error | Success = await startTimer(
                 newSqueal,
@@ -115,11 +115,9 @@ router
             }
             break;
           default:
-            const post = await postSqueal(req.body, req.user as User);
-            const squeals: SquealerError | Squeal[] | null =
-              await getAllSqueals();
-            if (post instanceof SquealerError) res.status(500).send(squeals);
-            else res.status(201).send(squeals);
+            await postSqueal(req.body, req.user as User);
+            const squeals: Squeal[] = await getAllSqueals();
+            res.status(201).send(squeals);
             break;
         }
       } else res.sendStatus(401);

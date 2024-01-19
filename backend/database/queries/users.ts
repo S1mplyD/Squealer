@@ -27,14 +27,10 @@ export async function getAllUsers() {
 
 export async function getManagedUsers(username: string): Promise<User[]> {
   let managedUsers: User[] = [];
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (!(user instanceof SquealerError)) {
-    for (let i of user.managedAccounts) {
-      const managedUser: User | SquealerError = await getUser(i);
-      if (!(managedUser instanceof SquealerError)) {
-        managedUsers.push(managedUser);
-      }
-    }
+  const user: User = await getUserByUsername(username);
+  for (let i of user.managedAccounts) {
+    const managedUser: User = await getUser(i);
+    managedUsers.push(managedUser);
   }
   return managedUsers;
 }
@@ -162,7 +158,7 @@ export async function updateProfilePicture(username: string, filename: string) {
 
 /**
  * funzione che elimina la foto profilo dell'utente
- * @param id id dell'utente
+ * @param username username dell'utente
  */
 export async function deleteProfilePicture(username: string) {
   const user: User | null = await userModel.findOne({ username: username });
@@ -251,8 +247,8 @@ export async function updatePassword(mail: string, password: string) {
 
 /**
  * funzione che fornisce i permessi da admin ad un utente
- * @param userId {Id} id dell'utente
- * @returns SquealerError | Success
+ * @param userId id dell'utente
+ * @returns Success
  */
 export async function grantPermissions(userId: string) {
   const update = await userModel.updateOne({ _id: userId }, { plan: "admin" });
@@ -262,7 +258,7 @@ export async function grantPermissions(userId: string) {
 
 /**
  * funzione che revoca i permessi da admin ad un utente
- * @param userId {Id} id dell'utente
+ * @param userId id dell'utente
  * @returns SquealerError | Success
  */
 export async function revokePermissions(userId: string) {

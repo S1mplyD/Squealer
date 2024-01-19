@@ -191,7 +191,8 @@ export async function postResponse(
   originalSquealId: string,
   user: User,
 ) {
-  const newSqueal: Squeal = await postSqueal(squeal, user);
+  const newSqueal: Squeal | undefined = await postSqueal(squeal, user);
+  if (!newSqueal) throw cannot_create;
   await squealModel.updateOne(
     { _id: originalSquealId },
     { $push: { responses: newSqueal._id } },
@@ -213,99 +214,104 @@ export async function postResponse(
  * @param user utente che posta lo squeal
  * @returns eventuali errori
  */
-export async function postSqueal(squeal: Squeal, user: User): Promise<Squeal> {
-  const channels: null | Channel[] = await channelsModel.find({
-    name: { $in: squeal.channels },
-  });
-  let rec: string[] = [];
-  if (!(channels.length > 0)) {
-    for (let i of squeal.channels) {
-      await createChannel(i.substring(1), await checkChannelType(i), user);
-    }
-  }
-  if (squeal.recipients && squeal.recipients.length > 0) {
-    for (let i of squeal.recipients) {
-      rec.push(i.replace(" ", ""));
-    }
-  }
-  let newSqueal: Squeal | null;
-  if (squeal.body && user.dailyCharacters >= squeal.body.length) {
-    newSqueal = await squealModel.create({
-      body: squeal.body,
-      lat: squeal.lat,
-      lng: squeal.lng,
-      locationName: squeal.locationName,
-      recipients: rec,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-      author: user.username,
-      type: squeal.type,
-      time: squeal.time,
-      positiveReactions: [],
-      negativeReactions: [],
-      originalSqueal: squeal.originalSqueal,
+export async function postSqueal(squeal: Squeal, user: User) {
+  try {
+    console.log(squeal);
+    const channels: null | Channel[] = await channelsModel.find({
+      name: { $in: squeal.channels },
     });
-    const characters: SquealerError | Success = await updateDailyCharacters(
-      user._id,
-      newSqueal.body!.length,
-    );
-    if (characters instanceof SquealerError) {
-      await squealModel.deleteOne({ _id: newSqueal._id });
-      throw cannot_update;
+    let rec: string[] = [];
+    if (!(channels.length > 0)) {
+      for (let i of squeal.channels) {
+        await createChannel(i.substring(1), await checkChannelType(i), user);
+      }
     }
-  } else if (
-    !squeal.body &&
-    (squeal.type === "media" || squeal.type === "geo") &&
-    user.dailyCharacters >= 125
-  ) {
-    newSqueal = await squealModel.create({
-      body: squeal.body,
-      lat: squeal.lat,
-      lng: squeal.lng,
-      locationName: squeal.locationName,
-      recipients: rec,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-      author: user.username,
-      type: squeal.type,
-      time: squeal.time,
-      positiveReactions: [],
-      negativeReactions: [],
-      originalSqueal: squeal.originalSqueal,
-    });
-    const characters: SquealerError | Success = await updateDailyCharacters(
-      user._id,
-      125,
-    );
-    if (characters instanceof SquealerError) {
-      await squealModel.deleteOne({ _id: newSqueal._id });
-      throw cannot_update;
+    if (squeal.recipients && squeal.recipients.length > 0) {
+      for (let i of squeal.recipients) {
+        rec.push(i.replace(" ", ""));
+      }
     }
-  } else throw cannot_create;
+    let newSqueal: Squeal | null;
+    if (squeal.body && user.dailyCharacters >= squeal.body.length) {
+      newSqueal = await squealModel.create({
+        body: squeal.body,
+        lat: squeal.lat,
+        lng: squeal.lng,
+        locationName: squeal.locationName,
+        recipients: rec,
+        date: new Date(),
+        category: squeal.category,
+        channels: squeal.channels,
+        author: user.username,
+        type: squeal.type,
+        time: squeal.time ? squeal.time * 1000 * 60 : squeal.time,
+        positiveReactions: [],
+        negativeReactions: [],
+        originalSqueal: squeal.originalSqueal,
+      });
+      const characters: SquealerError | Success = await updateDailyCharacters(
+        user._id,
+        newSqueal.body!.length,
+      );
+      if (characters instanceof SquealerError) {
+        await squealModel.deleteOne({ _id: newSqueal._id });
+        throw cannot_update;
+      }
+    } else if (
+      !squeal.body &&
+      (squeal.type === "media" || squeal.type === "geo") &&
+      user.dailyCharacters >= 125
+    ) {
+      newSqueal = await squealModel.create({
+        body: squeal.body,
+        lat: squeal.lat,
+        lng: squeal.lng,
+        locationName: squeal.locationName,
+        recipients: rec,
+        date: new Date(),
+        category: squeal.category,
+        channels: squeal.channels,
+        author: user.username,
+        type: squeal.type,
+        time: squeal.time ? squeal.time * 1000 * 60 : squeal.time,
+        positiveReactions: [],
+        negativeReactions: [],
+        originalSqueal: squeal.originalSqueal,
+      });
+      const characters: SquealerError | Success = await updateDailyCharacters(
+        user._id,
+        125,
+      );
+      if (characters instanceof SquealerError) {
+        await squealModel.deleteOne({ _id: newSqueal._id });
+        throw cannot_update;
+      }
+    } else throw cannot_create;
 
-  if (newSqueal.channels.length > 0) {
-    for (let i of newSqueal.channels) {
-      for (let j of channels) {
-        if (i === j.name) {
-          const id: string = newSqueal._id;
-          await addSquealToChannel(j.name, id, user);
+    if (newSqueal.channels.length > 0) {
+      for (let i of newSqueal.channels) {
+        for (let j of channels) {
+          if (i === j.name) {
+            const id: string = newSqueal._id;
+            await addSquealToChannel(j.name, id, user);
+          }
         }
       }
     }
-  }
-  if (newSqueal.recipients && newSqueal.recipients.length > 0) {
-    for (let i of newSqueal.recipients) {
-      await createNotification(
-        i.includes("@")
-          ? `You have a new message from ${newSqueal.author}`
-          : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
-        i,
-      );
+    if (newSqueal.recipients && newSqueal.recipients.length > 0) {
+      for (let i of newSqueal.recipients) {
+        await createNotification(
+          i.includes("@")
+            ? `You have a new message from ${newSqueal.author}`
+            : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
+          i,
+        );
+      }
     }
+    return newSqueal;
+  } catch (e) {
+    console.log(e);
   }
-  return newSqueal;
 }
 
 /**
@@ -518,7 +524,8 @@ export async function postSquealAsUser(
 ) {
   const user: User = await getUserByUsername(username);
   if (user.SMM == smm) {
-    const newSqueal: Squeal = await postSqueal(squeal, user);
+    const newSqueal: Squeal | undefined = await postSqueal(squeal, user);
+    if (!newSqueal) throw cannot_create;
     return newSqueal;
   } else throw unauthorized;
 }
