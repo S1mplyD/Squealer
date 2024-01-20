@@ -2,6 +2,7 @@ const getAll = async () => {
   const response = await axios.get("/api/channels/official");
   return response.data;
 };
+
 const createOfficiaChannelsTable = async () => {
   const me = await getMe();
   if (me.status !== 404 && me.data.plan === "admin") {
@@ -11,30 +12,7 @@ const createOfficiaChannelsTable = async () => {
       "<table id='table'>" +
       "<tr><th>Expand</th><th>Id</th><th>Name</th><th>Squeals</th><th>Channel admins</th><th>Allowed Read</th><th>Allowed Write</th></tr>" +
       "</table>";
-    for (let i of channels) {
-      newMain.innerHTML +=
-        "<tr>" +
-        "<td>> </td>" +
-        "<td>" +
-        i.id +
-        "</td>" +
-        "<td>" +
-        i.name +
-        "</td>" +
-        "<td>" +
-        i.squeals.length +
-        "</td>" +
-        "<td>" +
-        i.channelAdmins.length +
-        "</td>" +
-        "<td>" +
-        i.allowedRead.length +
-        "</td>" +
-        "<td>" +
-        i.allowedWrite.length +
-        "</td>" +
-        "</tr>";
-    }
+    fillTable(channels);
   } else {
     await createLoginForm("squealmain");
   }
@@ -82,4 +60,31 @@ const updateChannelSqueals = async (channelName, squeals) => {
     squeals.replaceAll(" ", "").split(","),
   );
   return response.data;
+};
+
+const fillTable = (items) => {
+  for (let i of items) {
+    newMain.innerHTML +=
+      "<tr>" +
+      "<td>> </td>" +
+      "<td>" +
+      i.id +
+      "</td>" +
+      "<td>" +
+      i.name +
+      "</td>" +
+      "<td>" +
+      i.squeals.length +
+      "</td>" +
+      "<td>" +
+      i.channelAdmins.length +
+      "</td>" +
+      "<td>" +
+      i.allowedRead.length +
+      "</td>" +
+      "<td>" +
+      i.allowedWrite.length +
+      "</td>" +
+      "</tr>";
+  }
 };
