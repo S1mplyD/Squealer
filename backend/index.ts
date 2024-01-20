@@ -14,9 +14,9 @@ import { router as userRoute } from "./routes/users";
 import { router as analyticsRoute } from "./routes/analytics";
 import { router as followRoute } from "./routes/follow";
 import fs from "fs";
-import { updateAnalyticTimer } from "./database/querys/analytics";
-import { SquealerError } from "./util/errors";
+import { updateAnalyticTimer } from "./database/queries/analytics";
 import { resetCharactersScheduler } from "./API/characters";
+import { deleteAutoSqueals } from "./fix";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -74,7 +74,7 @@ app.use("/test", express.static(path.join(__dirname, "../test")));
 
 //SMM dashboard
 // Funzione che ricarica il file statico della pagina corrente
-app.get("/smm/*", (req, res) => {
+app.get("/smm/*", (_, res) => {
   res.sendFile(path.join(__dirname, "../smm_dashboard/dist/index.html"));
 });
 
@@ -84,7 +84,7 @@ app.use(
   express.static(path.join(__dirname, "../frontend/squealer-bo")),
 );
 
-app.get("/*", (req, res) => {
+app.get("/*", (_, res) => {
   res.sendFile(
     path.join(__dirname, "../frontend/squealer-fo/dist/squealer-fo/index.html"),
   );
@@ -93,8 +93,7 @@ app.get("/*", (req, res) => {
 mongoose.set("strictQuery", false);
 mongoose.connect(uri).then(async () => {
   console.log("[CONNECTED TO MONGOOSE]");
-  const ret: SquealerError | undefined = await startAllTimer();
-  console.log(ret);
+  await startAllTimer();
   await updateAnalyticTimer();
   await resetCharactersScheduler();
 });

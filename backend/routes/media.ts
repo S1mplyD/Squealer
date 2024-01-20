@@ -49,6 +49,6 @@ router.route("/").post(upload.single("file"), (req, res) => {
       res.sendStatus(401);
     }
   } catch (error: any) {
-    console.log(error);
+    res.status(500).send(error);
   }
 });

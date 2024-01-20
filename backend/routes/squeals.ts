@@ -1,32 +1,34 @@
 import {
-  getAllSqueals,
-  getSquealsByRecipients,
-  getAllUserSqueals,
-  getAllGeoSqueals,
-  getTextSqueals,
-  getAllMediaSqueals,
-  getAllTimedSqueals,
-  getAutoSqueals,
-  postSqueal,
-  getTimedSqueal,
-  deleteTimedSqueal,
-  getMediaSqueal,
-  deleteMediaSqueal,
-  getSquealById,
-  deleteSqueal,
-  editReaction,
-  addPositiveReaction,
   addNegativeReaction,
-  postSquealAsUser,
-  postResponse,
+  addPositiveReaction,
+  deleteMediaSqueal,
+  deleteSqueal,
+  deleteTimedSqueal,
+  editReaction,
+  getAllGeoSqueals,
+  getAllMediaSqueals,
+  getAllSqueals,
+  getAllTimedSqueals,
+  getAllUserSqueals,
+  getAutoSqueals,
+  getMediaSqueal,
+  getSquealById,
   getSquealResponses,
+  getSquealsByRecipients,
+  getTextSqueals,
+  getTimedSqueal,
+  postResponse,
+  postSqueal,
+  postSquealAsUser,
   updateSquealRecipients,
-} from "../database/querys/squeals";
-import express from "express";
+} from "../database/queries/squeals";
+import express, {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import { Squeal, Success, User } from "../util/types";
 import { SquealerError } from "../util/errors";
 import { startTimer } from "../API/timers";
-import { changeUserPlan } from "../database/querys/users";
 
 export const router = express.Router();
 
@@ -38,61 +40,57 @@ router
    * GET
    * Ritorna tutti gli squeal
    */
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const squeals: SquealerError | Squeal[] = await getAllSqueals();
-        if (squeals instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(squeals);
+        const squeals: Squeal[] = await getAllSqueals();
+        res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   });
 
-router.route("/type/:type").get(async (req, res) => {
-  try {
-    if (!req.user || (req.user as User).status !== "ban") {
-      switch (req.params.type) {
-        case "geo":
-          const squealsGeo: Squeal[] | SquealerError = await getAllGeoSqueals();
-          if (squealsGeo instanceof SquealerError) res.sendStatus(404);
-          else res.status(200).send(squealsGeo);
-          break;
-        case "timed":
-          const squealsTimed: Squeal[] | SquealerError =
-            await getAllTimedSqueals();
-          if (squealsTimed instanceof SquealerError) res.sendStatus(404);
-          else res.status(200).send(squealsTimed);
-          break;
-        case "media":
-          const squealsMedia: Squeal[] | SquealerError =
-            await getAllMediaSqueals();
-          if (squealsMedia instanceof SquealerError) res.sendStatus(404);
-          else res.status(200).send(squealsMedia);
-          break;
-
-        case "text":
-          const squealsText: Squeal[] | SquealerError = await getTextSqueals();
-          if (squealsText instanceof SquealerError) res.sendStatus(404);
-          else res.status(200).send(squealsText);
-          break;
-        case "auto":
-          const squealsAuto: Squeal[] | SquealerError = await getAutoSqueals();
-          if (squealsAuto instanceof SquealerError) res.sendStatus(404);
-          else res.status(200).send(squealsAuto);
-          break;
-        default:
-          break;
-      }
-    } else res.sendStatus(401);
-  } catch (error: any) {
-    console.log(error);
-  }
-});
+router
+  .route("/type/:type")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (!req.user || (req.user as User).status !== "ban") {
+        switch (req.params.type) {
+          case "geo":
+            const squealsGeo: Squeal[] = await getAllGeoSqueals();
+            res.status(200).send(squealsGeo);
+            break;
+          case "timed":
+            const squealsTimed: Squeal[] = await getAllTimedSqueals();
+            res.status(200).send(squealsTimed);
+            break;
+          case "media":
+            const squealsMedia: Squeal[] = await getAllMediaSqueals();
+            res.status(200).send(squealsMedia);
+            break;
+          case "text":
+            const squealsText: Squeal[] = await getTextSqueals();
+            res.status(200).send(squealsText);
+            break;
+          case "auto":
+            const squealsAuto: Squeal[] = await getAutoSqueals();
+            res.status(200).send(squealsAuto);
+            break;
+          default:
+            break;
+        }
+      } else res.sendStatus(401);
+    } catch (error: any) {
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
+    }
+  });
 router
   .route("/type")
-  .post(async (req, res) => {
+  //TODO fix
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         req.user &&
@@ -101,33 +99,35 @@ router
       ) {
         switch (req.body.type) {
           case "timed":
-            const newSqueal: Squeal | SquealerError = await postSqueal(
+            const newSqueal: Squeal | undefined = await postSqueal(
               req.body,
               req.user as User,
             );
-            if (newSqueal instanceof SquealerError) res.sendStatus(404);
-            else {
+            if (!newSqueal) res.sendStatus(404);
+            else if (newSqueal) {
               const ret: SquealerError | Error | Success = await startTimer(
                 newSqueal,
               );
-              const squeals: Squeal[] | SquealerError = await getAllSqueals();
+              const squeals: SquealerError | Squeal[] | null =
+                await getAllSqueals();
               if (ret instanceof SquealerError) res.sendStatus(404);
               res.status(201).send(squeals);
             }
             break;
           default:
-            const post = await postSqueal(req.body, req.user as User);
-            const squeals: Squeal[] | SquealerError = await getAllSqueals();
-            if (post instanceof SquealerError) res.status(500).send(squeals);
-            else res.status(201).send(squeals);
+            await postSqueal(req.body, req.user as User);
+            const squeals: Squeal[] = await getAllSqueals();
+            res.status(201).send(squeals);
             break;
         }
       } else res.sendStatus(401);
     } catch (error: any) {
       console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   })
-  .delete(async (req, res) => {
+  .delete(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       const squeal: Squeal | SquealerError = await getSquealById(
         req.query.id as string,
@@ -147,7 +147,8 @@ router
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
-                const squeals: Squeal[] | SquealerError = await getAllSqueals();
+                const squeals: SquealerError | Squeal[] | null =
+                  await getAllSqueals();
                 res.status(200).send(squeals);
               }
             }
@@ -163,7 +164,8 @@ router
               );
               if (ret instanceof SquealerError) res.sendStatus(500);
               else {
-                const squeals: Squeal[] | SquealerError = await getAllSqueals();
+                const squeals: SquealerError | Squeal[] | null =
+                  await getAllSqueals();
                 res.status(200).send(squeals);
               }
             }
@@ -174,7 +176,8 @@ router
             );
             if (ret instanceof SquealerError) res.sendStatus(500);
             else {
-              const squeals: Squeal[] | SquealerError = await getAllSqueals();
+              const squeals: SquealerError | Squeal[] | null =
+                await getAllSqueals();
               res.status(200).send(squeals);
             }
             break;
@@ -188,14 +191,9 @@ router
                 (squeal as Squeal).author as string,
               )
             ) {
-              const ret: SquealerError | Success = await deleteTimedSqueal(
-                squeal as Squeal,
-              );
-              if (ret instanceof SquealerError) res.sendStatus(500);
-              else {
-                const squeals: Squeal[] | SquealerError = await getAllSqueals();
-                res.status(200).send(squeals);
-              }
+              await deleteTimedSqueal(squeal as Squeal);
+              const squeals: Squeal[] = await getAllSqueals();
+              res.status(200).send(squeals);
             }
 
             break;
@@ -206,16 +204,10 @@ router
                 (squeal as Squeal).author as string,
               )
             ) {
-              const ret: SquealerError | Success = await deleteMediaSqueal(
-                squeal as Squeal,
-              );
-              if (ret instanceof SquealerError) res.sendStatus(500);
-              else {
-                const squeals: Squeal[] | SquealerError = await getAllSqueals();
-                res.status(200).send(squeals);
-              }
+              await deleteMediaSqueal(squeal as Squeal);
+              const squeals: Squeal[] = await getAllSqueals();
+              res.status(200).send(squeals);
             }
-
             break;
           default:
             if (
@@ -224,21 +216,17 @@ router
                 (squeal as Squeal).author as string,
               )
             ) {
-              const ret: SquealerError | Success = await deleteSqueal(
-                req.query.id as string,
-              );
-              if (ret instanceof SquealerError) res.sendStatus(500);
-              else {
-                const squeals: Squeal[] | SquealerError = await getAllSqueals();
-                res.status(200).send(squeals);
-              }
+              const ret: Success = await deleteSqueal(req.query.id as string);
+              const squeals: Squeal[] = await getAllSqueals();
+              res.status(200).send(squeals);
             }
-
             break;
         }
       }
     } catch (error: any) {
       console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   });
 
@@ -248,17 +236,18 @@ router
    * GET
    * chiamata che ritorna tutti gli squeals pubblicati da un utente
    */
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
         const squeals: SquealerError | Squeal[] = await getAllUserSqueals(
           req.params.username,
         );
-        if (squeals instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(squeals);
+        res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error) {
       console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   });
 
@@ -268,169 +257,173 @@ router
    * GET
    * ritorna tutti gli squeal appartenenti ai recipients ricercati
    */
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const squeals: Squeal[] | SquealerError = await getSquealsByRecipients(
+        const squeals: Squeal[] = await getSquealsByRecipients(
           req.query.recipient as string,
         );
-        if (squeals instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(squeals);
+        res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error: any) {
       console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   });
 
-router.route("/recipients/:id").post(async (req, res) => {
-  try {
-    if (req.user && (req.user as User).plan === "admin") {
-      await updateSquealRecipients(req.params.id, req.body.recipients);
-      res.sendStatus(200);
-    } else res.sendStatus(401);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
+router
+  .route("/recipients/:id")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        await updateSquealRecipients(req.params.id, req.body.recipients);
+        res.sendStatus(200);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
 router
   .route("/reactions")
   /**
    *GET
    * permette ad un amministratore di modificare le reazioni ad uno squeal
    */
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await editReaction(
+        const update: Success = await editReaction(
           req.body.squealid,
           req.body.positiveReactions,
           req.body.negativeReactions,
         );
-        if (update instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        res.sendStatus(200);
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   });
 
-router.route("/positiveReactions").post(async (req, res) => {
-  try {
-    if (
-      !req.user ||
-      (req.user as User).status !== "ban" ||
-      (req.user as User).status !== "block"
-    ) {
-      const update: SquealerError | Success | undefined =
-        await addPositiveReaction(
+router
+  .route("/positiveReactions")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        !req.user ||
+        (req.user as User).status !== "ban" ||
+        (req.user as User).status !== "block"
+      ) {
+        const update: Success = await addPositiveReaction(
           req.query.squealId as string,
           (req.user as User)?._id,
         );
-      if (!(update instanceof SquealerError) && update !== undefined)
         res.sendStatus(200);
-      else res.sendStatus(500);
+      }
+    } catch (error) {
+      console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-});
+  });
 
-router.route("/negativeReactions").post(async (req, res) => {
-  try {
-    if (
-      !req.user ||
-      (req.user as User).status !== "ban" ||
-      (req.user as User).status !== "block"
-    ) {
-      const update: SquealerError | Success | undefined =
-        await addNegativeReaction(
+router
+  .route("/negativeReactions")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        !req.user ||
+        (req.user as User).status !== "ban" ||
+        (req.user as User).status !== "block"
+      ) {
+        const update: Success = await addNegativeReaction(
           req.query.squealId as string,
           (req.user as User)?._id,
         );
-      if (!(update instanceof SquealerError) && update !== undefined)
         res.sendStatus(200);
-      else res.sendStatus(500);
-    } else res.sendStatus(401);
-  } catch (error) {
-    console.log(error);
-  }
-});
+      } else res.sendStatus(401);
+    } catch (error) {
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
+      console.log(error);
+    }
+  });
 
-router.route("/smm/:username").post(async (req, res) => {
-  try {
-    if (
-      (req.user as User).status !== "ban" &&
-      (req.user as User).status !== "block"
-    ) {
-      const newSqueal: Squeal | SquealerError | undefined =
-        await postSquealAsUser(
+router
+  .route("/smm/:username")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        (req.user as User).status !== "ban" &&
+        (req.user as User).status !== "block"
+      ) {
+        const newSqueal: Squeal = await postSquealAsUser(
           req.params.username,
           (req.user as User).username,
           req.body,
         );
-      if (!newSqueal) res.sendStatus(500);
-      else if (newSqueal instanceof SquealerError)
-        res.status(500).send(newSqueal);
-      else res.status(201).send(newSqueal);
-    } else res.sendStatus(401);
-  } catch (error) {
-    console.log(error);
-  }
-});
+        res.status(201).send(newSqueal);
+      } else res.sendStatus(401);
+    } catch (error) {
+      console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
+    }
+  });
 
 /**
  * POST
  */
 router
   .route("/response/:id")
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         !req.user ||
         ((req.user as User).status !== "ban" &&
           (req.user as User).status !== "ban")
       ) {
-        const responses: Squeal[] | SquealerError | null =
-          await getSquealResponses(req.params.id);
-        if (responses instanceof SquealerError) res.sendStatus(500);
-        else if (!responses) res.sendStatus(404);
-        else res.status(200).send(responses);
+        const responses: Squeal[] = await getSquealResponses(req.params.id);
+        res.status(200).send(responses);
       } else res.sendStatus(401);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   })
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         (req.user as User).status !== "ban" &&
         (req.user as User).status !== "block"
       ) {
-        const newSqueal: Squeal | SquealerError = await postResponse(
+        const newSqueal: Squeal = await postResponse(
           req.body,
           req.params.id,
           req.user as User,
         );
-        if (newSqueal instanceof SquealerError) res.sendStatus(500);
-        else res.status(201).send(newSqueal);
+        res.status(201).send(newSqueal);
       } else res.sendStatus(401);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      res.status(500).send(error);
     }
   });
 
-router.route("/squeal/:id").get(async (req, res) => {
-  try {
-    if (
-      !req.user ||
-      ((req.user as User).status !== "ban" &&
-        (req.user as User).status !== "ban")
-    ) {
-      const squeal: Squeal | SquealerError = await getSquealById(req.params.id);
-      if (squeal instanceof SquealerError) res.sendStatus(404);
-      else res.status(200).send(squeal);
-    } else res.sendStatus(401);
-  } catch (e) {
-    console.log(e);
-  }
-});
+router
+  .route("/squeal/:id")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        !req.user ||
+        ((req.user as User).status !== "ban" &&
+          (req.user as User).status !== "ban")
+      ) {
+        const squeal: Squeal = await getSquealById(req.params.id);
+        res.status(200).send(squeal);
+      } else res.sendStatus(401);
+    } catch (error) {
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
+    }
+  });

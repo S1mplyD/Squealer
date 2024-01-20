@@ -1,4 +1,7 @@
-import express from "express";
+import express, {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 import {
   getAllChannels,
   createChannel,
@@ -13,7 +16,7 @@ import {
   removeUserFromChannel,
   editOfficialChannel,
   updateOfficialSqueals,
-} from "../database/querys/channels";
+} from "../database/queries/channels";
 import { SquealerError, catchError } from "../util/errors";
 import { Channel, Squeal, Success, User } from "../util/types";
 import channelsModel from "../database/models/channels.model";
@@ -29,12 +32,12 @@ router
   .get(async (req, res) => {
     try {
       if (req.user && (req.user as User).status !== "ban") {
-        const channels: Channel[] | SquealerError = await getAllChannels();
-        if (channels instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(channels);
+        const channels: Channel[] = await getAllChannels();
+        res.status(200).send(channels);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      if (error instanceof SquealerError) res.status(404).send(error);
+      else res.status(500).send(error);
     }
   })
   /**
@@ -44,30 +47,28 @@ router
   .post(async (req, res) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const returnValue: SquealerError | Success = await createChannel(
+        const returnValue: Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
           req.user as User,
         );
-        if (returnValue instanceof SquealerError) res.sendStatus(500);
-        else res.status(201).send(returnValue);
+        res.status(201).send(returnValue);
       } else if (
         req.user &&
         ((req.user as User).status !== "ban" ||
           (req.user as User).status !== "block")
       ) {
-        const newChannel: SquealerError | Success = await createChannel(
+        const newChannel: Success = await createChannel(
           req.query.name as string,
           req.query.type as string,
           req.user as User,
         );
-        if (newChannel instanceof SquealerError) res.sendStatus(500);
         res.status(201).send(newChannel);
       } else {
         res.sendStatus(401);
       }
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   })
   /**
@@ -80,17 +81,16 @@ router
         (req.user as User).status !== "block" ||
         (req.user as User).status !== "ban"
       ) {
-        const returnValue: SquealerError | Success = await deleteChannel(
+        const returnValue: Success = await deleteChannel(
           req.query.name as string,
           req.user as User,
         );
-        if (returnValue instanceof SquealerError) res.sendStatus(500);
         res.status(200).send(returnValue);
       } else {
         res.sendStatus(401);
       }
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -103,14 +103,12 @@ router
   .get(async (req, res) => {
     try {
       if ((req.user as User).status !== "ban") {
-        const channel: Channel | SquealerError = await getChannel(
-          req.params.name,
-        );
-        if (channel instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(channel);
+        const channel: Channel = await getChannel(req.params.name);
+        res.status(200).send(channel);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) res.sendStatus(404);
+      else res.status(500).send(error);
     }
   });
 router
@@ -129,7 +127,7 @@ router
       } else if (!req.user) res.sendStatus(401);
       else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 router
@@ -138,23 +136,20 @@ router
    * POST
    * addUserToUserChannel
    */
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         (req.user as User).status !== "ban" ||
         (req.user as User).status !== "block"
       ) {
-        const retValue: SquealerError | Success = await addUserToUserChannel(
-          req.body.username,
-          req.body.channelName,
-        );
-        if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
+        await addUserToUserChannel(req.body.username, req.body.channelName);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error.code === 20) res.sendStatus(404);
+        else res.sendStatus(500);
+      }
     }
   });
 
@@ -170,17 +165,14 @@ router
         (req.user as User).status !== "ban" ||
         (req.user as User).status !== "block"
       ) {
-        const retValue: SquealerError | Success = await removeUserFromChannel(
-          req.body.username,
-          req.body.channelName,
-        );
-        if (retValue instanceof SquealerError) {
-          if (retValue.code === 20) res.sendStatus(404);
-          else res.sendStatus(500);
-        } else res.sendStatus(200);
+        await removeUserFromChannel(req.body.username, req.body.channelName);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error.code === 20) res.sendStatus(404);
+        else res.status(500).send(error);
+      }
     }
   });
 
@@ -243,15 +235,13 @@ router
    * getAllKeywordChannel
    */
   .get(async (req, res) => {
-    console.log(req.user);
-
     try {
       if ((req.user as User).status !== "ban") {
         const keywordChannel: Channel[] = await getAllKeywordChannel();
         res.status(200).send(keywordChannel);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -270,7 +260,7 @@ router
         res.status(200).send(mentionChannel);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -288,10 +278,10 @@ router
             req.query.name as string,
             (req.user as User)._id,
           );
-        if (squeals instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(squeals);
+        res.status(200).send(squeals);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) res.sendStatus(404);
+      else res.status(500).send(error);
     }
   });

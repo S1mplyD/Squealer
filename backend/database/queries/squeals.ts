@@ -7,6 +7,7 @@ import {
   non_existent,
   not_recived,
   SquealerError,
+  unauthorized,
 } from "../../util/errors";
 import { removed, updated } from "../../util/success";
 import {
@@ -26,52 +27,48 @@ const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
 
 /**
  * funzione che ritorna tutti gli squeals non temporizzati
- * @returns Squeal[] | non_existent
  */
-export async function getAllSqueals() {
+export async function getAllSqueals(): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel.find().sort({ date: -1 });
-  if (squeals.length < 1) return non_existent;
+  if (squeals.length < 1) throw non_existent;
   else return squeals;
 }
 
 /**
  * funzione che ritorna tutti gli squeals postati da un utente
  * @param username username dell'utente
- * @returns Squeal [] | non_existent
  */
-export async function getAllUserSqueals(username: string) {
+export async function getAllUserSqueals(username: string): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({ author: username })
     .sort({ date: -1 });
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 
 /**
  * funzione che ritorna tutti gli squeals temporizzati
- * @returns non_existent | TimedSqueal []
  */
-export async function getAllTimedSqueals() {
+export async function getAllTimedSqueals(): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({
-      type: "timed",
+      time: { $gt: 0 },
     })
     .sort({ date: -1 });
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 
 /**
  * funzione che ritorna tutti gli squeals temporizzati
- * @returns non_existent | TimedSqueal []
  */
-export async function getAllMediaSqueals() {
+export async function getAllMediaSqueals(): Promise<Squeal[]> {
   const squeals: Squeal[] | null = await squealModel
     .find({
       type: "media",
     })
     .sort({ date: -1 });
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 
@@ -84,7 +81,7 @@ export async function getTextSqueals() {
     .find({ type: "text" })
     .sort({ date: -1 });
 
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 
@@ -97,7 +94,7 @@ export async function getAllGeoSqueals() {
     .find({ type: "geo" })
     .sort({ date: -1 });
 
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 
@@ -110,7 +107,7 @@ export async function getAutoSqueals() {
     .find({ type: "auto" })
     .sort({ date: -1 });
 
-  if (!squeals) return non_existent;
+  if (!squeals) throw non_existent;
   else return squeals;
 }
 /**
@@ -120,7 +117,7 @@ export async function getAutoSqueals() {
  */
 export async function getSquealById(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({ _id: id });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -133,7 +130,7 @@ export async function getTextSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
     $and: [{ _id: id, type: "text" }],
   });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -144,9 +141,9 @@ export async function getTextSqueal(id: string) {
  */
 export async function getTimedSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
-    $and: [{ _id: id }, { type: "timed" }],
+    $and: [{ _id: id }, { time: { $gt: 0 } }],
   });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -159,7 +156,7 @@ export async function getAutoSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
     $and: [{ _id: id, type: "auto" }],
   });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -172,7 +169,7 @@ export async function getGeoSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
     $and: [{ _id: id, type: "geo" }],
   });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -185,7 +182,7 @@ export async function getMediaSqueal(id: string) {
   const squeal: Squeal | null = await squealModel.findOne({
     $and: [{ _id: id, type: "media" }],
   });
-  if (!squeal) return non_existent;
+  if (!squeal) throw non_existent;
   else return squeal;
 }
 
@@ -194,21 +191,20 @@ export async function postResponse(
   originalSquealId: string,
   user: User,
 ) {
-  const newSqueal: Squeal | SquealerError = await postSqueal(squeal, user);
-  if (!(newSqueal instanceof SquealerError)) {
-    await squealModel.updateOne(
-      { _id: originalSquealId },
-      { $push: { responses: newSqueal._id } },
-    );
-    await squealModel.updateOne(
-      {
-        _id: newSqueal._id,
-      },
-      {
-        originalSqueal: originalSquealId,
-      },
-    );
-  }
+  const newSqueal: Squeal | undefined = await postSqueal(squeal, user);
+  if (!newSqueal) throw cannot_create;
+  await squealModel.updateOne(
+    { _id: originalSquealId },
+    { $push: { responses: newSqueal._id } },
+  );
+  await squealModel.updateOne(
+    {
+      _id: newSqueal._id,
+    },
+    {
+      originalSqueal: originalSquealId,
+    },
+  );
   return newSqueal;
 }
 
@@ -219,98 +215,103 @@ export async function postResponse(
  * @returns eventuali errori
  */
 export async function postSqueal(squeal: Squeal, user: User) {
-  const channels: null | Channel[] = await channelsModel.find({
-    name: { $in: squeal.channels },
-  });
-  let rec: string[] = [];
-  if (!(channels.length > 0)) {
-    for (let i of squeal.channels) {
-      await createChannel(i.substring(1), await checkChannelType(i), user);
-    }
-  }
-  if (squeal.recipients && squeal.recipients.length > 0) {
-    for (let i of squeal.recipients) {
-      rec.push(i.replace(" ", ""));
-    }
-  }
-  let newSqueal: Squeal | null;
-  if (squeal.body && user.dailyCharacters >= squeal.body.length) {
-    newSqueal = await squealModel.create({
-      body: squeal.body,
-      lat: squeal.lat,
-      lng: squeal.lng,
-      locationName: squeal.locationName,
-      recipients: rec,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-      author: user.username,
-      type: squeal.type,
-      time: squeal.time,
-      positiveReactions: [],
-      negativeReactions: [],
-      originalSqueal: squeal.originalSqueal,
+  try {
+    console.log(squeal);
+    const channels: null | Channel[] = await channelsModel.find({
+      name: { $in: squeal.channels },
     });
-    const characters: SquealerError | Success = await updateDailyCharacters(
-      user._id,
-      newSqueal.body!.length,
-    );
-    if (characters instanceof SquealerError) {
-      await squealModel.deleteOne({ _id: newSqueal._id });
-      return cannot_update;
+    let rec: string[] = [];
+    if (!(channels.length > 0)) {
+      for (let i of squeal.channels) {
+        await createChannel(i.substring(1), await checkChannelType(i), user);
+      }
     }
-  } else if (
-    !squeal.body &&
-    (squeal.type === "media" || squeal.type === "geo") &&
-    user.dailyCharacters >= 125
-  ) {
-    newSqueal = await squealModel.create({
-      body: squeal.body,
-      lat: squeal.lat,
-      lng: squeal.lng,
-      locationName: squeal.locationName,
-      recipients: rec,
-      date: new Date(),
-      category: squeal.category,
-      channels: squeal.channels,
-      author: user.username,
-      type: squeal.type,
-      time: squeal.time,
-      positiveReactions: [],
-      negativeReactions: [],
-      originalSqueal: squeal.originalSqueal,
-    });
-    const characters: SquealerError | Success = await updateDailyCharacters(
-      user._id,
-      125,
-    );
-    if (characters instanceof SquealerError) {
-      await squealModel.deleteOne({ _id: newSqueal._id });
-      return cannot_update;
+    if (squeal.recipients && squeal.recipients.length > 0) {
+      for (let i of squeal.recipients) {
+        rec.push(i.replace(" ", ""));
+      }
     }
-  } else return cannot_create;
+    let newSqueal: Squeal | null;
+    if (squeal.body && user.dailyCharacters >= squeal.body.length) {
+      newSqueal = await squealModel.create({
+        body: squeal.body,
+        lat: squeal.lat,
+        lng: squeal.lng,
+        locationName: squeal.locationName,
+        recipients: rec,
+        date: new Date(),
+        category: squeal.category,
+        channels: squeal.channels,
+        author: user.username,
+        type: squeal.type,
+        time: squeal.time ? squeal.time * 1000 * 60 : squeal.time,
+        positiveReactions: [],
+        negativeReactions: [],
+        originalSqueal: squeal.originalSqueal,
+      });
+      const characters: SquealerError | Success = await updateDailyCharacters(
+        user._id,
+        newSqueal.body!.length,
+      );
+      if (characters instanceof SquealerError) {
+        await squealModel.deleteOne({ _id: newSqueal._id });
+        throw cannot_update;
+      }
+    } else if (
+      !squeal.body &&
+      (squeal.type === "media" || squeal.type === "geo") &&
+      user.dailyCharacters >= 125
+    ) {
+      newSqueal = await squealModel.create({
+        body: squeal.body,
+        lat: squeal.lat,
+        lng: squeal.lng,
+        locationName: squeal.locationName,
+        recipients: rec,
+        date: new Date(),
+        category: squeal.category,
+        channels: squeal.channels,
+        author: user.username,
+        type: squeal.type,
+        time: squeal.time ? squeal.time * 1000 * 60 : squeal.time,
+        positiveReactions: [],
+        negativeReactions: [],
+        originalSqueal: squeal.originalSqueal,
+      });
+      const characters: SquealerError | Success = await updateDailyCharacters(
+        user._id,
+        125,
+      );
+      if (characters instanceof SquealerError) {
+        await squealModel.deleteOne({ _id: newSqueal._id });
+        throw cannot_update;
+      }
+    } else throw cannot_create;
 
-  if (newSqueal.channels.length > 0) {
-    for (let i of newSqueal.channels) {
-      for (let j of channels) {
-        if (i === j.name) {
-          const id: string = newSqueal._id;
-          await addSquealToChannel(j.name, id, user);
+    if (newSqueal.channels.length > 0) {
+      for (let i of newSqueal.channels) {
+        for (let j of channels) {
+          if (i === j.name) {
+            const id: string = newSqueal._id;
+            await addSquealToChannel(j.name, id, user);
+          }
         }
       }
     }
-  }
-  if (newSqueal.recipients && newSqueal.recipients.length > 0) {
-    for (let i of newSqueal.recipients) {
-      await createNotification(
-        i.includes("@")
-          ? `You have a new message from ${newSqueal.author}`
-          : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
-        i,
-      );
+    if (newSqueal.recipients && newSqueal.recipients.length > 0) {
+      for (let i of newSqueal.recipients) {
+        await createNotification(
+          i.includes("@")
+            ? `You have a new message from ${newSqueal.author}`
+            : `A new message has been posted by ${newSqueal.author} in channel ${i}`,
+          i,
+        );
+      }
     }
+    return newSqueal;
+  } catch (e) {
+    console.log(e);
   }
-  return newSqueal;
 }
 
 /**
@@ -319,17 +320,16 @@ export async function postSqueal(squeal: Squeal, user: User) {
  * @returns errori eventuali
  */
 export async function deleteSqueal(id: string) {
-  const squeal: Squeal | SquealerError = await getSquealById(id);
-  if (squeal instanceof SquealerError) return non_existent;
+  const squeal: Squeal = await getSquealById(id);
   if (squeal.type === "media") {
-    const result: SquealerError | Success = await deleteMediaSqueal(squeal);
+    const result: Success = await deleteMediaSqueal(squeal);
     return result;
   } else if (squeal.type === "timed") {
-    const result: SquealerError | Success = await deleteTimedSqueal(squeal);
+    const result: Success = await deleteTimedSqueal(squeal);
     return result;
   } else {
     const deleted: any = await squealModel.deleteOne({ _id: id });
-    if (deleted.deletedCount < 1) return cannot_delete;
+    if (deleted.deletedCount < 1) throw cannot_delete;
     else return removed;
   }
 }
@@ -343,13 +343,13 @@ export async function deleteMediaSqueal(squeal: Squeal) {
   if (squeal.body) {
     fs.unlink(resolve(publicUploadPath, squeal.body), (err) => {
       if (err) {
-        return cannot_delete;
+        throw cannot_delete;
       }
     });
-    const deleted: any = await squealModel.deleteOne({ _id: squeal._id });
-    if (deleted.deletedCount < 1) return cannot_delete;
+    const deleted = await squealModel.deleteOne({ _id: squeal._id });
+    if (deleted.deletedCount < 1) throw cannot_delete;
     else return removed;
-  } else return not_recived;
+  } else throw not_recived;
 }
 
 /**
@@ -362,11 +362,11 @@ export async function deleteTimedSqueal(squeal: Squeal) {
   });
 
   if (!timedSqueal) {
-    return non_existent;
+    throw non_existent;
   } else {
     await stopTimer(squeal);
     const deleted = await squealModel.deleteOne({ _id: squeal._id });
-    if (deleted.deletedCount < 1) return cannot_delete;
+    if (deleted.deletedCount < 1) throw cannot_delete;
     else return removed;
   }
 }
@@ -376,10 +376,8 @@ export async function deleteTimedSqueal(squeal: Squeal) {
  * @param squeal  squeal da arrestare
  */
 export async function stopTimedSqueal(squeal: Squeal) {
-  const timedSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
-  if (!(timedSqueal instanceof SquealerError)) {
-    await stopTimer(timedSqueal);
-  }
+  const timedSqueal: Squeal = await getTimedSqueal(squeal._id);
+  await stopTimer(timedSqueal);
 }
 
 /**
@@ -387,10 +385,8 @@ export async function stopTimedSqueal(squeal: Squeal) {
  * @param squeal  squeal da far ripartire
  */
 export async function restartTimedSqueal(squeal: Squeal) {
-  const timedSqueal: Squeal | SquealerError = await getTimedSqueal(squeal._id);
-  if (!(timedSqueal instanceof SquealerError)) {
-    return await startTimer(timedSqueal);
-  }
+  const timedSqueal: Squeal = await getTimedSqueal(squeal._id);
+  return await startTimer(timedSqueal);
 }
 
 /**
@@ -399,7 +395,7 @@ export async function restartTimedSqueal(squeal: Squeal) {
  * @returns squeals appartenenti ai destinatari scelti
  */
 export async function getSquealsByRecipients(recipient: string) {
-  const squeals: Squeal[] | SquealerError = await squealModel.find({
+  const squeals: Squeal[] = await squealModel.find({
     recipients: recipient,
   });
   return squeals;
@@ -411,7 +407,7 @@ export async function getSquealsByRecipients(recipient: string) {
  * @returns squeals appartenenti al canale scelto
  */
 export async function getSquealsByChannel(channel: string) {
-  const squeals: Squeal[] | SquealerError = await squealModel.find({
+  const squeals: Squeal[] = await squealModel.find({
     channels: channel,
   });
   return squeals;
@@ -429,25 +425,25 @@ export async function editReaction(
       negativeReactions: negativeReactions,
     },
   );
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
-export async function addPositiveReaction(squealId: string, userId?: string) {
-  const squeal: Squeal | SquealerError = await getSquealById(squealId);
-  if (userId === undefined) {
+export async function addPositiveReaction(
+  squealId: string,
+  userId?: string,
+): Promise<Success> {
+  const squeal: Squeal = await getSquealById(squealId);
+  if (!userId) {
     const update = await squealModel.updateOne(
       { _id: squealId },
       {
         $push: { positiveReactions: "guest" },
       },
     );
-    if (update.modifiedCount < 1) return cannot_update;
+    if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else if (
-    !(squeal instanceof SquealerError) &&
-    squeal.negativeReactions?.includes(userId!)
-  ) {
+  } else if (squeal.negativeReactions?.includes(userId)) {
     const update = await squealModel.updateOne(
       { _id: squealId },
       {
@@ -455,40 +451,32 @@ export async function addPositiveReaction(squealId: string, userId?: string) {
         $push: { positiveReactions: userId },
       },
     );
-    if (update.modifiedCount < 1) return cannot_update;
+    if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else {
-    if (
-      !(squeal instanceof SquealerError) &&
-      !squeal.positiveReactions?.includes(userId)
-    ) {
-      const update = await squealModel.updateOne(
-        { _id: squealId },
-        {
-          $push: { positiveReactions: userId },
-        },
-      );
-      if (update.modifiedCount < 1) return cannot_update;
-      else return updated;
-    }
-  }
+  } else if (!squeal.positiveReactions?.includes(userId)) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { positiveReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) throw cannot_update;
+    else return updated;
+  } else throw cannot_update;
 }
 
 export async function addNegativeReaction(squealId: string, userId?: string) {
-  const squeal: Squeal | SquealerError = await getSquealById(squealId);
-  if (userId === undefined) {
+  const squeal: Squeal = await getSquealById(squealId);
+  if (!userId) {
     const update = await squealModel.updateOne(
       { _id: squealId },
       {
         $push: { negativeReactions: "guest" },
       },
     );
-    if (update.modifiedCount < 1) return cannot_update;
+    if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else if (
-    !(squeal instanceof SquealerError) &&
-    squeal.positiveReactions?.includes(userId)
-  ) {
+  } else if (squeal.positiveReactions?.includes(userId)) {
     const update = await squealModel.updateOne(
       { _id: squealId },
       {
@@ -496,35 +484,30 @@ export async function addNegativeReaction(squealId: string, userId?: string) {
         $pull: { positiveReactions: userId },
       },
     );
-    if (update.modifiedCount < 1) return cannot_update;
+    if (update.modifiedCount < 1) throw cannot_update;
     else return updated;
-  } else {
-    if (
-      !(squeal instanceof SquealerError) &&
-      !squeal.negativeReactions?.includes(userId)
-    ) {
-      const update = await squealModel.updateOne(
-        { _id: squealId },
-        {
-          $push: { negativeReactions: userId },
-        },
-      );
-      if (update.modifiedCount < 1) return cannot_update;
-      else return updated;
-    }
-  }
+  } else if (!squeal.negativeReactions?.includes(userId)) {
+    const update = await squealModel.updateOne(
+      { _id: squealId },
+      {
+        $push: { negativeReactions: userId },
+      },
+    );
+    if (update.modifiedCount < 1) throw cannot_update;
+    else return updated;
+  } else throw cannot_update;
 }
 
 export async function updateSquealsUsername(
   oldUsername: string,
   username: string,
-): Promise<Success | SquealerError> {
+): Promise<Success> {
   const update = await squealModel.updateMany(
     { author: oldUsername },
     { author: username },
   );
   if (update.modifiedCount > 0) return updated;
-  else return cannot_update;
+  else throw cannot_update;
 }
 
 /**
@@ -539,28 +522,24 @@ export async function postSquealAsUser(
   smm: string,
   squeal: Squeal,
 ) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (!(user instanceof SquealerError)) {
-    if (user.SMM == smm) {
-      const newSqueal: Squeal | SquealerError = await postSqueal(squeal, user);
-      return newSqueal;
-    }
-  } else return user;
+  const user: User = await getUserByUsername(username);
+  if (user.SMM == smm) {
+    const newSqueal: Squeal | undefined = await postSqueal(squeal, user);
+    if (!newSqueal) throw cannot_create;
+    return newSqueal;
+  } else throw unauthorized;
 }
 
 export async function getSquealResponses(id: string) {
-  const originalSqueal: Squeal | SquealerError = await getSquealById(id);
-  if (originalSqueal instanceof SquealerError) throw non_existent;
-  else if (originalSqueal.responses) {
-    let responses: Squeal[] = [];
+  const originalSqueal: Squeal = await getSquealById(id);
+  let responses: Squeal[] = [];
+  if (originalSqueal.responses) {
     for (let i of originalSqueal.responses) {
-      const squeal: Squeal | SquealerError = await getSquealById(i);
-      if (!(squeal instanceof SquealerError)) {
-        responses.push(squeal);
-      }
+      const squeal: Squeal = await getSquealById(i);
+      responses.push(squeal);
     }
-    return responses;
-  } else return null;
+  }
+  return responses;
 }
 
 export async function updateSquealRecipients(
@@ -572,6 +551,6 @@ export async function updateSquealRecipients(
     { recipients: recipients },
   );
   if (update.modifiedCount < 1) {
-    throw new Error("Cannot Update");
+    throw cannot_update;
   } else return updated;
 }

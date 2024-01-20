@@ -1,9 +1,9 @@
 import {
-  SquealerError,
   cannot_create,
   cannot_delete,
   cannot_update,
   non_existent,
+  not_valid,
   unauthorized,
 } from "../../util/errors";
 import { created, removed, updated } from "../../util/success";
@@ -20,7 +20,7 @@ import { UpdateWriteOpResult } from "mongoose";
 export async function getAllChannels() {
   const channels: Channel[] = await channelsModel.find();
   if (channels.length < 1) {
-    return non_existent;
+    throw non_existent;
   } else {
     return channels;
   }
@@ -33,7 +33,7 @@ export async function getAllChannels() {
  */
 export async function getChannel(name: string) {
   const channel: Channel | null = await channelsModel.findOne({ name: name });
-  if (!channel) return non_existent;
+  if (!channel) throw non_existent;
   else return channel;
 }
 
@@ -46,7 +46,7 @@ export async function getAllUserChannel(user: User) {
     type: "userchannel",
     allowedRead: user._id,
   });
-  if (!userChannels) return [];
+  if (!userChannels) throw non_existent;
   else return userChannels;
 }
 
@@ -58,8 +58,7 @@ export async function getAllOfficialChannel() {
   const channels: Channel[] | null = await channelsModel.find({
     type: "officialchannel",
   });
-  console.log(channels);
-  if (!channels) return [];
+  if (!channels) throw non_existent;
   else return channels;
 }
 
@@ -71,7 +70,7 @@ export async function getAllKeywordChannel() {
   const channels: Channel[] | null = await channelsModel.find({
     type: "keyword",
   });
-  if (!channels) return [];
+  if (!channels) throw non_existent;
   else return channels;
 }
 
@@ -85,13 +84,14 @@ export async function getAllMentionChannel(user: User) {
     allowedRead: user._id,
     allowedWrite: user._id,
   });
-  if (!channels) return [];
+  if (!channels) throw non_existent;
   else return channels;
 }
 
 /**
  * funzione che ritorna tutti gli squeal appartenenti ad un canale
  * @param channelName nome del canale
+ * @param userId id utente
  * @returns SquealerError | (Squeal | SquealGeo | SquealMedia
       | TimedSqueal
       | TimedSquealGeo
@@ -101,21 +101,15 @@ export async function getAllSquealsFromChannel(
   channelName: string,
   userId: string,
 ) {
-  const channel: Channel | SquealerError = await getChannel(channelName);
-  if (channel instanceof SquealerError) return non_existent;
-  else {
-    if (channel.allowedRead.includes(userId)) {
-      let squeals: Squeal[] = [];
-      for (let i of channel.squeals) {
-        const squeal: Squeal | SquealerError = await getSquealById(i);
-        if (squeal instanceof SquealerError) return non_existent;
-        else {
-          squeals.push(squeal);
-        }
-      }
-      return squeals;
-    } else return unauthorized;
-  }
+  const channel: Channel = await getChannel(channelName);
+  if (channel.allowedRead.includes(userId)) {
+    let squeals: Squeal[] = [];
+    for (let i of channel.squeals) {
+      const squeal: Squeal = await getSquealById(i);
+      squeals.push(squeal);
+    }
+    return squeals;
+  } else throw unauthorized;
 }
 
 /**
@@ -138,7 +132,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) return cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   } else if (type === "officialchannel" && user.plan === "admin") {
     const newChannel = await channelsModel.create({
@@ -148,7 +142,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) return cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   } else {
     const newChannel = await channelsModel.create({
@@ -158,7 +152,7 @@ export async function createChannel(
       allowedRead: user._id,
       allowedWrite: user._id,
     });
-    if (!newChannel) return cannot_create;
+    if (!newChannel) throw new Error("Cannot create Channel");
     else return created;
   }
 }
@@ -173,17 +167,14 @@ export async function addUserToUserChannel(
   username: string,
   channelName: string,
 ) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (user instanceof SquealerError) return non_existent;
-  else {
-    const userId = user._id;
-    const update = await channelsModel.updateOne(
-      { name: channelName, type: "userchannel" },
-      { $push: { allowedRead: userId, allowedWrite: userId } },
-    );
-    if (update.modifiedCount < 1) return cannot_update;
-    else return updated;
-  }
+  const user: User = await getUserByUsername(username);
+  const userId = user._id;
+  const update = await channelsModel.updateOne(
+    { name: channelName, type: "userchannel" },
+    { $push: { allowedRead: userId, allowedWrite: userId } },
+  );
+  if (update.modifiedCount < 1) throw cannot_update;
+  else return updated;
 }
 
 /**
@@ -196,17 +187,14 @@ export async function removeUserFromChannel(
   username: string,
   channelName: string,
 ) {
-  const user: User | SquealerError = await getUserByUsername(username);
-  if (user instanceof SquealerError) return non_existent;
-  else {
-    const userId = user._id;
-    const update = await channelsModel.updateOne(
-      { name: channelName },
-      { $pop: { allowedRead: userId, allowedWrite: userId } },
-    );
-    if (update.modifiedCount < 1) return cannot_update;
-    else return updated;
-  }
+  const user: User = await getUserByUsername(username);
+  const userId = user._id;
+  const update = await channelsModel.updateOne(
+    { name: channelName },
+    { $pop: { allowedRead: userId, allowedWrite: userId } },
+  );
+  if (update.modifiedCount < 1) throw cannot_update;
+  else return updated;
 }
 
 export async function editOfficialChannel(
@@ -226,7 +214,7 @@ export async function editOfficialChannel(
     },
   );
   if (update.modifiedCount > 0) return updated;
-  else throw new Error("Cannot Update");
+  else throw cannot_update;
 }
 
 export async function updateOfficialSqueals(name: string, squeals: string[]) {
@@ -235,7 +223,7 @@ export async function updateOfficialSqueals(name: string, squeals: string[]) {
     { squeals: squeals },
   );
   if (update.modifiedCount > 0) return updated;
-  else throw new Error("Cannot Update");
+  else throw cannot_update;
 }
 
 //ESEGUIRE OGNI VOLTA CHE UN ACCOUNT VIENE CREATO
@@ -253,10 +241,11 @@ export async function addUserReadToOfficialChannel(
     { name: channelName },
     { $push: { allowedRead: userId } },
   );
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
 
+// TODO eseguire dopo grantPermission
 //ESEGUIRE OGNI VOLTA CHE UN UTENTE RICEVE I PERMESSI DA ADMIN
 /**
  * funzione che aggiunge un admin ad un canale ufficiale
@@ -272,15 +261,28 @@ export async function addAdminToOfficialChannel(
     { name: channelName },
     { $push: { allowedRead: adminId, allowedWrite: adminId } },
   );
-  if (update.modifiedCount < 1) return cannot_update;
+  if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
+}
+
+//TODO funzione equivalente a quella sopra per rimuovere un utente dagli admin degli official channels
+export async function removeAdminToOfficialChannel(
+  adminId: string,
+  channelName: string,
+) {}
+export async function checkChannel(
+  channelName: string,
+): Promise<Channel | null> {
+  return channelsModel.findOne({
+    name: channelName,
+  });
 }
 
 /**
  * funzione che aggiunge uno squeal ad un canale
  * @param channelName nome del canale
  * @param squealId id dello squeal da aggiungere al canale
- * @param userId id dell'utente
+ * @param user utente
  * @returns SquealerError | Success
  */
 export async function addSquealToChannel(
@@ -288,24 +290,15 @@ export async function addSquealToChannel(
   squealId: string,
   user: User,
 ) {
-  const channel: Channel | SquealerError = await getChannel(channelName);
-  if (channel instanceof SquealerError) {
-    const squeal: SquealerError | Squeal = await getSquealById(squealId);
-    if (squeal instanceof SquealerError) return non_existent;
-    else {
-      //Se il canale non esiste ma è una keyword creo il canale e poi aggiungo lo squeal
-      for (let i of squeal.channels) {
-        if (i.includes("#")) {
-          const create: SquealerError | Success = await createChannel(
-            i,
-            "keyword",
-            user,
-          );
-          if (create instanceof SquealerError) return create;
-          else await addSquealToChannel(i, squeal._id, user);
-        }
-      }
-      return cannot_create;
+  const channel: Channel = await getChannel(channelName);
+  if (!(await checkChannel(channelName))) {
+    const squeal: Squeal = await getSquealById(squealId);
+    //Se il canale non esiste ma è una keyword creo il canale e poi aggiungo lo squeal
+    for (let i of squeal.channels) {
+      if (i.includes("#")) {
+        await createChannel(i, "keyword", user);
+        await addSquealToChannel(i, squeal._id, user);
+      } else throw cannot_create;
     }
   } else {
     //canali con richiesta di scrittura
@@ -317,14 +310,14 @@ export async function addSquealToChannel(
         { name: channelName },
         { $push: { squeals: squealId } },
       );
-      if (update.modifiedCount < 1) return cannot_update;
+      if (update.modifiedCount < 1) throw cannot_update;
       else return updated;
     } else {
       const update = await channelsModel.updateOne(
         { name: channelName },
         { $push: { squeals: squealId } },
       );
-      if (update.modifiedCount < 1) return cannot_update;
+      if (update.modifiedCount < 1) throw cannot_update;
       else return updated;
     }
   }
@@ -334,6 +327,7 @@ export async function addSquealToChannel(
  * funzione che elimina un canale
  * utilizzata in /api/channels dagli admin
  * @param name nome del canale
+ * @param user utente
  * @returns SquealerError | Success
  */
 export async function deleteChannel(name: string, user: User) {
@@ -343,7 +337,7 @@ export async function deleteChannel(name: string, user: User) {
       { returnDocument: "after" },
     );
     if (deleted.deletedCount == 0) {
-      return cannot_delete;
+      throw cannot_delete;
     } else {
       return removed;
     }
@@ -353,13 +347,14 @@ export async function deleteChannel(name: string, user: User) {
       { returnDocument: "after" },
     );
     if (deleted.deletedCount == 0) {
-      return cannot_delete;
+      throw cannot_delete;
     } else {
       return removed;
     }
   }
 }
 
+// TODO ?
 export async function deleteUserChannel(channelName: string) {}
 
 export async function checkChannelType(channelName: string) {
@@ -377,5 +372,5 @@ export async function checkChannelType(channelName: string) {
     channelName === channelName.toUpperCase()
   ) {
     return "officialchannel";
-  } else return "";
+  } else throw not_valid;
 }
