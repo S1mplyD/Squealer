@@ -11,6 +11,15 @@
       href="/backoffice"
       >Go to Backoffice</a
     >
+    <a
+      mat-raised-button
+      color="primary"
+      *ngIf="plan === 'professional'"
+      type="button"
+      class="button-href"
+      href="/smm"
+      >Go to SMM</a
+    >
   </div>
 
   <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
@@ -51,7 +60,7 @@
       </section>
       <div *ngIf="squealSubType">
         <mat-label color="primary"
-          >Set the frequency of the post (in seconds):</mat-label
+          >Set the frequency of the post (in minutes):</mat-label
         >
         <mat-slider
           min="0"

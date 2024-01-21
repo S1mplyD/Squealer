@@ -16,7 +16,6 @@ import { router as followRoute } from "./routes/follow";
 import fs from "fs";
 import { updateAnalyticTimer } from "./database/queries/analytics";
 import { resetCharactersScheduler } from "./API/characters";
-import { deleteAutoSqueals } from "./fix";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
