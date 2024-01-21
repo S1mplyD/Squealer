@@ -153,27 +153,33 @@ const fillTable = (items) => {
       "</tr>";
   }
 };
+
 const getUsersByNameAsc = async () => {
   const response = await axios.get("/api/users/name/asc");
   return response.data;
 };
+
 const getUsersByNameDesc = async () => {
   const response = await axios.get("/api/users/name/desc");
   return response.data;
 };
+
 const getUsersByTypeAsc = async () => {
-  const response = await axios.get("/api/users/asc");
+  const response = await axios.get("/api/users/type/asc");
   return response.data;
 };
+
 const getUsersByTypeDesc = async () => {
-  const response = await axios.get("/api/users/asc");
+  const response = await axios.get("/api/users/type/desc");
   return response.data;
 };
+
 const getUsersByPopularityAsc = async () => {
-  const response = await axios.get("/api/users/asc");
+  const response = await axios.get("/api/users/pop/asc");
   return response.data;
 };
+
 const getUsersByPopularityDesc = async () => {
-  const response = await axios.get("/api/users/asc");
+  const response = await axios.get("/api/users/pop/desc");
   return response.data;
 };
