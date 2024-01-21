@@ -453,3 +453,25 @@ export async function addCharactersToUser(
     return updated;
   } else throw cannot_update;
 }
+
+export async function getUsersByNameAsc() {
+  return userModel.find().sort({ username: 1 });
+}
+
+export const getUsersByNameDesc = async () => {
+  return userModel.find().sort({ username: -1 });
+};
+export const getUsersByTypeAsc = async () => {
+  return userModel.find().sort({ type: 1 });
+};
+
+export const getUsersByTypeDesc = async () => {
+  return userModel.find().sort({ type: -1 });
+};
+export const getUsersByPopularityAsc = async () => {
+  return userModel.find().sort({ pop: 1 });
+};
+
+export const getUsersByPopularityDesc = async () => {
+  return userModel.find().sort({ pop: -1 });
+};
