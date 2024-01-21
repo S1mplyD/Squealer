@@ -16,6 +16,8 @@ import {
   getProfessionalUsers,
   getUserByUsername,
   getUserProfilePictureByUsername,
+  getUsersByNameAsc,
+  getUsersByNameDesc,
   grantPermissions,
   removeSMM,
   revokePermissions,
@@ -421,5 +423,30 @@ router
     } catch (e) {
       if (e instanceof SquealerError) res.sendStatus(404);
       else res.status(500).send(e);
+    }
+  });
+
+router
+  .route("/name/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByNameAsc();
+        res.status(200).send(users);
+      }
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/name/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByNameDesc();
+        res.status(200).send(users);
+      }
+    } catch (e) {
+      res.status(500).send(e);
     }
   });
