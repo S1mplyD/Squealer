@@ -1,66 +1,67 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Title</title>
     <script src="scripts/auth.js"></script>
     <script src="scripts/squeals.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
-  <body onload="createSquealTable()">
+</head>
+
+<body onload="createSquealTable()">
     <header>
-      <nav>
-        <ul>
-          <li>
-            <button onclick="document.location.replace('users.html')">
-              Users
-            </button>
-          </li>
-          <li>
-            <button onclick="document.location.replace('squeals.html') ">
-              Squeals</button
-            >1
-          </li>
-          <li>
-            <button
-              onclick="document.location.replace('officialChannels.html')"
-            >
-              Official Channels
-            </button>
-          </li>
-        </ul>
-      </nav>
+        <nav>
+            <ul>
+                <li>
+                    <button onclick="document.location.replace('users.html')">
+                        Users
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.replace('squeals.html') ">
+                        Squeals
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.replace('officialChannels.html')">
+                        Official Channels
+                    </button>
+                </li>
+            </ul>
+        </nav>
     </header>
     <main id="squealmain">
-      <div id="squealtable"></div>
-      <div>
-        <label for="id">Squeal ID</label>
-        <input type="text" id="id" placeholder="id" />
-        <form>
-          <label for="recipients">Recipients</label>
-          <input
-            type="text"
-            id="recipients"
-            placeholder="@mention, #keyword or §channel"
-          />
-          <button
-            onclick="changeSquealRecipients(document.getElementById('id').value, document.getElementById('recipients').value)"
-          >
-            SUBMIT
-          </button>
-        </form>
-        <form>
-          <label for="positive">Positive reactions</label>
-          <input type="number" id="positive" placeholder="Positive reactions" />
-          <label for="negative">Negative reactions</label>
-          <input type="number" id="negative" placeholder="Negative reactions" />
-          <button
-            onclick="changeReactions(document.getElementById('id').value, document.getElementById('positive').value,document.getElementById('negative').value)"
-          >
-            SUBMIT
-          </button>
-        </form>
-      </div>
+        <label for="filters">Filters</label>
+        <div id="filters">
+            <button onclick="orderBySender()">Sender</button>
+            <button onclick="orderByDate()">Date</button>
+            <button onclick="orderByRecipients()">Recipients</button>
+        </div>
+        <div id="squealtable"></div>
+        <div>
+            <label for="id">Squeal ID</label>
+            <input type="text" id="id" placeholder="id" />
+            <form>
+                <label for="recipients">Recipients</label>
+                <input type="text" id="recipients" placeholder="@mention, #keyword or §channel" />
+                <button
+                    onclick="changeSquealRecipients(document.getElementById('id').value, document.getElementById('recipients').value)">
+                    SUBMIT
+                </button>
+            </form>
+            <form>
+                <label for="positive">Positive reactions</label>
+                <input type="number" id="positive" placeholder="Positive reactions" />
+                <label for="negative">Negative reactions</label>
+                <input type="number" id="negative" placeholder="Negative reactions" />
+                <button
+                    onclick="changeReactions(document.getElementById('id').value, document.getElementById('positive').value,document.getElementById('negative').value)">
+                    SUBMIT
+                </button>
+            </form>
+        </div>
     </main>
-  </body>
+</body>
+
 </html>

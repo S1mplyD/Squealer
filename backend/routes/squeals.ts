@@ -14,7 +14,13 @@ import {
   getMediaSqueal,
   getSquealById,
   getSquealResponses,
+  getSquealsByDateAsc,
+  getSquealsByDateDesc,
   getSquealsByRecipients,
+  getSquealsByRecipientsAsc,
+  getSquealsByRecipientsDesc,
+  getSquealsBySenderAsc,
+  getSquealsBySenderDesc,
   getTextSqueals,
   getTimedSqueal,
   postResponse,
@@ -425,5 +431,78 @@ router
     } catch (error) {
       if (error instanceof SquealerError) res.status(404).send(error);
       else res.status(500).send(error);
+    }
+  });
+
+router
+  .route("/sender/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsBySenderAsc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/sender/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsBySenderDesc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/date/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsByDateAsc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/date/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsByDateDesc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/recipients/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsByRecipientsAsc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/recipients/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const squeals: Squeal[] = await getSquealsByRecipientsDesc();
+        res.status(200).send(squeals);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
     }
   });

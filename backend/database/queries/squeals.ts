@@ -554,3 +554,28 @@ export async function updateSquealRecipients(
     throw cannot_update;
   } else return updated;
 }
+
+export const getSquealsBySenderAsc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ author: 1 });
+  return squeals;
+};
+export const getSquealsBySenderDesc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ author: -1 });
+  return squeals;
+};
+export const getSquealsByDateAsc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ date: 1 });
+  return squeals;
+};
+export const getSquealsByDateDesc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ date: -1 });
+  return squeals;
+};
+export const getSquealsByRecipientsAsc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ recipients: 1 });
+  return squeals;
+};
+export const getSquealsByRecipientsDesc = async () => {
+  const squeals: Squeal[] = await squealModel.find({}).sort({ recipients: -1 });
+  return squeals;
+};
