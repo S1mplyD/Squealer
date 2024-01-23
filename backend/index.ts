@@ -13,9 +13,10 @@ import { router as mediaRoute } from "./routes/media";
 import { router as userRoute } from "./routes/users";
 import { router as analyticsRoute } from "./routes/analytics";
 import { router as followRoute } from "./routes/follow";
-import fs from "fs";
 import { updateAnalyticTimer } from "./database/queries/analytics";
 import { resetCharactersScheduler } from "./API/characters";
+import { updateUsersPopularity } from "./API/popularity";
+import squealModel from "./database/models/squeals.model";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -33,16 +34,6 @@ app.use(
     saveUninitialized: false,
   }),
 );
-
-//Controllo se la cartella per gli uploads esiste altrimenti la creo
-fs.readdir(path.resolve(__dirname, "..", "public"), (err, files) => {
-  if (err) console.log(err);
-  if (!files.includes("uploads")) {
-    fs.mkdir("public/uploads", (err) => {
-      if (err) console.log(err);
-    });
-  }
-});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -90,13 +81,24 @@ app.get("/*", (_, res) => {
 });
 
 mongoose.set("strictQuery", false);
-mongoose.connect(uri).then(async () => {
-  console.log("[CONNECTED TO MONGOOSE]");
-  await startAllTimer();
-  await updateAnalyticTimer();
-  await resetCharactersScheduler();
-});
+mongoose
+  .connect(uri)
+  .then(async () => {
+    console.log("[CONNECTED TO MONGOOSE]");
+    await startAllTimer();
+    // await fix();
+    await updateAnalyticTimer();
+    await resetCharactersScheduler();
+    await updateUsersPopularity();
+  })
+  .catch((e) => {
+    console.error(e);
+  });
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`);
 });
+
+const fix = async () => {
+  await squealModel.deleteMany({ originalSqueal: { $ne: "" } });
+};
