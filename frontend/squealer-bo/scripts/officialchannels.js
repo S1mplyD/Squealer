@@ -18,6 +18,34 @@ const createOfficiaChannelsTable = async () => {
   }
 };
 
+const fillTable = (items) => {
+  const table = document.getElementById("table");
+  for (let i of items) {
+    table.innerHTML +=
+      "<tr>" +
+      "<td> </td>" +
+      "<td>" +
+      i._id +
+      "</td>" +
+      "<td>" +
+      i.name +
+      "</td>" +
+      "<td>" +
+      i.squeals.length +
+      "</td>" +
+      "<td>" +
+      i.channelAdmins.length +
+      "</td>" +
+      "<td>" +
+      i.allowedRead.length +
+      "</td>" +
+      "<td>" +
+      i.allowedWrite.length +
+      "</td>" +
+      "</tr>";
+  }
+};
+
 const deleteChannel = async (name) => {
   const response = await axios.delete("/api/channels/", null, {
     params: {
@@ -60,31 +88,4 @@ const updateChannelSqueals = async (channelName, squeals) => {
     squeals.replaceAll(" ", "").split(","),
   );
   return response.data;
-};
-
-const fillTable = (items) => {
-  for (let i of items) {
-    newMain.innerHTML +=
-      "<tr>" +
-      "<td>> </td>" +
-      "<td>" +
-      i.id +
-      "</td>" +
-      "<td>" +
-      i.name +
-      "</td>" +
-      "<td>" +
-      i.squeals.length +
-      "</td>" +
-      "<td>" +
-      i.channelAdmins.length +
-      "</td>" +
-      "<td>" +
-      i.allowedRead.length +
-      "</td>" +
-      "<td>" +
-      i.allowedWrite.length +
-      "</td>" +
-      "</tr>";
-  }
 };
