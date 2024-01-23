@@ -100,7 +100,7 @@ const orderByType = async () => {
   const orderedUsers = typeAsc
     ? await getUsersByTypeAsc()
     : await getUsersByTypeDesc();
-  nameAsc = !nameAsc;
+  typeAsc = !typeAsc;
   const newMain = document.getElementById("usertable");
   newMain.innerHTML =
     "<table id='table'>" +
@@ -113,7 +113,7 @@ const orderByPopularity = async () => {
   const orderedUsers = popularAsc
     ? await getUsersByPopularityAsc()
     : await getUsersByPopularityDesc();
-  nameAsc = !nameAsc;
+  popularAsc = !popularAsc;
   const newMain = document.getElementById("usertable");
   newMain.innerHTML =
     "<table id='table'>" +
@@ -175,11 +175,11 @@ const getUsersByTypeDesc = async () => {
 };
 
 const getUsersByPopularityAsc = async () => {
-  const response = await axios.get("/api/users/pop/asc");
+  const response = await axios.get("/api/users/popularity/asc");
   return response.data;
 };
 
 const getUsersByPopularityDesc = async () => {
-  const response = await axios.get("/api/users/pop/desc");
+  const response = await axios.get("/api/users/popularity/desc");
   return response.data;
 };

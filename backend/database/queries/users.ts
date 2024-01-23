@@ -455,23 +455,30 @@ export async function addCharactersToUser(
 }
 
 export async function getUsersByNameAsc() {
-  return userModel.find().sort({ username: 1 });
+  const users: User[] = await userModel.find().sort({ username: 1 }).lean();
+  return users;
 }
 
 export const getUsersByNameDesc = async () => {
-  return userModel.find().sort({ username: -1 });
+  const users: User[] = await userModel.find().sort({ username: -1 }).lean();
+  return users;
 };
+
 export const getUsersByTypeAsc = async () => {
-  return userModel.find().sort({ type: 1 });
+  const users: User[] = await userModel.find().sort({ plan: 1 }).lean();
+  return users;
 };
 
 export const getUsersByTypeDesc = async () => {
-  return userModel.find().sort({ type: -1 });
+  const users: User[] = await userModel.find().sort({ plan: -1 }).lean();
+  return users;
 };
 export const getUsersByPopularityAsc = async () => {
-  return userModel.find().sort({ pop: 1 });
+  const users: User[] = await userModel.find().sort({ popularity: 1 }).lean();
+  return users;
 };
 
 export const getUsersByPopularityDesc = async () => {
-  return userModel.find().sort({ pop: -1 });
+  const users: User[] = await userModel.find().sort({ popularity: -1 }).lean();
+  return users;
 };

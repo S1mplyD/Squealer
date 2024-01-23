@@ -18,6 +18,10 @@ import {
   getUserProfilePictureByUsername,
   getUsersByNameAsc,
   getUsersByNameDesc,
+  getUsersByPopularityAsc,
+  getUsersByPopularityDesc,
+  getUsersByTypeAsc,
+  getUsersByTypeDesc,
   grantPermissions,
   removeSMM,
   revokePermissions,
@@ -433,7 +437,7 @@ router
       if (req.user && (req.user as User).plan === "admin") {
         const users: User[] = await getUsersByNameAsc();
         res.status(200).send(users);
-      }
+      } else res.sendStatus(401);
     } catch (e) {
       res.status(500).send(e);
     }
@@ -445,7 +449,55 @@ router
       if (req.user && (req.user as User).plan === "admin") {
         const users: User[] = await getUsersByNameDesc();
         res.status(200).send(users);
-      }
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/type/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByTypeAsc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/type/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByTypeDesc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/popularity/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByPopularityAsc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/popularity/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByPopularityDesc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
     } catch (e) {
       res.status(500).send(e);
     }
