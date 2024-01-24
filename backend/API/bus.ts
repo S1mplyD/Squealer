@@ -9,12 +9,20 @@ const getRoute = async (id: string) => {
   );
   let nodes: { name: string; lat: number; lng: number }[] = [];
   // waypoint
-  for (let i of response.data.elements.members) {
-    const node = await getNode(i.ref);
-    nodes.push({ name: node.name, lat: node.lat, lng: node.lng });
+  for (let i of response.data.elements[0].members) {
+    if (i.role === "stop") {
+      const node = await getNode(i.ref);
+      nodes.push({ name: node.name, lat: node.lat, lng: node.lng });
+    }
   }
   return {
-    name: `#${response.data.elements.tags.ref}-${response.data.elements.tags.from}->${response.data.elements.tags.to}`,
+    name: `#${response.data.elements[0].tags.ref.replaceAll(
+      " ",
+      "_",
+    )}-${response.data.elements[0].tags.from.replaceAll(
+      " ",
+      "_",
+    )}->${response.data.elements[0].tags.to.replaceAll(" ", "_")}`,
     nodes: nodes,
   };
 };
@@ -25,29 +33,44 @@ const getNode = async (id: string) => {
   );
 
   return {
-    name: response.data.elements.tags.name,
-    lat: response.data.elements.lat,
-    lng: response.data.elements.lon,
+    name: response.data.elements[0].tags.name,
+    lat: response.data.elements[0].lat,
+    lng: response.data.elements[0].lon,
   };
 };
 
 const postRouteSqueal = async (routeSqueal: RouteSqueal) => {
   const route = await getRoute(routeSqueal.reference);
-  for (let i of route.nodes) {
+
+  await route.nodes.reduce(async (previousPromise, node) => {
+    await previousPromise;
+
+    await doSetTimeout(route.name, node, routeSqueal.timeBetween);
+  }, Promise.resolve());
+};
+
+const doSetTimeout = async (
+  channelName: string,
+  i: { name: string; lat: number; lng: number },
+  time: number,
+): Promise<void> => {
+  return new Promise<void>((resolve) => {
     setTimeout(async () => {
       await squealModel.create({
         lat: i.lat + "",
         lng: i.lng + "",
         locationName: i.name,
-        channels: [`§${route.name}`],
+        channels: [`${channelName}`],
         author: "Squealer",
         date: Date.now(),
         category: "public",
         type: "geo",
         originalSqueal: "",
       });
-    }, routeSqueal.timeBetween);
-  }
+
+      resolve();
+    }, time);
+  });
 };
 
 export const postRouteSqueals = async () => {
