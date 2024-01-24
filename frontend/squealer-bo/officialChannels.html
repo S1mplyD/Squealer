@@ -32,6 +32,7 @@
         </nav>
     </header>
     <main id="officialmain">
+        <div id="officialtable"></div>
         <div>
             <label for="channelName">Channel Name</label>
             <input id="channelName" type="text" placeholder="Channel Name" />
@@ -55,7 +56,9 @@
                     Edit Channel
                 </button>
             </form>
-            <button onclick="deleteChannel(document.getElementById('channelName').value)">
+            <label for="deleteChannel">Name of the channel to delete</label>
+            <input id="deleteChannel" type="text" placeholder="channel name" />
+            <button onclick="deleteChannel(document.getElementById('deleteChannel').value)">
                 Delete Channel
             </button>
             <form>
