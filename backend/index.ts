@@ -18,6 +18,7 @@ import { resetCharactersScheduler } from "./API/characters";
 import { updateUsersPopularity } from "./API/popularity";
 import squealModel from "./database/models/squeals.model";
 import { postRandomNews } from "./API/news";
+import { postRandomArticle } from "./API/wikipedia";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -92,6 +93,7 @@ mongoose
     await resetCharactersScheduler();
     await updateUsersPopularity();
     await postRandomNews();
+    await postRandomArticle();
   })
   .catch((e) => {
     console.error(e);
