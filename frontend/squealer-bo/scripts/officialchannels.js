@@ -7,7 +7,7 @@ const createOfficiaChannelsTable = async () => {
   const me = await getMe();
   if (me.status !== 404 && me.data.plan === "admin") {
     const channels = await getAll();
-    const newMain = document.getElementById("officialmain");
+    const newMain = document.getElementById("officialtable");
     newMain.innerHTML =
       "<table id='table'>" +
       "<tr><th>Expand</th><th>Id</th><th>Name</th><th>Squeals</th><th>Channel admins</th><th>Allowed Read</th><th>Allowed Write</th></tr>" +
