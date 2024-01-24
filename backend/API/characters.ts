@@ -1,5 +1,5 @@
 import userModel from "../database/models/users.model";
-import { getAllUsers, getUser } from "../database/querys/users";
+import { getAllUsers, getUser } from "../database/queries/users";
 import {
   defaultCharactersBase,
   defaultCharactersJournalist,
@@ -13,19 +13,16 @@ import schedule from "node-schedule";
 /**
  * funzione che ritorna i caratteri di un utente
  * @param id id utente
- * @returns SquealerError | characters
+ * @returns characters
  */
 export async function getUserCharacter(id: string) {
-  const user: User | SquealerError = await getUser(id);
-  if (user instanceof SquealerError) return non_existent;
-  else {
-    const characters: [number, number, number] = [
-      (user as User).dailyCharacters,
-      (user as User).weeklyCharacters,
-      (user as User).monthlyCharacters,
-    ];
-    return characters;
-  }
+  const user: User = await getUser(id);
+  const characters: [number, number, number] = [
+    (user as User).dailyCharacters,
+    (user as User).weeklyCharacters,
+    (user as User).monthlyCharacters,
+  ];
+  return characters;
 }
 
 /**
@@ -51,43 +48,38 @@ export async function updateDailyCharacters(
 }
 
 export async function resetCharactersScheduler() {
-  const users: SquealerError | User[] = await getAllUsers();
-  // Reset giornaliero ogni giorno alle 00:00
-  schedule.scheduleJob("0 0 * * *", async () => {
-    console.log("aggiornamento giornaliero " + new Date());
-    if (users instanceof SquealerError) return non_existent;
-    else {
+  try {
+    const users: User[] = await getAllUsers();
+    // Reset giornaliero ogni giorno alle 00:00
+    schedule.scheduleJob("0 0 * * *", async () => {
+      console.log("aggiornamento giornaliero " + new Date());
       for (let i of users) {
         const daily: SquealerError | Success | undefined =
           await resetCharactersDaily(i._id);
         if (daily instanceof SquealerError) console.log(daily);
       }
-    }
-  });
-  //Reset settimanale ogni lunedì alle 00.00
-  schedule.scheduleJob("0 0 * * 1", async () => {
-    console.log("aggiornamento settimanale " + new Date());
-    if (users instanceof SquealerError) return non_existent;
-    else {
+    });
+    //Reset settimanale ogni lunedì alle 00.00
+    schedule.scheduleJob("0 0 * * 1", async () => {
+      console.log("aggiornamento settimanale " + new Date());
       for (let i of users) {
         const daily: SquealerError | Success | undefined =
           await resetCharactersWeekly(i._id);
         if (daily instanceof SquealerError) console.log(daily);
       }
-    }
-  });
-  //Reset mensile ogni primo giorno del mese alle 00.00
-  schedule.scheduleJob("0 0 1 * *", async () => {
-    console.log("aggiornamento mensile " + new Date());
-    if (users instanceof SquealerError) return non_existent;
-    else {
+    });
+    //Reset mensile ogni primo giorno del mese alle 00.00
+    schedule.scheduleJob("0 0 1 * *", async () => {
+      console.log("aggiornamento mensile " + new Date());
       for (let i of users) {
         const daily: SquealerError | Success | undefined =
           await resetCharactersMonthly(i._id);
         if (daily instanceof SquealerError) console.log(daily);
       }
-    }
-  });
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 /**
@@ -96,11 +88,7 @@ export async function resetCharactersScheduler() {
  * @returns Success | SquealerError
  */
 export async function resetCharactersDaily(id: string) {
-  const characters: SquealerError | [number, number, number] =
-    await getUserCharacter(id);
-  if (characters instanceof SquealerError) {
-    return characters;
-  }
+  const characters: [number, number, number] = await getUserCharacter(id);
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
@@ -125,11 +113,7 @@ export async function resetCharactersDaily(id: string) {
  * @returns SquealerError | Success
  */
 export async function resetCharactersWeekly(id: string) {
-  const characters: SquealerError | [number, number, number] =
-    await getUserCharacter(id);
-  if (characters instanceof SquealerError) {
-    return non_existent;
-  }
+  const characters: [number, number, number] = await getUserCharacter(id);
   const [daily, weekly, monthly] = characters as [number, number, number];
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
@@ -154,11 +138,7 @@ export async function resetCharactersWeekly(id: string) {
  * @returns SquealerError | Success
  */
 export async function resetCharactersMonthly(id: string) {
-  const characters: SquealerError | [number, number, number] =
-    await getUserCharacter(id);
-  if (characters instanceof SquealerError) {
-    return non_existent;
-  }
+  const characters: [number, number, number] = await getUserCharacter(id);
   const user: User | SquealerError = await getUser(id);
   const defaultCharacters: number[] | undefined = await getDefaultCharacters(
     (user as User).plan,

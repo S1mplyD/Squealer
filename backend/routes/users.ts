@@ -1,27 +1,37 @@
-import express from "express";
-import { Success, User } from "../util/types";
+import express, {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
+import { User } from "../util/types";
 import {
+  addCharactersToUser,
+  addSMM,
   ban,
+  blockUser,
+  changeUserPlan,
   deleteAccount,
   deleteProfilePicture,
   getAllUsers,
-  grantPermissions,
-  revokePermissions,
-  unbanUser,
-  updateProfilePicture,
-  updateUser,
-  blockUser,
-  getUserByUsername,
-  unblockUser,
-  addSMM,
-  removeSMM,
-  changeUserPlan,
   getManagedUsers,
   getProfessionalUsers,
+  getUserByUsername,
   getUserProfilePictureByUsername,
-} from "../database/querys/users";
-import { SquealerError, non_existent } from "../util/errors";
-import { updateSquealsUsername } from "../database/querys/squeals";
+  getUsersByNameAsc,
+  getUsersByNameDesc,
+  getUsersByPopularityAsc,
+  getUsersByPopularityDesc,
+  getUsersByTypeAsc,
+  getUsersByTypeDesc,
+  grantPermissions,
+  removeSMM,
+  revokePermissions,
+  unbanUser,
+  unblockUser,
+  updateProfilePicture,
+  updateUser,
+} from "../database/queries/users";
+import { non_existent, SquealerError } from "../util/errors";
+import { updateSquealsUsername } from "../database/queries/squeals";
 
 export const router = express.Router();
 /**
@@ -30,15 +40,14 @@ export const router = express.Router();
  */
 router
   .route("/")
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const users: User[] | SquealerError = await getAllUsers();
-        if (users instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(users);
+        const users: User[] = await getAllUsers();
+        res.status(200).send(users);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   })
   /**
@@ -46,31 +55,21 @@ router
    * chiamata per eliminare permanentemente un account
    * (NO GOING BACK)
    */
-  .delete(async (req, res) => {
+  .delete(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const deleted: SquealerError | Success = await deleteAccount(
-            req.body.mail,
-            "",
-            true,
-          );
-          if (deleted instanceof SquealerError) res.sendStatus(500);
-          else res.sendStatus(200);
+          await deleteAccount(req.body.mail, "", true);
+          res.sendStatus(200);
         } else {
           if ((req.user as User)._id === req.query.id) {
-            const deleted: SquealerError | Success = await deleteAccount(
-              req.body.mail,
-              req.body.password,
-              false,
-            );
-            if (deleted instanceof SquealerError) res.sendStatus(500);
-            else res.sendStatus(200);
+            await deleteAccount(req.body.mail, req.body.password, false);
+            res.sendStatus(200);
           } else res.sendStatus(401);
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -80,28 +79,27 @@ router
    * GET
    * chiamata che ritorna un utente
    */
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (!req.user || (req.user as User).status !== "ban") {
-        const user: User | SquealerError = await getUserByUsername(
+        const user: User = await getUserByUsername(
           req.params.username as string,
         );
-        if (user instanceof SquealerError) res.sendStatus(404);
-        else res.status(200).send(user);
+        res.status(200).send(user);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   })
   /**
    * PATCH
    * chiamata per modificare le informazioni di un utente
    */
-  .patch(async (req, res) => {
+  .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const update: SquealerError | User = await updateUser(
+          const update: User = await updateUser(
             req.params.username as string,
             req.body,
           );
@@ -111,11 +109,10 @@ router
               req.body.username,
             );
           }
-          if (update instanceof SquealerError) res.sendStatus(500);
-          else res.status(200).send(update);
+          res.status(200).send(update);
         } else {
           if ((req.user as User)._id === req.query.id) {
-            const update: SquealerError | User = await updateUser(
+            const update: User = await updateUser(
               req.query.username as string,
               req.body,
             );
@@ -125,19 +122,18 @@ router
                 req.body.username,
               );
             }
-            if (update instanceof SquealerError) res.sendStatus(500);
-            else res.status(200).send(update);
+            res.status(200).send(update);
           } else res.sendStatus(401);
         }
-      } else res;
+      } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
 router
   .route("/user/:username/profilePicture")
-  .get(async (req, res) => {
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       const profilePicture = await getUserProfilePictureByUsername(
         req.params.username,
@@ -151,65 +147,58 @@ router
    * chiamata per aggiornare il percorso della profile picture
    * DA USARE DOPO LA CHIAMATA POST /api/media
    */
-  .patch(async (req, res) => {
+  .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const update: SquealerError | Success = await updateProfilePicture(
+          await updateProfilePicture(
             req.params.username,
-            req.query.filename as string,
+            req.body.filename as string,
           );
-          if (update instanceof SquealerError) res.sendStatus(500);
-          else res.sendStatus(200);
+          res.sendStatus(200);
         } else {
           if (req.params.username === (req.user as User).username) {
-            const update: SquealerError | Success = await updateProfilePicture(
+            await updateProfilePicture(
               req.params.username,
-              req.query.filename as string,
+              req.body.filename as string,
             );
-            if (update instanceof SquealerError) res.sendStatus(500);
-            else res.sendStatus(200);
+            res.sendStatus(200);
           } else res.sendStatus(401);
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   })
   /**
    * DELETE
    * chiamata per eliminare la foto profilo e reimpostare quella di default
    */
-  .delete(async (req, res) => {
+  .delete(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
-          const deleted: SquealerError | undefined = await deleteProfilePicture(
-            req.params.username,
-          );
+          await deleteProfilePicture(req.params.username);
           //fs.unlink ritorna "undefined" se ha successo
-          if (deleted instanceof SquealerError) {
-            if (deleted.code === 11) res.sendStatus(500);
-            else res.sendStatus(404);
-          } else res.sendStatus(200);
+          res.sendStatus(200);
         } else {
           if ((req.user as User).username === req.params.username) {
-            const deleted = await deleteProfilePicture(req.params.username);
-            if (deleted instanceof SquealerError) {
-              if (deleted.code === 11) res.sendStatus(500);
-              else res.sendStatus(404);
-            } else res.sendStatus(200);
+            await deleteProfilePicture(req.params.username);
+            res.sendStatus(200);
           }
         }
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error.code === 11) res.status(500).send(error);
+        else res.status(404).send(error);
+      }
     }
   });
 
 router
   .route("/user/:username/smm")
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         (((req.user as User).status !== "block" ||
@@ -217,20 +206,16 @@ router
           (req.user as User).plan === "professional") ||
         (req.user as User).plan === "admin"
       ) {
-        const update: SquealerError | Success | undefined = await addSMM(
-          req.params.username,
-          (req.user as User)._id,
-        );
-        if (update instanceof SquealerError) {
-          if (update === non_existent) res.sendStatus(404);
-        } else if (!update) res.sendStatus(500);
-        else res.sendStatus(200);
+        await addSMM(req.params.username, (req.user as User)._id);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      if (error instanceof SquealerError) {
+        if (error === non_existent) res.sendStatus(404);
+      } else res.status(500).send(error);
     }
   })
-  .delete(async (req, res) => {
+  .delete(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
         ((req.user as User).status !== "block" ||
@@ -238,43 +223,53 @@ router
         ((req.user as User).plan === "professional" ||
           (req.user as User).plan) === "admin"
       ) {
-        const update: SquealerError | Success | undefined = await removeSMM(
-          (req.user as User)._id,
-          req.params.username,
-        );
-        if (update instanceof SquealerError) {
-          res.sendStatus(500);
-        } else res.sendStatus(200);
+        await removeSMM((req.user as User)._id, req.params.username);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
-router.route("/user/:username/changeplan").post(async (req, res) => {
-  try {
-    if (
-      req.user &&
-      (req.user as User).status !== "ban" &&
-      (req.user as User).status !== "block"
-    ) {
-      if ((req.user as User).plan === "admin") {
-        console.log(req.params, req.body);
-        const update: Success | SquealerError | undefined =
+router
+  .route("/user/:username/changeplan")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        req.user &&
+        (req.user as User).status !== "ban" &&
+        (req.user as User).status !== "block"
+      ) {
+        if ((req.user as User).plan === "admin") {
           await changeUserPlan(req.params.username as string, req.body.plan);
-        if (!(update instanceof SquealerError)) res.sendStatus(200);
-        else res.sendStatus(500);
-      } else {
-        const update: Success | SquealerError | undefined =
+          res.sendStatus(200);
+        } else {
           await changeUserPlan((req.user as User).username, req.body.plan);
-        if (!(update instanceof SquealerError)) res.sendStatus(200);
-        else res.sendStatus(500);
+          res.sendStatus(200);
+        }
       }
+    } catch (err) {
+      res.status(500).send(err);
     }
-  } catch (err) {
-    console.log(err);
-  }
-});
+  });
+
+router
+  .route("/user/:username/addcharacters")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        await addCharactersToUser(
+          req.params.username,
+          req.body.dailyCharacters,
+          req.body.weeklyCharacters,
+          req.body.monthlyCharacters,
+        );
+        res.sendStatus(200);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
 
 router
   .route("/revokePermissions")
@@ -282,17 +277,14 @@ router
    * POST
    * chiamata per revocare i permessi da admin ad un utente
    */
-  .patch(async (req, res) => {
+  .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await revokePermissions(
-          req.query.id as string,
-        );
-        if (update instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        await revokePermissions(req.query.username as string);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -302,18 +294,14 @@ router
    * POST
    * chiamata per garantire i permessi da admin ad un utente
    */
-  .patch(async (req, res) => {
-    console.log(req.user);
+  .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await grantPermissions(
-          req.query.id as string,
-        );
-        if (update instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        await grantPermissions(req.query.username as string);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -323,17 +311,14 @@ router
    * POST
    * chiamata per bannare un utente
    */
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const banned: SquealerError | Success = await ban(
-          req.query.id as string,
-        );
-        if (banned instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        await ban(req.query.username as string);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -343,17 +328,14 @@ router
    * POST
    * chiamata per sbannare un utente
    */
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const unban: SquealerError | Success = await unbanUser(
-          req.query.id as string,
-        );
-        if (unban instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        await unbanUser(req.query.username as string);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
@@ -363,78 +345,160 @@ router
    * POST
    * chiamata per bloccare l'utente per un determinato periodo di tempo
    */
-  .post(async (req, res) => {
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if ((req.user as User).plan === "admin") {
-        const update: SquealerError | Success = await blockUser(
+        await blockUser(
           req.query.username as string,
           req.query.time as unknown as number,
         );
-        if (update instanceof SquealerError) res.sendStatus(500);
-        else res.sendStatus(200);
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (error: any) {
-      console.log(error);
+      res.status(500).send(error);
     }
   });
 
-router.route("/unblock").post(async (req, res) => {
-  try {
-    if ((req.user as User).plan === "admin") {
-      const update: SquealerError | Success = await unblockUser(
-        req.query.username as string,
-      );
-      if (update instanceof SquealerError) res.sendStatus(500);
-      else res.sendStatus(200);
-    } else res.sendStatus(401);
-  } catch (error) {
-    console.log(error);
-  }
-});
+router
+  .route("/unblock")
+  .post(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if ((req.user as User).plan === "admin") {
+        await unblockUser(req.query.username as string);
+        res.sendStatus(200);
+      } else res.sendStatus(401);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
 
-router.route("/notification").get(async (req, res) => {
-  if (
-    req.user &&
-    ((req.user as User).status != "ban" || (req.user as User).status != "block")
-  ) {
-    res.send((req.user as User).notification);
-  } else res.sendStatus(401);
-});
+router
+  .route("/notification")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        req.user &&
+        ((req.user as User).status != "ban" ||
+          (req.user as User).status != "block")
+      ) {
+        res.send((req.user as User).notification);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
 
-router.route("/me").get(async (req, res) => {
+router.route("/me").get(async (req: ExpressRequest, res: ExpressResponse) => {
   try {
     if (req.user) res.send(req.user);
     else res.sendStatus(404);
   } catch (e) {
-    console.log(e);
+    res.status(500).send(e);
   }
 });
 
-router.route("/managedUsers/:username").get(async (req, res) => {
-  try {
-    if (
-      (req.user as User).status !== "ban" &&
-      (req.user as User).status !== "block"
-    ) {
-      const managedUsers: User[] = await getManagedUsers(req.params.username);
-      res.status(200).send(managedUsers);
+router
+  .route("/managedUsers/:username")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        (req.user as User).status !== "ban" &&
+        (req.user as User).status !== "block"
+      ) {
+        const managedUsers: User[] = await getManagedUsers(req.params.username);
+        res.status(200).send(managedUsers);
+      }
+    } catch (error) {
+      res.status(500).send(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-});
+  });
 
-router.route("/professionals").get(async (req, res) => {
-  try {
-    if (
-      (req.user as User).status !== "ban" &&
-      (req.user as User).status !== "block"
-    ) {
-      const proUsers: User[] | SquealerError = await getProfessionalUsers();
-      if (proUsers instanceof SquealerError) res.sendStatus(404);
-      else res.status(200).send(proUsers);
-    } else res.sendStatus(401);
-  } catch (e) {
-    console.log(e);
-  }
-});
+router
+  .route("/professionals")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (
+        (req.user as User).status !== "ban" &&
+        (req.user as User).status !== "block"
+      ) {
+        const proUsers: User[] = await getProfessionalUsers();
+        res.status(200).send(proUsers);
+      } else res.sendStatus(401);
+    } catch (e) {
+      if (e instanceof SquealerError) res.sendStatus(404);
+      else res.status(500).send(e);
+    }
+  });
+
+router
+  .route("/name/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByNameAsc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/name/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByNameDesc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/type/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByTypeAsc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/type/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByTypeDesc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/popularity/asc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByPopularityAsc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });
+router
+  .route("/popularity/desc")
+  .get(async (req: ExpressRequest, res: ExpressResponse) => {
+    try {
+      if (req.user && (req.user as User).plan === "admin") {
+        const users: User[] = await getUsersByPopularityDesc();
+        res.status(200).send(users);
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  });

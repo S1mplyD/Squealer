@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Users</title>
+    <script src="scripts/users.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body onload="createUserTable()">
+    <header>
+        <nav>
+            <ul>
+                <li>
+                    <button onclick="document.location.href = 'users.html'">
+                        Users
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.href = 'squeals.html'">
+                        Squeals
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.href = 'officialChannels.html'">
+                        Official Channels
+                    </button>
+                </li>
+            </ul>
+    </header>
+    <main id="usermain">
+        <label for="filters">Filters</label>
+        <div id="filters">
+            <button onclick="orderByName()">Name</button>
+            <button onclick="orderByType()">Type</button>
+            <button onclick="orderByPopularity()">Popularity</button>
+        </div>
+        <div id="usertable">
+        </div>
+        <div id="block">
+            <form>
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="username" />
+                <label for="time">Time to block</label>
+                <input type="number" id="time" placeholder="blocking time" />
+                <button
+                    onclick="blockUser(document.getElementById('username').value,document.getElementById('time').value)">
+                    BLOCK!
+                </button>
+            </form>
+        </div>
+        <div id="unblock">
+            <label for="usernameunblock">Username</label>
+            <input type="text" id="usernameunblock" placeholder="username" />
+            <button onclick="unblockUser(document.getElementById('usernameunblock').value)">UNBLOCK!</button>
+        </div>
+        <div id="ban">
+            <label for="usernameban">Username</label>
+            <input type="text" id="usernameban" placeholder="username" />
+            <button onclick="ban(document.getElementById('usernameban').value)">BAN!</button>
+        </div>
+        <div id="unban">
+            <label for="usernameunban">Username</label>
+            <input type="text" id="usernameunban" placeholder="username" />
+            <button onclick="unban(document.getElementById('usernameunban').value)">UNBAN!</button>
+        </div>
+        <div id="increaseCharacters">
+            <form>
+                <label for="usernameCh">Username</label>
+                <input type="text" id="usernameCh" placeholder="username" />
+                <label for="daily">Daily characters to add</label>
+                <input type="number" id="daily" placeholder="Characters to add" />
+                <label for="weekly">Weekly characters to add</label>
+                <input type="number" id="weekly" placeholder="Characters to add" />
+                <label for="monthly">Monthly characters to add</label>
+                <input type="number" id="monthly" placeholder="Characters to add" />
+                <button onclick="addCharactersToUser(document.getElementById('username').value,
+                    document.getElementById('daily').value,
+                    document.getElementById('weekly').value,
+                    document.getElementById('monthly').value)">
+                    ADD CHARACTERS!
+                </button>
+            </form>
+            <div>
+                <label for="grant">Username</label>
+                <input type="text" id="grant" placeholder="username" />
+                <button onclick="grantPermission(document.getElementById('grant').value)">GRANT PERMISSIONS!</button>
+            </div>
+            <div>
+                <label for="revoke">Username</label>
+                <input type="text" id="revoke" placeholder="username" />
+                <button onclick="revokePermission(document.getElementById('grant').value)">REVOKE PERMISSIONS!</button>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

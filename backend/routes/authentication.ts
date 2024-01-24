@@ -7,7 +7,7 @@ import {
   updatePassword,
   updateResetToken,
   createUserUsingGoogle,
-} from "../database/querys/users";
+} from "../database/queries/users";
 import express from "express";
 import bcrypt from "bcryptjs";
 import { sendMail } from "../util/mail";
@@ -41,7 +41,7 @@ passport.use(
               profile._json.email,
               profile.id,
               profile._json.picture,
-              new Date()
+              new Date(),
             );
             if (newUser) return done(null, newUser);
             else return done(null, false);
@@ -49,8 +49,8 @@ passport.use(
             done(null, currentUser);
           }
         });
-    }
-  )
+    },
+  ),
 );
 
 /**
@@ -72,7 +72,7 @@ passport.use(
             req.body.name,
             username,
             req.body.mail,
-            encryptedPassword
+            encryptedPassword,
           );
           if (newUser) {
             return done(null, newUser);
@@ -83,8 +83,8 @@ passport.use(
       } catch (err) {
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );
 
 router.get(
@@ -92,7 +92,7 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] }),
   (req, res) => {
     if (req.user) res.status(200).send(req.user);
-  }
+  },
 );
 
 router.get(
@@ -100,7 +100,7 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
     res.status(200).redirect("/");
-  }
+  },
 );
 
 /**
@@ -123,7 +123,7 @@ passport.use(
     } catch (err) {
       return done(err);
     }
-  })
+  }),
 );
 
 router.post("/login", passport.authenticate("local"), function (req, res) {
@@ -159,7 +159,7 @@ router.get("/logout", (req, res) => {
     });
     res.status(200).redirect("/");
   } catch (error: any) {
-    console.log(error);
+    res.status(500).send(error);
   }
 });
 router
@@ -182,21 +182,17 @@ router
    * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
    */
   .post(async (req, res) => {
+    try {
+    } catch (e) {
+      res.status(500).send(e);
+    }
     const token: any = req.body.token;
     const mail: any = req.query.mail;
     const user: any = await userModel.findOne({ mail: mail });
     const password: any = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, 10);
     if (token === user.resetToken) {
-      const ret: SquealerError | Success = await updatePassword(
-        mail,
-        encryptedPassword
-      );
-      console.log(ret);
-      if (ret instanceof SquealerError) {
-        res.sendStatus(500);
-      } else {
-        res.sendStatus(200);
-      }
+      const ret: Success = await updatePassword(mail, encryptedPassword);
+      res.sendStatus(200);
     }
   });

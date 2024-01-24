@@ -45,6 +45,7 @@ export type User = {
   status: string;
   blockedFor: number;
   notification: string[];
+  popularity: number;
 };
 
 // nuovo tipo canali

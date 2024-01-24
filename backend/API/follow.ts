@@ -1,5 +1,5 @@
 import userModel from "../database/models/users.model";
-import { getUser, getUserByUsername } from "../database/querys/users";
+import { getUser, getUserByUsername } from "../database/queries/users";
 import { SquealerError, cannot_update, non_existent } from "../util/errors";
 import { updated } from "../util/success";
 import { User } from "../util/types";

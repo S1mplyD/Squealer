@@ -19,17 +19,12 @@ export async function getAnalytic(id: string) {
   const analytic: Analytic | null = await analyticsDataModel.findOne({
     squealId: id,
   });
-  if (!analytic) return non_existent;
+  if (!analytic) throw non_existent;
   else return analytic;
 }
-/**
- * funzione che ritorna tutte le analitiche
- * @param id id dell'utente
- * @returns SquealerError | Analytic[]
- */
 export async function getAllAnalytics() {
   const analytics: Analytic[] = await analyticsDataModel.find();
-  if (analytics.length < 1) return non_existent;
+  if (analytics.length < 1) throw non_existent;
   else return analytics;
 }
 
@@ -44,7 +39,7 @@ export async function getAllUserAnalytics(username: string) {
       author: username,
     })
     .sort({ date: -1 });
-  if (analytics.length < 1) return non_existent;
+  if (analytics.length < 1) throw non_existent;
   else return analytics;
 }
 
@@ -56,19 +51,16 @@ export async function getAllUserAnalytics(username: string) {
  */
 export async function createAnalyticForSqueal(id: string) {
   const squeal = await getSquealById(id);
-  if (squeal instanceof SquealerError) return squeal;
-  else {
-    if ("visual" in squeal) {
-      const newAnalytic = await analyticsDataModel.create({
-        squealId: squeal._id,
-        dates: new Date(),
-        visuals: squeal.visual,
-        positiveReactions: squeal.positiveReactions,
-        negativeReactions: squeal.negativeReactions,
-      });
-      if (!newAnalytic) return cannot_create;
-      else return created;
-    }
+  if ("visual" in squeal) {
+    const newAnalytic = await analyticsDataModel.create({
+      squealId: squeal._id,
+      dates: new Date(),
+      visuals: squeal.visual,
+      positiveReactions: squeal.positiveReactions,
+      negativeReactions: squeal.negativeReactions,
+    });
+    if (!newAnalytic) throw cannot_create;
+    else return created;
   }
 }
 /**
@@ -78,28 +70,23 @@ export async function createAnalyticForSqueal(id: string) {
  */
 export async function updateAnalyticForEverySqueal() {
   try {
-    const analytics: SquealerError | Analytic[] = await getAllAnalytics();
-    if (analytics instanceof SquealerError) {
-      // return non_existent;
-      throw non_existent;
-    } else {
-      for (let i of analytics as Analytic[]) {
-        const squeal: Squeal | SquealerError = await getSquealById(i.squealId);
-        if ("visual" in squeal) {
-          const update = await analyticsDataModel.updateOne(
-            {
-              _id: squeal._id,
-            },
-            {
-              dates: new Date(),
-              visuals: squeal.visual,
-              positiveReactions: squeal.positiveReactions,
-              negativeReactions: squeal.negativeReactions,
-            },
-          );
-          if (update.modifiedCount < 1) return cannot_update;
-          else return updated;
-        }
+    const analytics: Analytic[] = await getAllAnalytics();
+    for (let i of analytics as Analytic[]) {
+      const squeal: Squeal = await getSquealById(i.squealId);
+      if ("visual" in squeal) {
+        const update = await analyticsDataModel.updateOne(
+          {
+            _id: squeal._id,
+          },
+          {
+            dates: new Date(),
+            visuals: squeal.visual,
+            positiveReactions: squeal.positiveReactions,
+            negativeReactions: squeal.negativeReactions,
+          },
+        );
+        if (update.modifiedCount < 1) console.log(cannot_update);
+        else return updated;
       }
     }
   } catch (error) {
