@@ -13,7 +13,7 @@ const createSquealTable = async () => {
     const newMain = document.getElementById("squealtable");
     newMain.innerHTML =
       "<table id='table'>" +
-      "<tr><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
+      "<tr><th>Id</th><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
       "</table>";
     fillTable(squeals);
   } else {
@@ -44,6 +44,9 @@ const fillTable = (items) => {
       table.innerHTML +=
         "<tr>" +
         "<td>" +
+        i._id +
+        "</td>" +
+        "<td>" +
         "<img src='/" +
         i.body +
         "'/>" +
@@ -73,6 +76,9 @@ const fillTable = (items) => {
     } else {
       table.innerHTML +=
         "<tr>" +
+        "<td>" +
+        i._id +
+        "</td>" +
         "<td>" +
         i.body +
         "</td>" +
