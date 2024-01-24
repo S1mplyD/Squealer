@@ -218,10 +218,10 @@ router
   .delete(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
       if (
-        ((req.user as User).status !== "block" ||
+        (((req.user as User).status !== "block" ||
           (req.user as User).status !== "ban") &&
-        ((req.user as User).plan === "professional" ||
-          (req.user as User).plan) === "admin"
+          (req.user as User).plan === "professional") ||
+        (req.user as User).plan === "admin"
       ) {
         await removeSMM((req.user as User)._id, req.params.username);
         res.sendStatus(200);
