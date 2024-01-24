@@ -17,6 +17,7 @@ import { updateAnalyticTimer } from "./database/queries/analytics";
 import { resetCharactersScheduler } from "./API/characters";
 import { updateUsersPopularity } from "./API/popularity";
 import squealModel from "./database/models/squeals.model";
+import { postRandomNews } from "./API/news";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -90,6 +91,7 @@ mongoose
     await updateAnalyticTimer();
     await resetCharactersScheduler();
     await updateUsersPopularity();
+    await postRandomNews();
   })
   .catch((e) => {
     console.error(e);
