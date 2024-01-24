@@ -98,7 +98,6 @@ export type Notification = {
 
 export type RouteSqueal = {
   name: string;
-  nodes: { name: string; lat: number; lng: number }[];
   timeBetween: number;
   reference: string;
 };
