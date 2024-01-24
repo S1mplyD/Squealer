@@ -95,3 +95,10 @@ export type Notification = {
   status: string;
   _id: string;
 };
+
+export type RouteSqueal = {
+  name: string;
+  nodes: { name: string; lat: number; lng: number }[];
+  timeBetween: number;
+  reference: string;
+};
