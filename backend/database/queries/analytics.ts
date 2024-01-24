@@ -8,7 +8,11 @@ import {
 import { created, updated } from "../../util/success";
 import { Analytic, Squeal } from "../../util/types";
 import analyticsDataModel from "../models/analytics.model";
-import { getSquealById } from "./squeals";
+import {
+  getAllUserSqueals,
+  getSquealById,
+  getSquealResponses,
+} from "./squeals";
 
 /**
  * funzione che ritorna le analitiche di un determinato squeal
@@ -103,3 +107,21 @@ export async function updateAnalyticTimer() {
     await updateAnalyticForEverySqueal();
   }, updateAnalyticTime);
 }
+
+export const getAllUserSquealsResponses = async (username: string) => {
+  try {
+    const userSqueals: Squeal[] = await getAllUserSqueals(username);
+    let completeSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] = [];
+    let responses: Squeal[] = [];
+    for (let i of userSqueals) {
+      const squealResponses: Squeal[] = await getSquealResponses(i._id);
+      for (let j of squealResponses) {
+        responses.push(j);
+      }
+      completeSqueals.push({ originalSqueal: i, responses: responses });
+    }
+    return completeSqueals;
+  } catch (e) {
+    console.error(e);
+  }
+};
