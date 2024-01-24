@@ -19,6 +19,7 @@ import { updateUsersPopularity } from "./API/popularity";
 import squealModel from "./database/models/squeals.model";
 import { postRandomNews } from "./API/news";
 import { postRandomArticle } from "./API/wikipedia";
+import { postRouteSqueals } from "./API/bus";
 
 config();
 const maxAge: number = 24 * 60 * 60 * 1000;
@@ -94,6 +95,7 @@ mongoose
     await updateUsersPopularity();
     await postRandomNews();
     await postRandomArticle();
+    await postRouteSqueals();
   })
   .catch((e) => {
     console.error(e);
