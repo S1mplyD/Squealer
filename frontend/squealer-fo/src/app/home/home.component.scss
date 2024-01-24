@@ -1,0 +1,14 @@
+#card {
+  background-color: #333;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#card::-webkit-scrollbar {
+  display: none;
+}
+
+.button-href {
+  color: black;
+  text-decoration: none;
+}

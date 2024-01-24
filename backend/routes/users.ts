@@ -149,6 +149,7 @@ router
    */
   .patch(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
+      console.log(req.body)
       if ((req.user as User).status !== "ban") {
         if ((req.user as User).plan === "admin") {
           await updateProfilePicture(

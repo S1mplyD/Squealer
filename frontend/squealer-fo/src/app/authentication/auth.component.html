@@ -1,0 +1,80 @@
+<h2 class="hometitle">Authentication</h2>
+
+<div class="posts" color="primary">
+  <div fxLayout="column" class="responsive-mat-form" *ngIf="!isLoggedIn">
+    <h2>Log In with Google</h2>
+    <div class="button-group">
+      <button mat-raised-button color="primary" (click)="loginWithGoogle()">Login with Google</button>
+    </div>
+    <br>
+    <h2>Log In</h2>
+    <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" id="forms">
+      <mat-expansion-panel-header>Click here to Log In</mat-expansion-panel-header>
+      <mat-accordion>
+        <form [formGroup]="loginForm" (ngSubmit)="loginWithEmail()">
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Email</mat-label>
+            <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+          </mat-form-field>
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Password</mat-label>
+            <input color="primary" matInput type="password" formControlName="password" placeholder="Password" required>
+          </mat-form-field>
+          <div class="button-group">
+            <button mat-raised-button color="primary" type="submit">Login</button>
+          </div>
+        </form>
+      </mat-accordion>
+    </mat-expansion-panel>
+  </div>
+
+  <div *ngIf="isLoggedIn">
+    <h2>Welcome, {{ userName }}!</h2>
+    <button (click)="logout()">Logout</button>
+  </div>
+  <br>
+  <div fxLayout="column">
+    <h2>Sign Up</h2>
+    <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" id="forms">
+      <mat-expansion-panel-header>Click here to Sign Up</mat-expansion-panel-header>
+      <mat-accordion>
+        <form [formGroup]="signupForm" (ngSubmit)="signup()">
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Email</mat-label>
+            <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+          </mat-form-field>
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Password</mat-label>
+            <input color="primary" matInput type="password" formControlName="password" placeholder="Password" required>
+          </mat-form-field>
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Username</mat-label>
+            <input color="primary" matInput type="text" formControlName="username" placeholder="Username" required>
+          </mat-form-field>
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Name</mat-label>
+            <input color="primary" matInput type="text" formControlName="name" placeholder="Name" required>
+          </mat-form-field>
+          <div class="button-group">
+            <button mat-raised-button color="primary" type="submit">Sign Up</button>
+          </div>
+        </form>
+      </mat-accordion>
+    </mat-expansion-panel>
+
+  </div>
+  <br>
+  <div>
+    <h2>Recover Password</h2>
+    <form [formGroup]="recoverPasswordForm" (ngSubmit)="recoverPassword()">
+      <mat-form-field class="full-width" appearance="outline" color="primary">
+        <mat-label color="primary">Email</mat-label>
+        <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+      </mat-form-field>
+      <div class="button-group">
+        <button mat-raised-button color="primary" type="submit">Recover Password</button>
+      </div>
+    </form>
+  </div>
+
+</div>
