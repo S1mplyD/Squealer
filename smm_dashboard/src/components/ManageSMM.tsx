@@ -31,7 +31,7 @@ const ManageSMM: React.FC = () => {
     });
   }, []);
 
-  if (!isLoading && user) {
+  if (!isLoading && user && user.plan === "professional") {
     return (
       <>
         {SMM ? (

@@ -26,6 +26,7 @@ const CreateSqueal: React.FC = () => {
     lat: 44.1420926,
     lng: 11.1478767,
   });
+  const [user, setUser] = useState<User>();
   const [locationName, setLocationName] = useState<string>();
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
@@ -97,6 +98,7 @@ const CreateSqueal: React.FC = () => {
         });
       }
       const user: User = await getMe();
+      setUser(user);
       const managed: User[] = await getManagedUsers(user.username);
       setManagedUsers(managed);
     }
@@ -105,7 +107,7 @@ const CreateSqueal: React.FC = () => {
       setLoading(false);
     });
   }, []);
-  if (!loading) {
+  if (!loading && user && user.plan === "professional") {
     return (
       <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange ">
         <form className="mt-4">

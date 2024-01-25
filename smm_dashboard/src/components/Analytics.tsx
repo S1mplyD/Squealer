@@ -40,7 +40,7 @@ export function Analytics() {
     changeAnalytics();
   };
 
-  if (!isLoading && user) {
+  if (!isLoading && user && user.plan === "professional") {
     return (
       <>
         <div className="flex flex-row m-4 p-4 ">
