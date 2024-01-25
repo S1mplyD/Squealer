@@ -61,7 +61,7 @@ const doSetTimeout = async (
         lng: i.lng + "",
         locationName: i.name,
         channels: [`${channelName}`],
-        author: "Squealer",
+        author: channelName,
         date: Date.now(),
         category: "public",
         type: "geo",
