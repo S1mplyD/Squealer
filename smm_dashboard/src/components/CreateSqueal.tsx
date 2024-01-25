@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   getManagedUsers,
   getMe,
+  getUser,
   postSqueal,
   reverseGeocode,
   uploadFile,
@@ -34,6 +35,8 @@ const CreateSqueal: React.FC = () => {
   const [media, setMedia] = useState(false);
   const [loading, setLoading] = useState(true);
   const [managedUsers, setManagedUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User>();
+
   const MapLoc = () => {
     useMapEvents({
       async click(e) {
@@ -100,13 +103,23 @@ const CreateSqueal: React.FC = () => {
       const user: User = await getMe();
       setUser(user);
       const managed: User[] = await getManagedUsers(user.username);
+      managed.push(user);
       setManagedUsers(managed);
+      setSelectedUser(managed[0]);
     }
 
     fetchData().then(() => {
       setLoading(false);
     });
   }, []);
+
+  const handleChange = async () => {
+    const selectedValue = (document.getElementById("user") as HTMLSelectElement)
+      .value;
+    const selUser = await getUser(selectedValue);
+    setSelectedUser(selUser);
+  };
+
   if (!loading && user && user.plan === "professional") {
     return (
       <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange ">
@@ -117,13 +130,19 @@ const CreateSqueal: React.FC = () => {
                 <label htmlFor="user" className="font-bold">
                   User
                 </label>
-                <select id="user">
+                <select id="user" onChange={handleChange}>
                   {managedUsers.map((el) => (
                     <option key={el.username}>{el.username}</option>
                   ))}
                 </select>
               </div>
             ) : null}
+            <label htmlFor="characters">Characters</label>
+            <div id="characters">
+              <p>{selectedUser?.dailyCharacters}</p>
+              <p>{selectedUser?.weeklyCharacters}</p>
+              <p>{selectedUser?.monthlyCharacters}</p>
+            </div>
             <label htmlFor="radiodiv" className="font-bold">
               Type
             </label>
@@ -175,29 +194,6 @@ const CreateSqueal: React.FC = () => {
                 ></input>
               </div>
             </div>
-            {/*{checkbox ? (*/}
-            {/*  <div>*/}
-            {/*    <label htmlFor="timed">Timed</label>*/}
-            {/*    <input*/}
-            {/*      type="checkbox"*/}
-            {/*      value={"timed"}*/}
-            {/*      id="timed"*/}
-            {/*      onClick={() => {*/}
-            {/*        setTimed(!timed);*/}
-            {/*      }}*/}
-            {/*    ></input>*/}
-            {/*    {timed ? (*/}
-            {/*      <div>*/}
-            {/*        <input*/}
-            {/*          type="number"*/}
-            {/*          name="time"*/}
-            {/*          id="time"*/}
-            {/*          placeholder="Time"*/}
-            {/*        />*/}
-            {/*      </div>*/}
-            {/*    ) : null}*/}
-            {/*  </div>*/}
-            {/*) : null}*/}
             {text ? (
               <div>
                 <div className="mb-4">
