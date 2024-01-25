@@ -6,7 +6,7 @@ const defaultCharactersProfessional = [1000, 6500, 25000];
 const defaultCharactersJournalist = [3000, 20000, 75000];
 const geoCharacters = 125;
 // ms * s * m * h
-const updateAnalyticTime = 1000 * 60 * 60 * 24;
+const updateAnalyticTime = 1000 * 60 * 60 * 3;
 
 export {
   imagetypes,
