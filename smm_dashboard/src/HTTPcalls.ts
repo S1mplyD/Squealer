@@ -84,15 +84,8 @@ export async function getProUsers() {
 }
 
 export async function getAllUserSqueal(username: string) {
-  const users = await axios.get(`${path}/api/squeals/user/${username}`);
+  const users = await axios.get(`${path}/api/analytics/responses/${username}`);
   return users.data;
-}
-
-export async function getAllUserAnalytics(username: string) {
-  const response = await axios.get(`${path}/api/analytics/${username}`);
-  if (response.status === 200) {
-    return response.data;
-  }
 }
 
 export async function reverseGeocode(lat: number, lng: number) {
@@ -131,3 +124,22 @@ export async function getAllMentionsChannel() {
   const response = await axios.get(`${path}/api/channels/mention`);
   return response.data;
 }
+
+export const getAllPopularSqueals = async (username: string) => {
+  const response = await axios.get(`${path}/api/analytics/popular/${username}`);
+  return response.data;
+};
+
+export const getAllUnpopularSqueals = async (username: string) => {
+  const response = await axios.get(
+    `${path}/api/analytics/unpopular/${username}`,
+  );
+  return response.data;
+};
+
+export const getAllControversialSqueals = async (username: string) => {
+  const response = await axios.get(
+    `${path}/api/analytics/controversial/${username}`,
+  );
+  return response.data;
+};
