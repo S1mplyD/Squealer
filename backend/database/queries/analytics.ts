@@ -16,35 +16,40 @@ export async function updateAnalyticForEverySqueal() {
   try {
     const squeals: Squeal[] = await getAllSqueals();
     for (let i of squeals) {
-      let cm: number = 0;
-      cm += i.positiveReactions ? i.positiveReactions.length : 0;
-      cm += i.negativeReactions ? i.negativeReactions.length : 0;
-      cm += i.visual ? i.visual : 0;
-      cm = cm * 0.25;
-      if (
-        i.positiveReactions &&
-        i.positiveReactions.length > cm &&
-        i.negativeReactions &&
-        !(i.negativeReactions.length > cm)
-      ) {
-        await squealModel.updateOne({ _id: i._id }, { category: "popular" });
-      } else if (
-        i.positiveReactions &&
-        !(i.positiveReactions.length > cm) &&
-        i.negativeReactions &&
-        i.negativeReactions.length > cm
-      ) {
-        await squealModel.updateOne({ _id: i._id }, { category: "unpopular" });
-      } else if (
-        i.positiveReactions &&
-        i.positiveReactions.length > cm &&
-        i.negativeReactions &&
-        i.negativeReactions.length > cm
-      ) {
-        await squealModel.updateOne(
-          { _id: i._id },
-          { category: "controversial" },
-        );
+      if (i.category === "public") {
+        let cm: number = 0;
+        cm += i.positiveReactions ? i.positiveReactions.length : 0;
+        cm += i.negativeReactions ? i.negativeReactions.length : 0;
+        cm += i.visual ? i.visual : 0;
+        cm = cm * 0.25;
+        if (
+          i.positiveReactions &&
+          i.positiveReactions.length > cm &&
+          i.negativeReactions &&
+          !(i.negativeReactions.length > cm)
+        ) {
+          await squealModel.updateOne({ _id: i._id }, { category: "popular" });
+        } else if (
+          i.positiveReactions &&
+          !(i.positiveReactions.length > cm) &&
+          i.negativeReactions &&
+          i.negativeReactions.length > cm
+        ) {
+          await squealModel.updateOne(
+            { _id: i._id },
+            { category: "unpopular" },
+          );
+        } else if (
+          i.positiveReactions &&
+          i.positiveReactions.length > cm &&
+          i.negativeReactions &&
+          i.negativeReactions.length > cm
+        ) {
+          await squealModel.updateOne(
+            { _id: i._id },
+            { category: "controversial" },
+          );
+        }
       }
     }
   } catch (error) {
