@@ -17,8 +17,8 @@ const Navbar: React.FC = () => {
       setLoading(false);
     });
   }, []);
-  console.log(auth);
-  if (!loading && auth) {
+
+  if (!loading && auth && auth.plan === "professional") {
     return (
       <div
         className={`container mx-auto px-4 sm:px-6 lg:px-8  rounded-lg bg-orange`}
@@ -70,16 +70,6 @@ const Navbar: React.FC = () => {
                 }}
               >
                 Add/Remove SMM
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px] "
-                onClick={() => {
-                  navigate("/smm/test");
-                }}
-              >
-                Test
               </button>
             </li>
           </ul>
