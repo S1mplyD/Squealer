@@ -1,11 +1,9 @@
 import { updateAnalyticTime } from "../../util/constants";
-import { Squeal } from "../../util/types";
+import { Squeal, User } from "../../util/types";
 import squealModel from "../models/squeals.model";
-import {
-  getAllSqueals,
-  getAllUserSqueals,
-  getSquealResponses,
-} from "./squeals";
+import userModel from "../models/users.model";
+import { getAllUserSqueals, getSquealResponses } from "./squeals";
+import { getAllUsers } from "./users";
 
 /**
  * funzione che aggiorna tutte le analitiche
@@ -14,41 +12,84 @@ import {
  */
 export async function updateAnalyticForEverySqueal() {
   try {
-    const squeals: Squeal[] = await getAllSqueals();
-    for (let i of squeals) {
-      if (i.category === "public") {
-        let cm: number = 0;
-        cm += i.positiveReactions ? i.positiveReactions.length : 0;
-        cm += i.negativeReactions ? i.negativeReactions.length : 0;
-        cm += i.visual ? i.visual : 0;
-        cm = cm * 0.25;
-        if (
-          i.positiveReactions &&
-          i.positiveReactions.length > cm &&
-          i.negativeReactions &&
-          !(i.negativeReactions.length > cm)
-        ) {
-          await squealModel.updateOne({ _id: i._id }, { category: "popular" });
-        } else if (
-          i.positiveReactions &&
-          !(i.positiveReactions.length > cm) &&
-          i.negativeReactions &&
-          i.negativeReactions.length > cm
-        ) {
-          await squealModel.updateOne(
-            { _id: i._id },
-            { category: "unpopular" },
-          );
-        } else if (
-          i.positiveReactions &&
-          i.positiveReactions.length > cm &&
-          i.negativeReactions &&
-          i.negativeReactions.length > cm
-        ) {
-          await squealModel.updateOne(
-            { _id: i._id },
-            { category: "controversial" },
-          );
+    const users: User[] = await getAllUsers();
+    for (let j of users) {
+      const squeals: Squeal[] = await getAllUserSqueals(j.username);
+      let popularCount = 0;
+      let unpopularCount = 0;
+      for (let i of squeals) {
+        if (i.category === "public") {
+          let cm: number = 0;
+          cm += i.positiveReactions ? i.positiveReactions.length : 0;
+          cm += i.negativeReactions ? i.negativeReactions.length : 0;
+          cm += i.visual ? i.visual : 0;
+          cm = cm * 0.25;
+          if (
+            i.positiveReactions &&
+            i.positiveReactions.length > cm &&
+            i.negativeReactions &&
+            !(i.negativeReactions.length > cm)
+          ) {
+            await squealModel.updateOne(
+              { _id: i._id },
+              { category: "popular" },
+            );
+            if (popularCount >= 10) {
+              const daily = j.dailyCharacters + (j.dailyCharacters * 1) / 100;
+              const weekly =
+                j.weeklyCharacters + (j.weeklyCharacters * 1) / 100;
+              const monthly =
+                j.monthlyCharacters + (j.monthlyCharacters * 1) / 100;
+              await userModel.updateOne(
+                { username: j.username },
+                {
+                  dailyCharacters: daily,
+                  weeklyCharacters: weekly,
+                  monthlyCharacters: monthly,
+                },
+              );
+              popularCount = 0;
+            } else popularCount++;
+          } else if (
+            i.positiveReactions &&
+            !(i.positiveReactions.length > cm) &&
+            i.negativeReactions &&
+            i.negativeReactions.length > cm
+          ) {
+            await squealModel.updateOne(
+              { _id: i._id },
+              { category: "unpopular" },
+            );
+            if (unpopularCount >= 3) {
+              const daily = j.dailyCharacters - (j.dailyCharacters * 1) / 100;
+              const weekly =
+                j.weeklyCharacters - (j.weeklyCharacters * 1) / 100;
+              const monthly =
+                j.monthlyCharacters - (j.monthlyCharacters * 1) / 100;
+              await userModel.updateOne(
+                { username: j.username },
+                {
+                  dailyCharacters: daily,
+                  weeklyCharacters: weekly,
+                  monthlyCharacters: monthly,
+                },
+              );
+              unpopularCount = 0;
+            } else unpopularCount++;
+          } else if (
+            i.positiveReactions &&
+            i.positiveReactions.length > cm &&
+            i.negativeReactions &&
+            i.negativeReactions.length > cm
+          ) {
+            await squealModel.updateOne(
+              { _id: i._id },
+              {
+                category: "controversial",
+                $push: { channels: "§CONTROVERSIAL" },
+              },
+            );
+          }
         }
       }
     }
