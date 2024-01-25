@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { User } from "../utils/types.ts";
-import { getMe, getManagedUsers } from "../HTTPcalls.ts";
+import { getMe, getManagedUsers, getUser } from "../HTTPcalls.ts";
 
 export function Analytics() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User>();
   const [managedUsers, setManagedUsers] = useState<User[]>();
-  const [selectedUser, setSelectedUser] = useState<string>();
+  const [selectedUser, setSelectedUser] = useState<User>();
 
   useEffect(() => {
     async function fetchData() {
@@ -16,6 +16,7 @@ export function Analytics() {
         const managedUsers = await getManagedUsers(user.username);
         managedUsers.push(user);
         setManagedUsers(managedUsers);
+        setSelectedUser(user);
       }
     }
     fetchData().then(() => {
@@ -23,11 +24,12 @@ export function Analytics() {
     });
   }, []);
 
-  const handleChange = () => {
+  const handleChange = async () => {
     const selectedValue = (
       document.getElementById("manageduserselect") as HTMLSelectElement
     ).value;
-    setSelectedUser(selectedValue);
+    const selUser = await getUser(selectedValue);
+    setSelectedUser(selUser);
   };
 
   if (!isLoading && user && user.plan === "professional") {
@@ -48,6 +50,17 @@ export function Analytics() {
               ))}
             </select>
           ) : null}
+          <div>
+            {selectedUser ? (
+              <div className="flex flex-row m-4 p-4">
+                <ul>
+                  <li>{selectedUser.dailyCharacters}</li>
+                  <li>{selectedUser.weeklyCharacters}</li>
+                  <li>{selectedUser.monthlyCharacters}</li>
+                </ul>
+              </div>
+            ) : null}
+          </div>
         </div>
       </>
     );
