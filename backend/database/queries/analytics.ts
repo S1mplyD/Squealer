@@ -1,72 +1,12 @@
 import { updateAnalyticTime } from "../../util/constants";
+import { Squeal } from "../../util/types";
+import squealModel from "../models/squeals.model";
 import {
-  SquealerError,
-  cannot_create,
-  cannot_update,
-  non_existent,
-} from "../../util/errors";
-import { created, updated } from "../../util/success";
-import { Analytic, Squeal } from "../../util/types";
-import analyticsDataModel from "../models/analytics.model";
-import {
+  getAllSqueals,
   getAllUserSqueals,
-  getSquealById,
   getSquealResponses,
 } from "./squeals";
 
-/**
- * funzione che ritorna le analitiche di un determinato squeal
- * @param id id dello squeal
- * @returns SquealerError | Analytic
- */
-export async function getAnalytic(id: string) {
-  const analytic: Analytic | null = await analyticsDataModel.findOne({
-    squealId: id,
-  });
-  if (!analytic) throw non_existent;
-  else return analytic;
-}
-export async function getAllAnalytics() {
-  const analytics: Analytic[] = await analyticsDataModel.find();
-  if (analytics.length < 1) throw non_existent;
-  else return analytics;
-}
-
-/**
- * funzione che ritorna tutte le analitiche
- * @param username id dell'utente
- * @returns SquealerError | Analytic[]
- */
-export async function getAllUserAnalytics(username: string) {
-  const analytics: Analytic[] = await analyticsDataModel
-    .find({
-      author: username,
-    })
-    .sort({ date: -1 });
-  if (analytics.length < 1) throw non_existent;
-  else return analytics;
-}
-
-/**
- * funzione che crea un'analitica di uno squeal (da utilizzare al momento della creazione dello squeal)
- * (NON UTILIZZARE CON SQUEAL AUTOMATIZZATI, SOLO SQUEAL NORMALI E TEMPORIZZATI)
- * @param id id dello squeal
- * @returns SquealerError | Success
- */
-export async function createAnalyticForSqueal(id: string) {
-  const squeal = await getSquealById(id);
-  if ("visual" in squeal) {
-    const newAnalytic = await analyticsDataModel.create({
-      squealId: squeal._id,
-      dates: new Date(),
-      visuals: squeal.visual,
-      positiveReactions: squeal.positiveReactions,
-      negativeReactions: squeal.negativeReactions,
-    });
-    if (!newAnalytic) throw cannot_create;
-    else return created;
-  }
-}
 /**
  * funzione che aggiorna tutte le analitiche
  * (NON ESEGUIRE, IL SERVER LA ESEGUE IN AUTOMATICO)
@@ -74,27 +14,41 @@ export async function createAnalyticForSqueal(id: string) {
  */
 export async function updateAnalyticForEverySqueal() {
   try {
-    const analytics: Analytic[] = await getAllAnalytics();
-    for (let i of analytics as Analytic[]) {
-      const squeal: Squeal = await getSquealById(i.squealId);
-      if ("visual" in squeal) {
-        const update = await analyticsDataModel.updateOne(
-          {
-            _id: squeal._id,
-          },
-          {
-            dates: new Date(),
-            visuals: squeal.visual,
-            positiveReactions: squeal.positiveReactions,
-            negativeReactions: squeal.negativeReactions,
-          },
+    const squeals: Squeal[] = await getAllSqueals();
+    for (let i of squeals) {
+      let cm: number = 0;
+      cm += i.positiveReactions ? i.positiveReactions.length : 0;
+      cm += i.negativeReactions ? i.negativeReactions.length : 0;
+      cm += i.visual ? i.visual : 0;
+      cm = cm * 0.25;
+      if (
+        i.positiveReactions &&
+        i.positiveReactions.length > cm &&
+        i.negativeReactions &&
+        !(i.negativeReactions.length > cm)
+      ) {
+        await squealModel.updateOne({ _id: i._id }, { category: "popular" });
+      } else if (
+        i.positiveReactions &&
+        !(i.positiveReactions.length > cm) &&
+        i.negativeReactions &&
+        i.negativeReactions.length > cm
+      ) {
+        await squealModel.updateOne({ _id: i._id }, { category: "unpopular" });
+      } else if (
+        i.positiveReactions &&
+        i.positiveReactions.length > cm &&
+        i.negativeReactions &&
+        i.negativeReactions.length > cm
+      ) {
+        await squealModel.updateOne(
+          { _id: i._id },
+          { category: "controversial" },
         );
-        if (update.modifiedCount < 1) console.log(cannot_update);
-        else return updated;
       }
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -124,4 +78,25 @@ export const getAllUserSquealsResponses = async (username: string) => {
   } catch (e) {
     console.error(e);
   }
+};
+
+export const getPopularPosts = async (username: string) => {
+  const squeals: Squeal[] = await squealModel
+    .find({ $and: [{ category: "popular" }, { author: username }] })
+    .sort({ positiveReactions: 1 });
+  return squeals;
+};
+
+export const getUnpopularPosts = async (username: string) => {
+  const squeals: Squeal[] = await squealModel
+    .find({ $and: [{ category: "unpopular" }, { author: username }] })
+    .sort({ negativeReactions: 1 });
+  return squeals;
+};
+
+export const getControversialPosts = async (username: string) => {
+  const squeals: Squeal[] = await squealModel.find({
+    $and: [{ category: "controversial" }, { author: username }],
+  });
+  return squeals;
 };
