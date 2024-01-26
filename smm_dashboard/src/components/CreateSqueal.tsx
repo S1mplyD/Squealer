@@ -318,6 +318,7 @@ const CreateSqueal: React.FC = () => {
                 if (newSqueal) {
                   console.log(newSqueal);
                   alert("squeal posted correctly");
+                  window.location.reload();
                 }
               } else if (type === "media") {
                 const files = document.querySelector(
@@ -329,7 +330,10 @@ const CreateSqueal: React.FC = () => {
                   const recipients: string = (
                     document.getElementById("recipients") as HTMLInputElement
                   ).value.replaceAll(" ", "");
-                  const recipientsArray: string[] = recipients.split(",");
+                  let recipientsArray: string[] = recipients.split(",");
+                  recipientsArray = recipientsArray.filter((el) => {
+                    return el !== "";
+                  });
                   const user = document.getElementById(
                     "user",
                   ) as HTMLSelectElement;
@@ -347,13 +351,17 @@ const CreateSqueal: React.FC = () => {
                   );
                   if (newSqueal) {
                     alert("squeal posted correctly");
+                    window.location.reload();
                   }
                 }
               } else if (type === "geo") {
                 const recipients: string = (
                   document.getElementById("recipients") as HTMLInputElement
                 ).value.replaceAll(" ", "");
-                const recipientsArray: string[] = recipients.split(",");
+                let recipientsArray: string[] = recipients.split(",");
+                recipientsArray = recipientsArray.filter((el) => {
+                  return el !== "";
+                });
                 const user = document.getElementById(
                   "user",
                 ) as HTMLSelectElement;
@@ -371,6 +379,7 @@ const CreateSqueal: React.FC = () => {
                 );
                 if (newSqueal) {
                   alert("squeal posted correctly");
+                  window.location.reload();
                 }
               }
             }}
