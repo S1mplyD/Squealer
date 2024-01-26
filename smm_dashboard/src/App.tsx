@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import ManageSMM from "./components/ManageSMM";
 import { Analytics } from "./components/Analytics.tsx";
+import { Characters } from "./components/Characters.tsx";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/smm/login" element={<Login />} />
           <Route path="/smm/managesmm" element={<ManageSMM />} />
           <Route path="/smm/analytics" element={<Analytics />} />
+          <Route path="/smm/characters" element={<Characters />} />
         </Routes>
       </>
     </BrowserRouter>
