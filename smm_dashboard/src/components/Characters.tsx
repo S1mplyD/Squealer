@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { User } from "../utils/types";
 import { getMe } from "../HTTPcalls";
-import Login from "./Login";
 
 export function Characters() {
   const [user, setUser] = useState<User>();
