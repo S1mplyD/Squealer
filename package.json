@@ -7,7 +7,8 @@
     "dev": "",
     "api": "nodemon ./backend/index.ts",
     "build": "tsc",
-    "start": "cd smm_dashboard && npm run build && cd .. && npm run api"
+    "start": "cd smm_dashboard && npm run build && cd .. && cd frontend/squealer-fo && npm run build && cd ../.. && npm run api",
+    "react": "cd smm_dashboard && npm run build && cd .. && npm run api"
   },
   "repository": {
     "type": "git",
