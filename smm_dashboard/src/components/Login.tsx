@@ -30,7 +30,7 @@ const Login: React.FC = () => {
             onClick={() => {
               login(
                 (document.getElementById("mail") as HTMLInputElement).value,
-                (document.getElementById("password") as HTMLInputElement).value
+                (document.getElementById("password") as HTMLInputElement).value,
               ).then(() => {
                 location.reload();
               });
@@ -46,7 +46,7 @@ const Login: React.FC = () => {
               href="http://localhost:3000/api/auth/google"
               className="mx-4 flex flex-row"
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"></img>
+              <img src="/google_icon.png"></img>
               Login with Google
             </a>
           </button>
