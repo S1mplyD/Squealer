@@ -89,7 +89,7 @@ mongoose
     .then(async () => {
         console.log("[CONNECTED TO MONGOOSE]");
         await startAllTimer();
-        await fix();
+        // await fix();
         await updateAnalyticTimer();
         await resetCharactersScheduler();
         await updateUsersPopularity();
@@ -106,5 +106,7 @@ app.listen(port, () => {
 });
 
 const fix = async () => {
-    await squealModel.deleteMany({ originalSqueal: { $ne: "" } });
+    await squealModel.deleteMany({
+        $and: [{ originalSqueal: { $ne: "" } }, { time: { $gt: 0 } }],
+    });
 };
