@@ -10,21 +10,21 @@ import { User } from "../util/types";
  * @returns followersCount | SquealerError
  */
 export async function getAllFollowers(username: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
+    const user: User | SquealerError = await getUserByUsername(username);
 
-  if (user instanceof SquealerError) return non_existent;
-  else {
-    let followers: User[] = [];
-    if (user.followers === undefined) return non_existent;
-    else if (user.followers?.length < 1) return non_existent;
+    if (user instanceof SquealerError) return non_existent;
     else {
-      for (let i of user.followers) {
-        const user: User | SquealerError = await getUserByUsername(username);
-        if (!(user instanceof SquealerError)) followers.push(user as User);
-      }
+        let followers: User[] = [];
+        if (user.followers === undefined) return non_existent;
+        else if (user.followers?.length < 1) return non_existent;
+        else {
+            for (let i of user.followers) {
+                const user: User | SquealerError = await getUserByUsername(username);
+                if (!(user instanceof SquealerError)) followers.push(user as User);
+            }
+        }
+        return followers;
     }
-    return followers;
-  }
 }
 
 /**
@@ -33,22 +33,22 @@ export async function getAllFollowers(username: string) {
  * @returns followingCount | SquealerError
  */
 export async function getAllFollowing(username: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
+    const user: User | SquealerError = await getUserByUsername(username);
 
-  if (user instanceof SquealerError) return non_existent;
-  else {
-    let following: User[] = [];
-    if (user.following === undefined) return non_existent;
-    else if (user.following?.length < 1) return non_existent;
+    if (user instanceof SquealerError) return non_existent;
     else {
-      for (let i of user.following) {
-        console.log(i);
-        const user: User | SquealerError = await getUser(i);
-        if (!(user instanceof SquealerError)) following.push(user as User);
-      }
+        let following: User[] = [];
+        if (user.following === undefined) return non_existent;
+        else if (user.following?.length < 1) return non_existent;
+        else {
+            for (let i of user.following) {
+                console.log(i);
+                const user: User | SquealerError = await getUser(i);
+                if (!(user instanceof SquealerError)) following.push(user as User);
+            }
+        }
+        return following;
     }
-    return following;
-  }
 }
 
 /**
@@ -58,24 +58,23 @@ export async function getAllFollowing(username: string) {
  * @returns SquealerError | Success
  */
 export async function followUser(userId: string, username: string) {
-  const user: User | SquealerError = await getUserByUsername(username);
+    const followingUser: User = await getUser(userId);
+    const followedUser: User = await getUserByUsername(username);
 
-  if (user instanceof SquealerError) return user;
-  // inserisco l'id dell'utente da seguire nei seguti dell'utente che segue
-  const update = await userModel.updateOne(
-    { _id: userId },
-    { $push: { following: user._id } },
-  );
-  if (update.modifiedCount < 1) return cannot_update;
-  else {
-    //aggiorno l'utente seguito
-    const updateUser = await userModel.updateOne(
-      { username: username },
-      { $push: { followers: userId } },
-    );
-    if (updateUser.modifiedCount < 1) return cannot_update;
-    else return updated;
-  }
+    // inserisco l'id dell'utente da seguire nei seguti dell'utente che segue
+    if (!followingUser.following?.includes(followedUser._id)) {
+        await userModel.updateOne(
+            { _id: userId },
+            { $push: { following: followedUser._id } },
+        );
+
+        if (!followedUser.followers?.includes(followingUser._id))
+            //aggiorno l'utente seguito
+            await userModel.updateOne(
+                { username: username },
+                { $push: { followers: followingUser._id } },
+            );
+    }
 }
 
 /**
@@ -85,22 +84,21 @@ export async function followUser(userId: string, username: string) {
  * @returns SquealerError | Success
  */
 export async function unfollowUser(userId: string, username: string) {
-  const followed: User | SquealerError = await getUserByUsername(username);
+    const followed: User | SquealerError = await getUserByUsername(username);
 
-  if (followed instanceof SquealerError) return non_existent;
-  console.log(followed._id);
+    if (followed instanceof SquealerError) return non_existent;
 
-  const update = await userModel.updateOne(
-    { _id: userId },
-    { $pull: { following: followed._id } },
-  );
-  if (update.modifiedCount < 1) return cannot_update;
-  else {
-    const updateUser = await userModel.updateOne(
-      { username: username },
-      { $pull: { followers: userId } },
+    const update = await userModel.updateOne(
+        { _id: userId },
+        { $pull: { following: followed._id } },
     );
-    if (updateUser.modifiedCount < 1) return cannot_update;
-    else return updated;
-  }
+    if (update.modifiedCount < 1) return cannot_update;
+    else {
+        const updateUser = await userModel.updateOne(
+            { username: username },
+            { $pull: { followers: userId } },
+        );
+        if (updateUser.modifiedCount < 1) return cannot_update;
+        else return updated;
+    }
 }
