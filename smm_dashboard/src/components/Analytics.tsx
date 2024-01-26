@@ -32,9 +32,10 @@ export function Analytics() {
         managedUsers.push(user);
         setManagedUsers(managedUsers);
         const userSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] =
-          await getAllUserSqueal(user.username);
+          await getAllUserSqueal(managedUsers[0].username);
         setSqueals(userSqueals);
         setSelectedUser(managedUsers[0]);
+        console.log(managedUsers[0]);
       }
     }
     fetchData().then(() => {
@@ -96,7 +97,30 @@ export function Analytics() {
       document.getElementById("manageduserselect") as HTMLSelectElement
     ).value;
     const selUser = await getUser(selectedValue);
+    await handleChangeSqueals(selUser);
+  };
+
+  const handleChangeSqueals = async (selUser: User) => {
     setSelectedUser(selUser);
+    if (selUser) {
+      if (showAll) {
+        const userSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] =
+          await getAllUserSqueal(selUser.username);
+        setSqueals(userSqueals);
+      } else if (showPopular) {
+        const userSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] =
+          await getAllPopularSqueals(selUser.username);
+        setSqueals(userSqueals);
+      } else if (showUnpopular) {
+        const userSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] =
+          await getAllUnpopularSqueals(selUser.username);
+        setSqueals(userSqueals);
+      } else if (showControversial) {
+        const userSqueals: { originalSqueal: Squeal; responses: Squeal[] }[] =
+          await getAllControversialSqueals(selUser.username);
+        setSqueals(userSqueals);
+      }
+    }
   };
 
   if (!isLoading && user && user.plan === "professional") {
