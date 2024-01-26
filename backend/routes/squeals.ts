@@ -35,6 +35,7 @@ import express, {
 import { Squeal, Success, User } from "../util/types";
 import { SquealerError } from "../util/errors";
 import { startTimer } from "../API/timers";
+import { getUserByUsername } from "../database/queries/users";
 
 export const router = express.Router();
 
@@ -364,12 +365,22 @@ router
                 (req.user as User).status !== "ban" &&
                 (req.user as User).status !== "block"
             ) {
-                const newSqueal: Squeal = await postSquealAsUser(
-                    req.params.username,
-                    (req.user as User).username,
-                    req.body,
-                );
-                res.status(201).send(newSqueal);
+                const user: User = await getUserByUsername(req.params.username);
+                if ((req.user as User).managedAccounts.includes(user._id)) {
+                    const newSqueal: Squeal = await postSquealAsUser(
+                        req.params.username,
+                        (req.user as User).username,
+                        req.body,
+                    );
+                    res.status(201).send(newSqueal);
+                } else if ((req.user as User).username === user.username) {
+                    const squeal: Squeal | undefined = await postSqueal(
+                        req.body,
+                        req.user as User,
+                    );
+                    if (squeal) res.status(201).send(squeal);
+                    else res.sendStatus(500);
+                } else res.sendStatus(401);
             } else res.sendStatus(401);
         } catch (error) {
             console.log(error);
