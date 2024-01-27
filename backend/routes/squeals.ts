@@ -8,6 +8,8 @@ import {
     getAllGeoSqueals,
     getAllMediaSqueals,
     getAllSqueals,
+    getAllSquealsWithLogin,
+    getAllSquealsWithoutLogin,
     getAllTimedSqueals,
     getAllUserSqueals,
     getAutoSqueals,
@@ -435,7 +437,7 @@ router
             if (
                 !req.user ||
                 ((req.user as User).status !== "ban" &&
-                    (req.user as User).status !== "ban")
+                    (req.user as User).status !== "block")
             ) {
                 const squeal: Squeal = await getSquealById(req.params.id);
                 res.status(200).send(squeal);
@@ -518,3 +520,32 @@ router
             res.status(500).send(e);
         }
     });
+
+router.route("/nologin").get(async (req, res) => {
+    try {
+        if (!req.user) {
+            const squeals: Squeal[] = await getAllSquealsWithoutLogin();
+            res.status(200).send(squeals);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+router.route("/login").get(async (req, res) => {
+    try {
+        if (
+            req.user &&
+            (req.user as User).status !== "ban" &&
+            (req.user as User).status !== "block"
+        ) {
+            const squeals: Squeal[] | undefined = await getAllSquealsWithLogin(
+                req.user as User,
+            );
+            if (squeals) res.status(200).send(squeals);
+            else res.sendStatus(404);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});

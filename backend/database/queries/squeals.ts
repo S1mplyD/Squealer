@@ -14,6 +14,8 @@ import {
     addSquealToChannel,
     checkChannelType,
     createChannel,
+    getAllOfficialChannel,
+    getSubscribedChannels,
 } from "./channels";
 import channelsModel from "../models/channels.model";
 import { resolve } from "path";
@@ -32,6 +34,52 @@ export async function getAllSqueals(): Promise<Squeal[]> {
     const squeals: Squeal[] | null = await squealModel.find().sort({ date: -1 });
     if (squeals.length < 1) throw non_existent;
     else return squeals;
+}
+
+export async function getAllSquealsWithoutLogin() {
+    const officialChannels: Channel[] = await getAllOfficialChannel();
+    let squeals: Squeal[] = [];
+    for (let i of officialChannels) {
+        const channelSqueals: Squeal[] = await getSquealsByChannel(i.name);
+        for (let j of channelSqueals) squeals.push(j);
+    }
+    return squeals;
+}
+
+export async function getAllSquealsWithLogin(user: User) {
+    const channels: Channel[] = await getSubscribedChannels(user);
+    let squeals: Squeal[] = [];
+    for (let i of channels) {
+        for (let j of i.squeals) {
+            try {
+                const squeal: Squeal = await getSquealById(j);
+                squeals.push(squeal);
+            } catch (e) {
+                continue;
+            }
+        }
+    }
+    const publicSqueals: Squeal[] = await getAllPublicSqueals();
+    for (let i of publicSqueals) squeals.push(i);
+    return squeals;
+}
+
+export async function getAllPublicSqueals() {
+    const squeals: Squeal[] = await squealModel.find({
+        $and: [
+            { channels: { $size: 0 } },
+            {
+                $or: [
+                    { category: "public" },
+                    { category: "pupular" },
+                    { category: "unpupular" },
+                    { category: "controversial" },
+                ],
+            },
+        ],
+    });
+    console.log(squeals);
+    return squeals;
 }
 
 /**
@@ -216,12 +264,13 @@ export async function postResponse(
  */
 export async function postSqueal(squeal: Squeal, user: User) {
     try {
-        console.log(squeal);
         const channels: null | Channel[] = await channelsModel.find({
             name: { $in: squeal.channels },
         });
+        console.log(channels);
+        console.log(squeal.channels);
         let rec: string[] = [];
-        if (!(channels.length > 0)) {
+        if (channels.length < 1) {
             for (let i of squeal.channels) {
                 await createChannel(i.substring(1), await checkChannelType(i), user);
             }
