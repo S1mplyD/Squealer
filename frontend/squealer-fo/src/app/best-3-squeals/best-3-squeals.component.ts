@@ -19,6 +19,7 @@ import axios from 'axios';
 })
 export class Best3SquealsComponent implements OnInit {
   squeals: Squeal[] = [];
+  justThreeSqueals: Squeal[] = [];
   fileNameSqueal = '';
   fileNameAnswer = '';
   accounts: User[] = [];
@@ -373,15 +374,13 @@ export class Best3SquealsComponent implements OnInit {
     console.log(this.isLoggedIn);
     if (this.isLoggedIn) {
       this.squealService
-      .getSquealsLogin()
+      .getSquealsLogin3Best()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
         this.squeals = res;
         for (const squeal of this.squeals) {
-          squeal.positiveReactions = [];
           this.loadAnswers(squeal._id);
         }
-        this.squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions) && (a.positiveReactions?.length > b.positiveReactions?.length) ? 1: -1));
       });
     } else {
       this.squealService
@@ -390,13 +389,10 @@ export class Best3SquealsComponent implements OnInit {
       .subscribe((res) => {
         this.squeals = res;
         for (const squeal of this.squeals) {
-          squeal.positiveReactions = [];
           this.loadAnswers(squeal._id);
         }
-        this.squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions) && (a.positiveReactions?.length > b.positiveReactions?.length) ? 1: -1));
       });
     }
-    this.squeals.splice(3, this.squeals.length - 3);
   }
 
   loadAnswers(id: string): void {
@@ -409,6 +405,20 @@ export class Best3SquealsComponent implements OnInit {
           this.responses.push(answer);
         }
       });
+  }
+
+  descentOrder(a: Squeal, b: Squeal): number {
+    if (!a.positiveReactions) {
+      a.positiveReactions = [];
+    }
+    if (!b.positiveReactions) {
+      b.positiveReactions = [];
+    }
+    if (a.positiveReactions.length >= b.positiveReactions.length) {
+      return -1;
+    } else {
+      return 1;
+    }
   }
 
   getChannels(body: string): string[] {

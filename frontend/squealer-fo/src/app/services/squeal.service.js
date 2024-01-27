@@ -49,85 +49,79 @@ let SquealService = exports.SquealService = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     var SquealService = _classThis = class {
-        constructor() {
-            this.squeals = [
-                // Example tweets
-                {
-                    id: 1,
-                    username: 'johndoe',
-                    profileImage: '',
-                    content: 'Hello, Squealer!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 2,
-                    username: 'janesmith',
-                    profileImage: '',
-                    content: 'Angular is awesome! @johndoe RULES!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 3,
-                    username: 'marco_rossi',
-                    profileImage: '',
-                    content: 'Hello, Squealer!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 4,
-                    username: 'fabio_vitali',
-                    profileImage: '',
-                    content: 'Che figata!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 5,
-                    username: 'luca_bennati',
-                    profileImage: '',
-                    content: 'SIUUUUM!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 6,
-                    username: 'mia_khalifa',
-                    profileImage: '',
-                    content: '@johndoe, HI!',
-                    timestamp: new Date()
-                },
-                {
-                    id: 7,
-                    username: 'delusional',
-                    profileImage: '',
-                    content: '@johndoe u r n idiot!',
-                    timestamp: new Date()
-                }
-                // Add more tweets as needed
-            ];
+        constructor(http) {
+            this.http = http;
+            this.apiUrl = 'http://localhost:3000/api/squeals/type'; // Replace with your authentication API URL
+            this.newApiUrl = 'http://localhost:3000/api/squeals';
         }
-        getTweets() {
+        getAllSqueals() {
+            return this.http.get(`${this.newApiUrl}`);
+        }
+        getAllSquealsRecipients(username) {
+            const params = {
+                'recipient': username + ''
+            };
+            return this.http.get(`${this.newApiUrl}/recipients`, { params: params });
+        }
+        getAllTextSqueals() {
             // Sort tweets by timestamp in descending order
-            return this.squeals.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+            return this.http.get(`${this.apiUrl}/text`);
         }
-        getTweetsForUsers(username) {
-            let squeals = [];
-            for (const squeal of this.squeals) {
-                if (squeal.username == username) {
-                    squeals.push(squeal);
-                }
-            }
-            return squeals;
+        getSquealsForUsers(username) {
+            return this.http.get(`${this.newApiUrl}/user/${username}`);
         }
-        getAnswersForUsers(username) {
-            let squeals = [];
-            for (const squeal of this.squeals) {
-                if (squeal.content.includes('@' + username)) {
-                    squeals.push(squeal);
-                }
-            }
-            return squeals;
+        getAllMediaSqueals() {
+            // Sort tweets by timestamp in descending order
+            return this.http.get(`${this.apiUrl}/media`);
         }
-        assignProfileImage(squeal, url) {
-            squeal.profileImage = url;
+        getMediaSquealsForUsers(username) {
+            return this.http.get(`${this.newApiUrl}/user/${username}`);
+        }
+        getAllGeoSqueals() {
+            // Sort tweets by timestamp in descending order
+            return this.http.get(`${this.apiUrl}/geo`);
+        }
+        getGeoSquealsForUsers(username) {
+            return this.http.get(`${this.apiUrl}/user/${username}`);
+        }
+        getAllTimedSqueals() {
+            return this.http.get(`${this.apiUrl}/timed`);
+        }
+        getResponses(squealId) {
+            return this.http.get(`${this.newApiUrl}/response/${squealId}`);
+        }
+        addUpvote(squealId) {
+            const params = {
+                'squealId': squealId + ''
+            };
+            return this.http.post(`${this.newApiUrl}/positiveReactions?squealId=${squealId}`, { params: params });
+        }
+        addDownvote(squealId) {
+            const params = {
+                'squealId': squealId + ''
+            };
+            return this.http.post(`${this.newApiUrl}/negativeReactions?squealId=${squealId}`, { params: params });
+        }
+        addSqueal(squeal) {
+            return this.http.post(`${this.apiUrl}`, squeal);
+        }
+        addResponse(squeal, originalId) {
+            return this.http.post(`${this.newApiUrl}/response/${originalId}`, squeal);
+        }
+        deleteSqueal(id) {
+            return this.http.delete(`${this.apiUrl}`, { params: { 'id': id + '' } });
+        }
+        getSquealsNoLogin() {
+            return this.http.get(`${this.newApiUrl}/nologin`);
+        }
+        getSquealsLogin() {
+            return this.http.get(`${this.newApiUrl}/login`);
+        }
+        getSquealsNoLogin3Best() {
+            return this.http.get(`${this.newApiUrl}/nologin3best`);
+        }
+        getSquealsLogin3Best() {
+            return this.http.get(`${this.newApiUrl}/login3best`);
         }
     };
     __setFunctionName(_classThis, "SquealService");

@@ -549,3 +549,44 @@ router.route("/login").get(async (req, res) => {
         res.status(500).send(e);
     }
 });
+
+router.route("/nologin3best").get(async (req, res) => {
+    try {
+        if (!req.user) {
+            const squeals: Squeal[] = await getAllSquealsWithoutLogin();
+            squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions)&&(a.positiveReactions?.length >= b.positiveReactions?.length) ? 1 : -1));
+            let squeals3Best: Squeal[] = [];
+            for (let i = 0; i < 3; i++) {
+                squeals3Best.push(squeals[i]);
+            }
+            res.status(200).send(squeals3Best);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+router.route("/login3best").get(async (req, res) => {
+    try {
+        if (
+            req.user &&
+            (req.user as User).status !== "ban" &&
+            (req.user as User).status !== "block"
+        ) {
+            const squeals: Squeal[] | undefined = await getAllSquealsWithLogin(
+                req.user as User,
+            );
+            squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions)&&(a.positiveReactions?.length >= b.positiveReactions?.length) ? 1 : -1));
+            let squeals3Best: Squeal[] = [];
+            for (let i = 0; i < 3; i++) {
+                squeals3Best.push(squeals[i]);
+            }
+            if (squeals3Best) res.status(200).send(squeals3Best);
+            else res.sendStatus(404);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
+
+

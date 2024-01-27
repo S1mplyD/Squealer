@@ -49,12 +49,14 @@ const animations_1 = require("@angular/platform-browser/animations");
 const account_list_component_1 = require("./followed-accounts/account-list.component");
 const user_page_component_1 = require("./user-page/user-page.component");
 const auth_component_1 = require("./authentication/auth.component");
+const best_3_squeals_component_1 = require("./best-3-squeals/best-3-squeals.component");
 account_list_component_1.AccountListComponent;
 const routes = [
     { path: 'authentication', component: auth_component_1.AuthComponent },
     { path: '', component: home_component_1.HomeComponent },
+    { path: 'best3Squeals', component: best_3_squeals_component_1.Best3SquealsComponent },
     { path: 'following', component: account_list_component_1.AccountListComponent },
-    { path: 'following/:username', component: user_page_component_1.UserPageComponent }
+    { path: 'following/:username', component: user_page_component_1.UserPageComponent },
 ];
 let AppRoutingModule = exports.AppRoutingModule = (() => {
     let _classDecorators = [(0, core_1.NgModule)({

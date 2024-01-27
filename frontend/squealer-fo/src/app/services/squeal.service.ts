@@ -94,4 +94,13 @@ export class SquealService {
   getSquealsLogin(): Observable<Squeal[]> {
     return this.http.get<Squeal[]>(`${this.newApiUrl}/login`);
   }
+
+  getSquealsNoLogin3Best(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/nologin3best`);
+  }
+
+  getSquealsLogin3Best(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/login3best`);
+  }
+
 }
