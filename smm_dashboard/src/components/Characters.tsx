@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { User } from "../utils/types";
-import { buyCharactersForUser, getManagedUsers, getMe } from "../HTTPcalls";
+import {
+  buyCharactersForUser,
+  getManagedUsers,
+  getMe,
+  getUser,
+} from "../HTTPcalls";
 
 export function Characters() {
   const [user, setUser] = useState<User>();
   const [price, setPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedUser, setSelectedUser] = useState<User>();
+  const [managedUsers, setManagedUsers] = useState<User[]>();
 
   let pricePerCharacter = 0.05;
 
@@ -35,13 +41,22 @@ export function Characters() {
     setPrice(price);
   };
 
+  const handleChange = async () => {
+    const selectedValue = (
+      document.getElementById("manageduserselect") as HTMLSelectElement
+    ).value;
+    const selUser = await getUser(selectedValue);
+    setSelectedUser(selUser);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const user: User = await getMe();
       setUser(user);
-      const managedUsers: User[] = await getManagedUsers(user.username);
-      managedUsers.push(user);
-      setSelectedUser(managedUsers[0]);
+      const managed: User[] = await getManagedUsers(user.username);
+      managed.push(user);
+      setSelectedUser(managed[0]);
+      setManagedUsers(managed);
     };
 
     fetchData().then(() => {
@@ -51,8 +66,23 @@ export function Characters() {
 
   if (!loading && user && user.plan === "professional") {
     return (
-      <div>
-        <div>Buy More Characters</div>
+      <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange">
+        {managedUsers ? (
+          <select
+            id="manageduserselect"
+            onChange={() => {
+              handleChange();
+            }}
+          >
+            {managedUsers.map((managedUser) => (
+              <option key={managedUser.username}>{managedUser.username}</option>
+            ))}
+          </select>
+        ) : null}
+        <h1 className="font-bold">Buy More Characters</h1>
+        <label htmlFor="daily" className="mr-4">
+          Daily characters
+        </label>
         <input
           id="daily"
           type="number"
@@ -61,6 +91,9 @@ export function Characters() {
           min={0}
           onChange={getPrice}
         />
+        <label htmlFor="weekly" className="mr-4">
+          Weekly characters
+        </label>
         <input
           type="number"
           placeholder="Weekly characters"
@@ -69,6 +102,9 @@ export function Characters() {
           min={0}
           onChange={getPrice}
         />
+        <label htmlFor="monthly" className="mr-4">
+          Monthly characters
+        </label>
         <input
           type="number"
           placeholder="Monthly characters"
