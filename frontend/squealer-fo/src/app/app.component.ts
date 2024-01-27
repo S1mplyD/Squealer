@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { AuthService } from './services/auth.service';
-import { Router } from '@angular/router';
 import { BreakpointObserver,Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -16,7 +15,7 @@ export class AppComponent implements OnInit, OnDestroy{
   title = 'Squealer Front Office';
   showFiller = false;
   isLoggedIn: boolean = false;
-  localLogged: string | null = localStorage.getItem('isLoggedIn');
+  localLogged: string | null = sessionStorage.getItem('isLoggedIn');
   httpError!: HttpErrorResponse;
   mobileQuery: MediaQueryList;
   screenWidth!: number;
@@ -29,7 +28,6 @@ export class AppComponent implements OnInit, OnDestroy{
     changeDetectorRef: ChangeDetectorRef,
     media: MediaMatcher,
     private authService: AuthService,
-    private router: Router,
     public responsive: BreakpointObserver) {
       this.mobileQuery = media.matchMedia('(max-width: 600px)');
       this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -50,6 +48,7 @@ ngOnInit(): void {
     if (res.status !== '404') {
       this.isLoggedIn = true;
       this.username = res.username + '';
+      sessionStorage.setItem('username', this.username)
       this.plan = res.plan + '';
     }
   });

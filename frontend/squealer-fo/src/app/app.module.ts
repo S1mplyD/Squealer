@@ -29,7 +29,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import axios from 'axios';
+import { Best3SquealsComponent } from './best-3-squeals/best-3-squeals.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +38,8 @@ import axios from 'axios';
     NewSquealsComponent,
     AccountListComponent,
     UserPageComponent,
-    AuthComponent
+    AuthComponent,
+    Best3SquealsComponent
   ],
   imports: [
     MatTabsModule,

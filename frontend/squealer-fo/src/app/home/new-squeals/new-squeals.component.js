@@ -72,17 +72,17 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
                     }
                 }
             }
-            if (localStorage.getItem('plan') === 'admin') {
+            if (sessionStorage.getItem('plan') === 'admin') {
                 this.plan = 'admin';
             }
-            if (localStorage.getItem('isLoggedIn') === 'false') {
+            if (sessionStorage.getItem('isLoggedIn') === 'false') {
                 this.isLoggedIn = false;
             }
-            else if (localStorage.getItem('isLoggedIn') === 'true') {
+            else if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 this.isLoggedIn = true;
             }
-            if (localStorage.getItem('username')) {
-                this.username = localStorage.getItem('username') + '';
+            if (sessionStorage.getItem('username')) {
+                this.username = sessionStorage.getItem('username') + '';
             }
         }
         formatDate(date) {

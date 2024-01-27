@@ -86,4 +86,12 @@ export class SquealService {
   deleteSqueal(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}`, {params: {'id': id + ''}});
   }
+
+  getSquealsNoLogin(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/nologin`);
+  }
+
+  getSquealsLogin(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/login`);
+  }
 }

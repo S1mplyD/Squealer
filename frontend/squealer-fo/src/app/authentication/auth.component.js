@@ -89,10 +89,10 @@ let AuthComponent = exports.AuthComponent = (() => {
             this.authService.loginWithGoogle()
                 .subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                sessionStorage.setItem('plan', acc.plan);
+                sessionStorage.setItem('username', acc.username);
             });
-            localStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('isLoggedIn', 'true');
             this.router.navigateByUrl('');
         }
         loginWithEmail() {
@@ -100,10 +100,10 @@ let AuthComponent = exports.AuthComponent = (() => {
             const password = this.loginForm.value.password;
             this.authService.loginWithEmail(email, password).subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                sessionStorage.setItem('plan', acc.plan);
+                sessionStorage.setItem('username', acc.username);
             });
-            localStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('isLoggedIn', 'true');
             this.router.navigateByUrl('');
         }
         signup() {
@@ -113,10 +113,10 @@ let AuthComponent = exports.AuthComponent = (() => {
             const name = this.signupForm.value.name;
             this.authService.signUp(email, password, username, name).subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                sessionStorage.setItem('plan', acc.plan);
+                sessionStorage.setItem('username', acc.username);
             });
-            localStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('isLoggedIn', 'true');
             this.router.navigateByUrl('');
         }
         recoverPassword() {
@@ -126,7 +126,7 @@ let AuthComponent = exports.AuthComponent = (() => {
         logout() {
             this.authService.logout();
             this.isLoggedIn = false;
-            localStorage.setItem('isLoggedIn', 'false');
+            sessionStorage.setItem('isLoggedIn', 'false');
             this.userName = '';
         }
     };

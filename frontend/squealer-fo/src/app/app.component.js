@@ -61,7 +61,7 @@ let AppComponent = exports.AppComponent = (() => {
         }
         logout() {
             this.authService.logout();
-            localStorage.setItem('isLoggedIn', 'false');
+            sessionStorage.setItem('isLoggedIn', 'false');
             location.reload();
         }
         ngOnDestroy() {

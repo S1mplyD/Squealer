@@ -70,6 +70,7 @@ export class AuthComponent implements OnInit, OnDestroy{
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
+      sessionStorage.setItem('username', this.user.username)
     });
     this.router.navigateByUrl('');
   }
@@ -85,6 +86,10 @@ export class AuthComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
         if (res.status !== '404') {
+          this.isLoggedIn = true;
+          this.user = res;
+          sessionStorage.setItem('username', this.user.username)
+          sessionStorage.setItem('isLoggedIn', 'true');
           this.router.navigateByUrl('');
         }
     });
@@ -106,6 +111,8 @@ export class AuthComponent implements OnInit, OnDestroy{
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe((acc) => {
       this.user = acc;
+      sessionStorage.setItem('username', this.user.username)
+      sessionStorage.setItem('isLoggedIn', 'true');
       this.router.navigateByUrl('');
     });
   }
@@ -117,6 +124,7 @@ export class AuthComponent implements OnInit, OnDestroy{
 
   logout() {
     this.authService.logout();
+    sessionStorage.setItem('isLoggedIn', 'false');
     this.isLoggedIn = false;
     this.userName = '';
   }
