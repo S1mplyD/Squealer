@@ -143,3 +143,21 @@ export const getAllControversialSqueals = async (username: string) => {
   );
   return response.data;
 };
+
+export const buyCharactersForUser = async (
+  username: string,
+  daily: number,
+  weekly: number,
+  monthly: number,
+) => {
+  const body = {
+    dailyCharacters: daily,
+    weeklyCharacters: weekly,
+    monthlyCharacters: monthly,
+  };
+  const response = await axios.post(
+    `${path}/api/users/user/${username}/addcharacters`,
+    body,
+  );
+  return response;
+};
