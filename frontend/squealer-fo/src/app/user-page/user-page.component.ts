@@ -22,7 +22,7 @@ export class UserPageComponent implements OnInit {
   taggedPosts!: Squeal[];
   userName!: string;
   isFollowed: boolean = false;
-  un = localStorage.getItem('username');
+  un = sessionStorage.getItem('username');
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
     private squealService: SquealService,

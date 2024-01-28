@@ -41,6 +41,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthComponent = void 0;
 const core_1 = require("@angular/core");
 const forms_1 = require("@angular/forms");
+const rxjs_1 = require("rxjs");
 let AuthComponent = exports.AuthComponent = (() => {
     let _classDecorators = [(0, core_1.Component)({
             selector: 'app-auth',
@@ -51,14 +52,15 @@ let AuthComponent = exports.AuthComponent = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     var AuthComponent = _classThis = class {
-        constructor(authService, formBuilder, router) {
+        constructor(authService, formBuilder, router, _snackBar, componentCacheService) {
             this.authService = authService;
             this.formBuilder = formBuilder;
             this.router = router;
+            this._snackBar = _snackBar;
+            this.componentCacheService = componentCacheService;
             this.isLoggedIn = false;
             this.userName = '';
             this.user = {
-                id: 0,
                 name: '',
                 username: '',
                 mail: '',
@@ -68,9 +70,13 @@ let AuthComponent = exports.AuthComponent = (() => {
                 plan: '',
                 resetToken: '',
                 createdAt: new Date(),
-                followersCount: 0,
-                followingCount: 0
+                status: '',
+                blockedFor: 0
             };
+            this.parameters = {
+                dataSource: []
+            };
+            this._unsubscribeAll = new rxjs_1.Subject();
             this.loginForm = this.formBuilder.group({
                 email: ['', forms_1.Validators.required],
                 password: ['', forms_1.Validators.required],
@@ -85,39 +91,58 @@ let AuthComponent = exports.AuthComponent = (() => {
                 email: ['', forms_1.Validators.required],
             });
         }
+        ngOnDestroy() {
+            this.componentCacheService.set(AuthComponent.name, this.parameters);
+        }
+        ngOnInit() {
+            throw new Error('Method not implemented.');
+        }
         loginWithGoogle() {
             this.authService.loginWithGoogle()
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
                 .subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                sessionStorage.setItem('username', this.user.username);
             });
-            localStorage.setItem('isLoggedIn', 'true');
             this.router.navigateByUrl('');
         }
         loginWithEmail() {
             const email = this.loginForm.value.email;
             const password = this.loginForm.value.password;
-            this.authService.loginWithEmail(email, password).subscribe((acc) => {
+            this.authService.loginWithEmail(email, password)
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                this.authService.isAuthenticated()
+                    .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                    .subscribe((res) => {
+                    if (res.status !== '404') {
+                        this.isLoggedIn = true;
+                        this.user = res;
+                        sessionStorage.setItem('username', this.user.username);
+                        sessionStorage.setItem('isLoggedIn', 'true');
+                        this.router.navigateByUrl('');
+                    }
+                });
+            }, (error) => {
+                this._snackBar.open('Email or password are not correct! Retry.', 'Close', {
+                    duration: 3000
+                });
             });
-            localStorage.setItem('isLoggedIn', 'true');
-            this.router.navigateByUrl('');
         }
         signup() {
             const email = this.signupForm.value.email;
             const password = this.signupForm.value.password;
-            const username = this.signupForm.value.username;
+            const username = this.signupForm.value.username.Replace(' ', '_');
             const name = this.signupForm.value.name;
-            this.authService.signUp(email, password, username, name).subscribe((acc) => {
+            this.authService.signUp(email, password, username, name)
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((acc) => {
                 this.user = acc;
-                localStorage.setItem('plan', acc.plan);
-                localStorage.setItem('username', acc.username);
+                sessionStorage.setItem('username', this.user.username);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                this.router.navigateByUrl('');
             });
-            localStorage.setItem('isLoggedIn', 'true');
-            this.router.navigateByUrl('');
         }
         recoverPassword() {
             const email = this.recoverPasswordForm.value.email;
@@ -125,8 +150,8 @@ let AuthComponent = exports.AuthComponent = (() => {
         }
         logout() {
             this.authService.logout();
+            sessionStorage.setItem('isLoggedIn', 'false');
             this.isLoggedIn = false;
-            localStorage.setItem('isLoggedIn', 'false');
             this.userName = '';
         }
     };

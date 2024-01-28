@@ -51,9 +51,10 @@ let AuthService = exports.AuthService = (() => {
         constructor(http) {
             this.http = http;
             this.apiUrl = 'http://localhost:3000/api/auth'; // Replace with your authentication API URL
+            this.authUrl = 'http://localhost:3000/api/users';
         }
         loginWithGoogle() {
-            return this.http.post(`${this.apiUrl}/google`, {});
+            return this.http.get(`${this.apiUrl}/google`, {});
         }
         loginWithEmail(username, password) {
             return this.http.post(`${this.apiUrl}/login`, { username, password });
@@ -61,11 +62,23 @@ let AuthService = exports.AuthService = (() => {
         signUp(mail, password, name, username) {
             return this.http.post(`${this.apiUrl}/register`, { mail, password, name, username });
         }
+        tokenRecoverPassword(email) {
+            const params = {
+                'mail': email + ''
+            };
+            this.http.get(`${this.apiUrl}/forgotPassword`, { params: params });
+        }
         recoverPassword(email) {
-            return this.http.post(`${this.apiUrl}/forgotPassword`, { email });
+            const params = {
+                'mail': email + ''
+            };
+            return this.http.post(`${this.apiUrl}/forgotPassword`, { params: params });
         }
         logout() {
-            return this.http.post(`${this.apiUrl}/logout`, {});
+            return this.http.get(`${this.apiUrl}/logout`);
+        }
+        isAuthenticated() {
+            return this.http.get(`${this.authUrl}/me`);
         }
     };
     __setFunctionName(_classThis, "AuthService");

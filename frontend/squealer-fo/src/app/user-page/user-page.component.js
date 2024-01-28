@@ -40,6 +40,7 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserPageComponent = void 0;
 const core_1 = require("@angular/core");
+const rxjs_1 = require("rxjs");
 let UserPageComponent = exports.UserPageComponent = (() => {
     let _classDecorators = [(0, core_1.Component)({
             selector: 'app-user-page',
@@ -50,37 +51,95 @@ let UserPageComponent = exports.UserPageComponent = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     var UserPageComponent = _classThis = class {
-        constructor(squealService, datePipe, activeRoute, accountService) {
+        constructor(squealService, datePipe, activeRoute, usersService, _snackBar) {
             this.squealService = squealService;
             this.datePipe = datePipe;
             this.activeRoute = activeRoute;
-            this.accountService = accountService;
+            this.usersService = usersService;
+            this._snackBar = _snackBar;
+            this.fileName = '';
+            this.isFollowed = false;
+            this.un = sessionStorage.getItem('username');
+            this._unsubscribeAll = new rxjs_1.Subject();
         }
         ngOnInit() {
+            this.usersService.getUserByUsername(String(this.activeRoute.snapshot.paramMap.get("username")))
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((res) => {
+                this.account = res;
+            });
+            this.squealService.getSquealsForUsers(String(this.activeRoute.snapshot.paramMap.get("username")))
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((res) => {
+                this.recentPosts = res;
+            });
             this.userName = String(this.activeRoute.snapshot.paramMap.get("username"));
-            this.getAccountData();
-            this.getRecentPosts();
-            this.getTaggedAnswers();
+            this.squealService.getAllSqueals()
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((res) => {
+                this.taggedPosts = res;
+            });
+            this.usersService.getAllUsers()
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((response) => {
+                this.users = response;
+            });
+            this.usersService.following(this.un ? this.un : '')
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll)).subscribe((res) => {
+                for (const foll of res) {
+                    if (this.userName === foll.username) {
+                        this.isFollowed = true;
+                    }
+                }
+            });
         }
         formatDate(date) {
             return this.datePipe.transform(date, 'dd/MM/yyyy'); // Change the format pattern as per your requirement
         }
-        getAccountData() {
-            this.account = this.accountService.getSpecificAccount(this.userName);
-        }
-        getRecentPosts() {
-            this.recentPosts = this.squealService.getTweetsForUsers(this.userName);
-        }
-        getTaggedAnswers() {
-            this.taggedPosts = this.squealService.getAnswersForUsers(this.userName);
-            this.answerers = this.accountService.getAccounts();
-            for (let tp of this.taggedPosts) {
-                for (const answerer of this.answerers) {
-                    if (tp.username == answerer.username) {
-                        tp.profileImage = answerer.profilePicture;
+        onFileSelected(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.fileName = file.name;
+                const formData = new FormData();
+                formData.append("file", file);
+                this.usersService.changeProfilePicture(formData)
+                    .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                    .subscribe((res) => {
+                    console.log(res);
+                    if (this.account) {
+                        this.usersService.updateProfilePicture(this.account.username, res)
+                            .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                            .subscribe(res => console.log(res));
                     }
-                }
+                });
             }
+        }
+        reloadPage() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
+        }
+        follow() {
+            this.usersService.follow(this.userName)
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe(res => {
+                this._snackBar.open('You followed this user.', 'Close', {
+                    duration: 3000
+                });
+            });
+            this.reloadPage();
+        }
+        unfollow() {
+            this.usersService.unfollow(this.userName)
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe(res => {
+                if (res === 'OK')
+                    this.isFollowed = false;
+                this._snackBar.open('You unfollowed this user.', 'Close', {
+                    duration: 3000
+                });
+            });
+            this.reloadPage();
         }
     };
     __setFunctionName(_classThis, "UserPageComponent");

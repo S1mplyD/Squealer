@@ -61,6 +61,16 @@ const account_list_component_1 = require("./followed-accounts/account-list.compo
 const user_page_component_1 = require("./user-page/user-page.component");
 const auth_component_1 = require("./authentication/auth.component");
 const http_1 = require("@angular/common/http");
+const dialog_1 = require("@angular/material/dialog");
+const radio_1 = require("@angular/material/radio");
+const checkbox_1 = require("@angular/material/checkbox");
+const slider_1 = require("@angular/material/slider");
+const select_1 = require("@angular/material/select");
+const form_field_1 = require("@angular/material/form-field");
+const snack_bar_1 = require("@angular/material/snack-bar");
+const progress_spinner_1 = require("@angular/material/progress-spinner");
+const ngx_leaflet_1 = require("@asymmetrik/ngx-leaflet");
+const best_3_squeals_component_1 = require("./best-3-squeals/best-3-squeals.component");
 let AppModule = exports.AppModule = (() => {
     let _classDecorators = [(0, core_1.NgModule)({
             declarations: [
@@ -69,7 +79,8 @@ let AppModule = exports.AppModule = (() => {
                 new_squeals_component_1.NewSquealsComponent,
                 account_list_component_1.AccountListComponent,
                 user_page_component_1.UserPageComponent,
-                auth_component_1.AuthComponent
+                auth_component_1.AuthComponent,
+                best_3_squeals_component_1.Best3SquealsComponent
             ],
             imports: [
                 tabs_1.MatTabsModule,
@@ -83,10 +94,19 @@ let AppModule = exports.AppModule = (() => {
                 button_1.MatButtonModule,
                 list_1.MatListModule,
                 expansion_1.MatExpansionModule,
+                snack_bar_1.MatSnackBarModule,
+                progress_spinner_1.MatProgressSpinnerModule,
                 forms_1.FormsModule,
                 input_1.MatInputModule,
                 forms_1.ReactiveFormsModule,
-                http_1.HttpClientModule
+                dialog_1.MatDialogModule,
+                http_1.HttpClientModule,
+                radio_1.MatRadioModule,
+                checkbox_1.MatCheckboxModule,
+                slider_1.MatSliderModule,
+                select_1.MatSelectModule,
+                form_field_1.MatFormFieldModule,
+                ngx_leaflet_1.LeafletModule
             ],
             providers: [common_1.DatePipe],
             bootstrap: [app_component_1.AppComponent]

@@ -41,6 +41,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccountListComponent = void 0;
 // account-list.component.ts
 const core_1 = require("@angular/core");
+const rxjs_1 = require("rxjs");
 let AccountListComponent = exports.AccountListComponent = (() => {
     let _classDecorators = [(0, core_1.Component)({
             selector: 'app-account-list',
@@ -51,13 +52,22 @@ let AccountListComponent = exports.AccountListComponent = (() => {
     let _classExtraInitializers = [];
     let _classThis;
     var AccountListComponent = _classThis = class {
-        constructor(router, accountService) {
+        constructor(router, authService, userService) {
             this.router = router;
-            this.accountService = accountService;
+            this.authService = authService;
+            this.userService = userService;
             this.accounts = [];
+            this.username = '';
+            this._unsubscribeAll = new rxjs_1.Subject();
         }
         ngOnInit() {
-            this.accounts = this.accountService.getAccounts();
+            this.authService.isAuthenticated()
+                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                .subscribe((res) => {
+                this.userService.following(res.username)
+                    .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
+                    .subscribe(resp => this.accounts = resp);
+            });
         }
     };
     __setFunctionName(_classThis, "AccountListComponent");

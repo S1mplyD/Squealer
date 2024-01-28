@@ -38,70 +38,44 @@ var __setFunctionName = (this && this.__setFunctionName) || function (f, name, p
     return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppComponent = void 0;
+exports.FollowService = void 0;
 const core_1 = require("@angular/core");
-const layout_1 = require("@angular/cdk/layout");
-const rxjs_1 = require("rxjs");
-let AppComponent = exports.AppComponent = (() => {
-    let _classDecorators = [(0, core_1.Component)({
-            selector: 'app-root',
-            templateUrl: './app.component.html',
-            styleUrls: ['./app.component.scss']
+let FollowService = exports.FollowService = (() => {
+    let _classDecorators = [(0, core_1.Injectable)({
+            providedIn: 'root',
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    var AppComponent = _classThis = class {
-        constructor(changeDetectorRef, media, authService, responsive) {
-            this.authService = authService;
-            this.responsive = responsive;
-            this.title = 'Squealer Front Office';
-            this.showFiller = false;
-            this.isLoggedIn = false;
-            this.localLogged = sessionStorage.getItem('isLoggedIn');
-            this.username = '';
-            this.plan = '';
-            this._unsubscribeAll = new rxjs_1.Subject();
-            this.mobileQuery = media.matchMedia('(max-width: 600px)');
-            this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-            this.mobileQuery.addListener(this._mobileQueryListener);
+    var FollowService = _classThis = class {
+        constructor(http) {
+            this.http = http;
+            this.apiUrl = 'http://localhost:3000/api/follow'; // Replace with your authentication API URL
         }
-        ngOnInit() {
-            this.responsive
-                .observe([layout_1.Breakpoints.HandsetPortrait])
-                .subscribe((state) => {
-                if (state.matches) {
-                    console.log('This is the Handset Portrait point at max-width: 599.98 px and portrait orientation.');
-                }
-            });
-            this.authService.isAuthenticated()
-                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                .subscribe((res) => {
-                if (res.status !== '404') {
-                    this.isLoggedIn = true;
-                    this.username = res.username + '';
-                    sessionStorage.setItem('username', this.username);
-                    this.plan = res.plan + '';
-                }
-            });
+        getAllFollowers(username) {
+            return this.http.get(`${this.apiUrl}/${username}/followers`);
         }
-        logout() {
-            this.authService.logout()
-                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                .subscribe((res) => {
-                this.isLoggedIn = false;
-            });
-            location.reload();
+        getAllFollowing(username) {
+            return this.http.get(`${this.apiUrl}/${username}/following`);
         }
-        ngOnDestroy() {
-            this.mobileQuery.removeListener(this._mobileQueryListener);
+        follow(username) {
+            const params = {
+                'username': username + '',
+            };
+            return this.http.post(`${this.apiUrl}/${username}/follow`, { params: params });
+        }
+        unfollow(username) {
+            const params = {
+                'username': username + '',
+            };
+            return this.http.post(`${this.apiUrl}/${username}/unfollow`, { params: params });
         }
     };
-    __setFunctionName(_classThis, "AppComponent");
+    __setFunctionName(_classThis, "FollowService");
     (() => {
         __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name }, null, _classExtraInitializers);
-        AppComponent = _classThis = _classDescriptor.value;
+        FollowService = _classThis = _classDescriptor.value;
         __runInitializers(_classThis, _classExtraInitializers);
     })();
-    return AppComponent = _classThis;
+    return FollowService = _classThis;
 })();

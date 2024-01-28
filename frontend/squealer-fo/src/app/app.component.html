@@ -25,15 +25,9 @@
                 </button>
               </mat-list-item>
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>public</mat-icon>&nbsp;Explore Squeals
-                </button>
-              </mat-list-item>
-              <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
-                  style="color: white">
-                  <mat-icon>whatshot</mat-icon>&nbsp;Best posts of the week
+                  <mat-icon>whatshot</mat-icon>&nbsp;Best 3 Squeals of the week
                 </button>
               </mat-list-item>
               <mat-list-item>
@@ -44,7 +38,7 @@
               </mat-list-item>
               <mat-list-item *ngIf="isLoggedIn">
                 <button mat-button fxFlex fxLayoutAlign="start center" style="color: white">
-                  <mat-icon>exit_to_app</mat-icon><a href="/api/auth/logout">Logout</a>
+                  <mat-icon>exit_to_app</mat-icon>&nbsp;<a href="/api/auth/logout" style="text-decoration: none; color: white;">Logout</a>
                 </button>
               </mat-list-item>
             </div>

@@ -73,21 +73,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NewSquealsComponent = void 0;
+exports.Best3SquealsComponent = void 0;
 const core_1 = require("@angular/core");
 const rxjs_1 = require("rxjs");
 const L = __importStar(require("leaflet"));
 const axios_1 = __importDefault(require("axios"));
-let NewSquealsComponent = exports.NewSquealsComponent = (() => {
+let Best3SquealsComponent = exports.Best3SquealsComponent = (() => {
     let _classDecorators = [(0, core_1.Component)({
-            selector: 'app-new-squeal',
-            templateUrl: './new-squeals.component.html',
-            styleUrls: ['./new-squeals.component.scss'],
+            selector: 'app-best-3-squeal',
+            templateUrl: './best-3-squeals.component.html',
+            styleUrls: ['./best-3-squeals.component.scss'],
         })];
     let _classDescriptor;
     let _classExtraInitializers = [];
     let _classThis;
-    var NewSquealsComponent = _classThis = class {
+    var Best3SquealsComponent = _classThis = class {
         constructor(squealService, datePipe, userService, mediaService, authService, _snackBar) {
             this.squealService = squealService;
             this.datePipe = datePipe;
@@ -96,6 +96,7 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
             this.authService = authService;
             this._snackBar = _snackBar;
             this.squeals = [];
+            this.justThreeSqueals = [];
             this.fileNameSqueal = '';
             this.fileNameAnswer = '';
             this.accounts = [];
@@ -360,15 +361,6 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
         markerDragEnd($event, index) {
             console.log($event.target.getLatLng());
         }
-        openPopup() {
-            this.newSqueal.time = 0;
-            this.squealSubType = false;
-            this.newSqueal.body = '';
-            this.isPopupOpen = true;
-        }
-        closePopup() {
-            this.isPopupOpen = false;
-        }
         openAnswer(id) {
             this.answeredId = id;
             this.isAnswerOpen = true;
@@ -396,7 +388,7 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
             console.log(this.isLoggedIn);
             if (this.isLoggedIn) {
                 this.squealService
-                    .getSquealsLogin()
+                    .getSquealsLogin3Best()
                     .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
                     .subscribe((res) => {
                     this.squeals = res;
@@ -428,55 +420,18 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
                 }
             });
         }
-        closePostForm() {
-            this.isPostFormOpen = false;
-            this.newSqueal = {
-                _id: '',
-                author: '',
-                body: '',
-                date: new Date(),
-                recipients: [],
-                category: '',
-                type: '',
-                channels: [],
-                originalSqueal: '',
-            };
-        }
-        closeAnswerForm() {
-            this.isPostFormOpen = false;
-            this.newAnswer = {
-                _id: '',
-                author: '',
-                body: '',
-                date: new Date(),
-                recipients: [],
-                category: '',
-                type: '',
-                channels: [],
-                originalSqueal: '',
-            };
-        }
-        uploadFiles() {
-            if (this.selectedFile) {
-                this.upload(this.selectedFile);
+        descentOrder(a, b) {
+            if (!a.positiveReactions) {
+                a.positiveReactions = [];
             }
-            this.newSqueal.body = this.selectedFileName;
-        }
-        upload(file) {
-            if (file) {
-                this.mediaService
-                    .postMediaFile(file)
-                    .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                    .subscribe((res) => (this.selectedFileName = res));
+            if (!b.positiveReactions) {
+                b.positiveReactions = [];
             }
-        }
-        selectFiles(event) {
-            this.selectedFileName = '';
-            this.selectedFile = event.target.files[0];
-            if (this.selectedFile) {
-                const reader = new FileReader();
-                reader.readAsDataURL(this.selectedFile);
-                this.selectedFileName = this.selectedFile.name;
+            if (a.positiveReactions.length >= b.positiveReactions.length) {
+                return -1;
+            }
+            else {
+                return 1;
             }
         }
         getChannels(body) {
@@ -510,44 +465,6 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
             });
             window.location.reload();
         }
-        answer(id) {
-            if (this.squealType === 'text') {
-                let numChar = this.newSqueal.body.length;
-                if (this.dailyChars - numChar >= 0) {
-                    const answer = {
-                        _id: '',
-                        author: this.username,
-                        body: this.newAnswer.body,
-                        date: new Date(),
-                        lat: this.newAnswer.lat,
-                        lng: this.newAnswer.lng,
-                        time: this.newAnswer.time,
-                        recipients: this.getRecipients(this.recipients),
-                        channels: this.getChannels(this.newAnswer.body),
-                        positiveReactions: this.newAnswer.positiveReactions,
-                        negativeReactions: this.newAnswer.negativeReactions,
-                        category: 'public',
-                        type: this.squealType,
-                        originalSqueal: '',
-                        locationName: this.newAnswer.locationName,
-                    };
-                    this.squealService
-                        .addResponse(answer, id)
-                        .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                        .subscribe((res) => {
-                        if (res) {
-                            this.loadSqueals();
-                        }
-                    });
-                    this.closeAnswer();
-                }
-                else {
-                    this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-                        duration: 3000,
-                    });
-                }
-            }
-        }
         addDownvote(squealId) {
             console.log(squealId);
             this.squealService
@@ -570,127 +487,12 @@ let NewSquealsComponent = exports.NewSquealsComponent = (() => {
                 .item(0)
                 .classList.remove('stop-scrolling');
         }
-        addPost() {
-            console.log(this.dailyChars);
-            let numChar = this.newSqueal.body.length;
-            if (this.squealType === 'text') {
-                if (this.dailyChars - numChar >= 0) {
-                    const squeal = {
-                        _id: '',
-                        author: this.username,
-                        body: this.newSqueal.body,
-                        date: new Date(),
-                        lat: this.newSqueal.lat,
-                        lng: this.newSqueal.lng,
-                        time: this.newSqueal.time,
-                        recipients: this.getRecipients(this.recipients),
-                        channels: this.getChannels(this.newSqueal.body),
-                        positiveReactions: this.newSqueal.positiveReactions,
-                        negativeReactions: this.newSqueal.negativeReactions,
-                        category: 'public',
-                        type: this.squealType,
-                        originalSqueal: '',
-                        locationName: this.newSqueal.locationName,
-                    };
-                    this.squealService
-                        .addSqueal(squeal)
-                        .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                        .subscribe((res) => {
-                        if (res) {
-                            this.loadSqueals();
-                        }
-                    });
-                    this.closePopup();
-                }
-                else {
-                    this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-                        duration: 3000,
-                    });
-                }
-            }
-            else {
-                if (this.dailyChars - 125 >= 0) {
-                    if (this.squealType === 'media') {
-                        if (this.selectedFile) {
-                            // const newFileName = this.mediaService.postMediaFile(
-                            //   this.selectedFile,
-                            // );
-                            this.mediaService
-                                .postMediaFile(this.selectedFile)
-                                .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                                .subscribe((res) => {
-                                this.selectedFileName = res;
-                                const squeal = {
-                                    _id: '',
-                                    author: this.username,
-                                    body: this.selectedFileName + '',
-                                    date: new Date(),
-                                    lat: this.newSqueal.lat,
-                                    lng: this.newSqueal.lng,
-                                    time: this.newSqueal.time,
-                                    recipients: this.getRecipients(this.recipients),
-                                    channels: this.getChannels(this.newSqueal.body),
-                                    positiveReactions: this.newSqueal.positiveReactions,
-                                    negativeReactions: this.newSqueal.negativeReactions,
-                                    category: 'public',
-                                    type: this.squealType,
-                                    originalSqueal: '',
-                                    locationName: this.newSqueal.locationName,
-                                };
-                                this.squealService
-                                    .addSqueal(squeal)
-                                    .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                                    .subscribe((res) => {
-                                    if (res) {
-                                        this.loadSqueals();
-                                    }
-                                });
-                                this.closePopup();
-                            });
-                        }
-                    }
-                    else {
-                        const squeal = {
-                            _id: '',
-                            author: this.username,
-                            body: this.newSqueal.body,
-                            date: new Date(),
-                            lat: this.newSqueal.lat,
-                            lng: this.newSqueal.lng,
-                            time: this.newSqueal.time,
-                            recipients: this.getRecipients(this.recipients),
-                            channels: this.getChannels(this.newSqueal.body),
-                            positiveReactions: this.newSqueal.positiveReactions,
-                            negativeReactions: this.newSqueal.negativeReactions,
-                            category: 'public',
-                            type: this.squealType,
-                            originalSqueal: '',
-                            locationName: this.newSqueal.locationName,
-                        };
-                        this.squealService
-                            .addSqueal(squeal)
-                            .pipe((0, rxjs_1.takeUntil)(this._unsubscribeAll))
-                            .subscribe((res) => {
-                            if (res) {
-                                this.loadSqueals();
-                            }
-                        });
-                        this.closePopup();
-                    }
-                }
-                else {
-                    this._snackBar.open('You finished your daily chars! Try again tomorrow, loser!', 'Close', {
-                        duration: 3000,
-                    });
-                }
-            }
-        }
     };
-    __setFunctionName(_classThis, "NewSquealsComponent");
+    __setFunctionName(_classThis, "Best3SquealsComponent");
     (() => {
         __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name }, null, _classExtraInitializers);
-        NewSquealsComponent = _classThis = _classDescriptor.value;
+        Best3SquealsComponent = _classThis = _classDescriptor.value;
         __runInitializers(_classThis, _classExtraInitializers);
     })();
-    return NewSquealsComponent = _classThis;
+    return Best3SquealsComponent = _classThis;
 })();

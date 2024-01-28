@@ -13,12 +13,13 @@ import { LatLng, TileLayer } from 'leaflet';
 import axios from 'axios';
 
 @Component({
-  selector: 'app-new-squeal',
-  templateUrl: './new-squeals.component.html',
-  styleUrls: ['./new-squeals.component.scss'],
+  selector: 'app-best-3-squeal',
+  templateUrl: './best-3-squeals.component.html',
+  styleUrls: ['./best-3-squeals.component.scss'],
 })
-export class NewSquealsComponent implements OnInit {
+export class Best3SquealsComponent implements OnInit {
   squeals: Squeal[] = [];
+  justThreeSqueals: Squeal[] = [];
   fileNameSqueal = '';
   fileNameAnswer = '';
   accounts: User[] = [];
@@ -339,17 +340,6 @@ export class NewSquealsComponent implements OnInit {
     console.log($event.target.getLatLng());
   }
 
-  openPopup(): void {
-    this.newSqueal.time = 0;
-    this.squealSubType = false;
-    this.newSqueal.body = '';
-    this.isPopupOpen = true;
-  }
-
-  closePopup(): void {
-    this.isPopupOpen = false;
-  }
-
   openAnswer(id: string): void {
     this.answeredId = id;
     this.isAnswerOpen = true;
@@ -384,7 +374,7 @@ export class NewSquealsComponent implements OnInit {
     console.log(this.isLoggedIn);
     if (this.isLoggedIn) {
       this.squealService
-      .getSquealsLogin()
+      .getSquealsLogin3Best()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
         this.squeals = res;
@@ -403,7 +393,6 @@ export class NewSquealsComponent implements OnInit {
         }
       });
     }
-
   }
 
   loadAnswers(id: string): void {
@@ -418,59 +407,17 @@ export class NewSquealsComponent implements OnInit {
       });
   }
 
-  closePostForm() {
-    this.isPostFormOpen = false;
-    this.newSqueal = {
-      _id: '',
-      author: '',
-      body: '',
-      date: new Date(),
-      recipients: [],
-      category: '',
-      type: '',
-      channels: [],
-      originalSqueal: '',
-    };
-  }
-
-  closeAnswerForm() {
-    this.isPostFormOpen = false;
-    this.newAnswer = {
-      _id: '',
-      author: '',
-      body: '',
-      date: new Date(),
-      recipients: [],
-      category: '',
-      type: '',
-      channels: [],
-      originalSqueal: '',
-    };
-  }
-
-  uploadFiles(): void {
-    if (this.selectedFile) {
-      this.upload(this.selectedFile);
+  descentOrder(a: Squeal, b: Squeal): number {
+    if (!a.positiveReactions) {
+      a.positiveReactions = [];
     }
-    this.newSqueal.body = this.selectedFileName;
-  }
-
-  upload(file: File): void {
-    if (file) {
-      this.mediaService
-        .postMediaFile(file)
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((res) => (this.selectedFileName = res));
+    if (!b.positiveReactions) {
+      b.positiveReactions = [];
     }
-  }
-
-  selectFiles(event: any): void {
-    this.selectedFileName = '';
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      const reader = new FileReader();
-      reader.readAsDataURL(this.selectedFile);
-      this.selectedFileName = this.selectedFile.name;
+    if (a.positiveReactions.length >= b.positiveReactions.length) {
+      return -1;
+    } else {
+      return 1;
     }
   }
 
@@ -505,48 +452,6 @@ export class NewSquealsComponent implements OnInit {
     window.location.reload();
   }
 
-  answer(id: string): void {
-    if (this.squealType === 'text') {
-      let numChar = this.newSqueal.body.length;
-      if (this.dailyChars - numChar >= 0) {
-        const answer: Squeal = {
-          _id: '',
-          author: this.username,
-          body: this.newAnswer.body,
-          date: new Date(),
-          lat: this.newAnswer.lat,
-          lng: this.newAnswer.lng,
-          time: this.newAnswer.time,
-          recipients: this.getRecipients(this.recipients),
-          channels: this.getChannels(this.newAnswer.body),
-          positiveReactions: this.newAnswer.positiveReactions,
-          negativeReactions: this.newAnswer.negativeReactions,
-          category: 'public',
-          type: this.squealType,
-          originalSqueal: '',
-          locationName: this.newAnswer.locationName,
-        };
-        this.squealService
-          .addResponse(answer, id)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((res) => {
-            if (res) {
-              this.loadSqueals();
-            }
-          });
-        this.closeAnswer();
-      } else {
-        this._snackBar.open(
-          'You finished your daily chars! Try again tomorrow, loser!',
-          'Close',
-          {
-            duration: 3000,
-          },
-        );
-      }
-    }
-  }
-
   addDownvote(squealId: string): void {
     console.log(squealId);
     this.squealService
@@ -572,124 +477,4 @@ export class NewSquealsComponent implements OnInit {
       .classList.remove('stop-scrolling');
   }
 
-  addPost(): void {
-    console.log(this.dailyChars);
-    let numChar = this.newSqueal.body.length;
-    if (this.squealType === 'text') {
-      if (this.dailyChars - numChar >= 0) {
-        const squeal: Squeal = {
-          _id: '',
-          author: this.username,
-          body: this.newSqueal.body,
-          date: new Date(),
-          lat: this.newSqueal.lat,
-          lng: this.newSqueal.lng,
-          time: this.newSqueal.time,
-          recipients: this.getRecipients(this.recipients),
-          channels: this.getChannels(this.newSqueal.body),
-          positiveReactions: this.newSqueal.positiveReactions,
-          negativeReactions: this.newSqueal.negativeReactions,
-          category: 'public',
-          type: this.squealType,
-          originalSqueal: '',
-          locationName: this.newSqueal.locationName,
-        };
-        this.squealService
-          .addSqueal(squeal)
-          .pipe(takeUntil(this._unsubscribeAll))
-          .subscribe((res) => {
-            if (res) {
-              this.loadSqueals();
-            }
-          });
-        this.closePopup();
-      } else {
-        this._snackBar.open(
-          'You finished your daily chars! Try again tomorrow, loser!',
-          'Close',
-          {
-            duration: 3000,
-          },
-        );
-      }
-    } else {
-      if (this.dailyChars - 125 >= 0) {
-        if (this.squealType === 'media') {
-          if (this.selectedFile) {
-            // const newFileName = this.mediaService.postMediaFile(
-            //   this.selectedFile,
-            // );
-            this.mediaService
-              .postMediaFile(this.selectedFile)
-              .pipe(takeUntil(this._unsubscribeAll))
-              .subscribe((res) => {
-                this.selectedFileName = res;
-
-                const squeal: Squeal = {
-                  _id: '',
-                  author: this.username,
-                  body: this.selectedFileName + '',
-                  date: new Date(),
-                  lat: this.newSqueal.lat,
-                  lng: this.newSqueal.lng,
-                  time: this.newSqueal.time,
-                  recipients: this.getRecipients(this.recipients),
-                  channels: this.getChannels(this.newSqueal.body),
-                  positiveReactions: this.newSqueal.positiveReactions,
-                  negativeReactions: this.newSqueal.negativeReactions,
-                  category: 'public',
-                  type: this.squealType,
-                  originalSqueal: '',
-                  locationName: this.newSqueal.locationName,
-                };
-                this.squealService
-                  .addSqueal(squeal)
-                  .pipe(takeUntil(this._unsubscribeAll))
-                  .subscribe((res) => {
-                    if (res) {
-                      this.loadSqueals();
-                    }
-                  });
-                this.closePopup();
-              });
-          }
-        } else {
-          const squeal: Squeal = {
-            _id: '',
-            author: this.username,
-            body: this.newSqueal.body,
-            date: new Date(),
-            lat: this.newSqueal.lat,
-            lng: this.newSqueal.lng,
-            time: this.newSqueal.time,
-            recipients: this.getRecipients(this.recipients),
-            channels: this.getChannels(this.newSqueal.body),
-            positiveReactions: this.newSqueal.positiveReactions,
-            negativeReactions: this.newSqueal.negativeReactions,
-            category: 'public',
-            type: this.squealType,
-            originalSqueal: '',
-            locationName: this.newSqueal.locationName,
-          };
-          this.squealService
-            .addSqueal(squeal)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((res) => {
-              if (res) {
-                this.loadSqueals();
-              }
-            });
-          this.closePopup();
-        }
-      } else {
-        this._snackBar.open(
-          'You finished your daily chars! Try again tomorrow, loser!',
-          'Close',
-          {
-            duration: 3000,
-          },
-        );
-      }
-    }
-  }
 }
