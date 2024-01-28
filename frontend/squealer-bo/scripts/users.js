@@ -27,14 +27,14 @@ const unblockUser = async (username) => {
 
 const ban = async (username) => {
   const response = await axios.post("/api/users/ban", null, {
-    params: username,
+    params: { username },
   });
   return response.data;
 };
 
 const unban = async (username) => {
   const response = await axios.post("/api/users/unban", null, {
-    params: username,
+    params: { username },
   });
   return response.data;
 };

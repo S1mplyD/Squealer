@@ -272,15 +272,21 @@ export async function revokePermissions(userId: string) {
  * @param id id dell'utente da bannare
  * @returns non_existent | cannot_update | updated
  */
-export async function ban(id: string) {
-  const user: User = await getUser(id);
-  const update = await userModel.updateOne({ _id: id }, { status: "ban" });
+export async function ban(username: string) {
+  const user: User = await getUserByUsername(username);
+  const update = await userModel.updateOne(
+    { username: username },
+    { status: "ban" },
+  );
   if (update.modifiedCount < 1) throw cannot_update;
   //Rimuovo l'smm o un account managed
   else {
     if (user.SMM !== "" || user.SMM === undefined) {
       //Rimuovo l'SMM all'utente bannato
-      const updateUser = await userModel.updateOne({ _id: id }, { SMM: "" });
+      const updateUser = await userModel.updateOne(
+        { username: username },
+        { SMM: "" },
+      );
       if (updateUser.modifiedCount < 1) throw cannot_update;
       // Rimuovo all'smm dell'utente bannato l'account gestito
 
@@ -308,8 +314,11 @@ export async function ban(id: string) {
  * @param id id utente
  * @returns cannot_update | Success
  */
-export async function unbanUser(id: string) {
-  const update = await userModel.updateOne({ _id: id }, { status: "normal" });
+export async function unbanUser(username: string) {
+  const update = await userModel.updateOne(
+    { username: username },
+    { status: "normal" },
+  );
   if (update.modifiedCount < 1) throw cannot_update;
   else return updated;
 }
@@ -439,7 +448,7 @@ export async function addCharactersToUser(
   monthlyCharacters: number,
 ) {
   const update = await userModel.updateOne(
-    { username },
+    { username: username },
     {
       $inc: {
         dailyCharacters: dailyCharacters,
