@@ -156,7 +156,7 @@ export const buyCharactersForUser = async (
     monthlyCharacters: monthly,
   };
   const response = await axios.post(
-    `${path}/api/users/user/${username}/addcharacters`,
+    `${path}/api/users/user/${username}/buycharacters`,
     body,
   );
   return response;
