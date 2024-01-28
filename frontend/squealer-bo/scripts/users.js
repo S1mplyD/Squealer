@@ -45,7 +45,7 @@ const createUserTable = async () => {
     const users = await getAll();
     const newMain = document.getElementById("usertable");
     newMain.innerHTML =
-      "<table id='table'>" +
+      "<table id='table' class='table'>" +
       "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
       "</table>";
     fillTable(users);
@@ -91,7 +91,7 @@ const orderByName = async () => {
   nameAsc = !nameAsc;
   const newMain = document.getElementById("usertable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
     "</table>";
   fillTable(orderedUsers);
@@ -103,7 +103,7 @@ const orderByType = async () => {
   typeAsc = !typeAsc;
   const newMain = document.getElementById("usertable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
     "</table>";
   fillTable(orderedUsers);
@@ -116,7 +116,7 @@ const orderByPopularity = async () => {
   popularAsc = !popularAsc;
   const newMain = document.getElementById("usertable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Name</th><th>Username</th><th>Mail</th><th>Plan</th><th>Status</th><th>Daily Characters</th><th>Weekly Characters</thWee><th>Monthly Characters</th></tr>" +
     "</table>";
   fillTable(orderedUsers);

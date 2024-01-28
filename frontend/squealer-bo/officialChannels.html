@@ -1,99 +1,81 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>Title</title>
     <script src="scripts/auth.js"></script>
     <script src="scripts/officialchannels.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
+</head>
 
-  <body onload="createOfficiaChannelsTable()">
+<body onload="createOfficiaChannelsTable()">
     <header>
-      <nav>
-        <ul>
-          <li>
-            <button onclick="document.location.replace('users.html')">
-              Users
-            </button>
-          </li>
-          <li>
-            <button onclick="document.location.replace('squeals.html') ">
-              Squeals
-            </button>
-          </li>
-          <li>
-            <button
-              onclick="document.location.replace('officialChannels.html')"
-            >
-              Official Channels
-            </button>
-          </li>
-        </ul>
-      </nav>
+        <nav>
+            <ul>
+                <li>
+                    <button onclick="document.location.replace('users.html')">
+                        Users
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.replace('squeals.html') ">
+                        Squeals
+                    </button>
+                </li>
+                <li>
+                    <button onclick="document.location.replace('officialChannels.html')">
+                        Official Channels
+                    </button>
+                </li>
+            </ul>
+        </nav>
     </header>
     <main id="officialmain">
-      <div id="officialtable"></div>
-      <div>
-        <label for="channelName">Channel Name</label>
-        <input id="channelName" type="text" placeholder="Channel Name" />
-        <button
-          onclick="addChannel(document.getElementById('channelName').value)"
-        >
-          Add Channel
-        </button>
-        <form>
-          <label for="newName">New Channel Name</label>
-          <input type="text" id="newName" placeholder="new channel name" />
-          <label for="allowedRead">Users allowed to read</label>
-          <input
-            type="text"
-            id="allowedRead"
-            placeholder="id of users allowed to read separated by ','"
-          />
-          <label for="allowedWrite">Users allowed to write</label>
-          <input
-            type="text"
-            id="allowedWrite"
-            placeholder="id of users allowed to write separated by ','"
-          />
-          <label for="channelAdmins">Channel's admins</label>
-          <input
-            type="text"
-            id="channelAdmins"
-            placeholder="id of the admins separated by ','"
-          />
-          <button
-            onclick="editChannel(document.getElementById('channelName').value,
+        <div id="officialtable"></div>
+        <div>
+            <label for="channelName">Channel Name</label>
+            <input id="channelName" type="text" placeholder="Channel Name" />
+            <button onclick="addChannel(document.getElementById('channelName').value)">
+                Add Channel
+            </button>
+            <form>
+                <label for="newName">New Channel Name</label>
+                <input type="text" id="newName" placeholder="new channel name" />
+                <label for="allowedRead">Users allowed to read</label>
+                <input type="text" id="allowedRead" placeholder="id of users allowed to read separated by ','" />
+                <label for="allowedWrite">Users allowed to write</label>
+                <input type="text" id="allowedWrite" placeholder="id of users allowed to write separated by ','" />
+                <label for="channelAdmins">Channel's admins</label>
+                <input type="text" id="channelAdmins" placeholder="id of the admins separated by ','" />
+                <button onclick="editChannel(document.getElementById('channelName').value,
             document.getElementById('newName').value,
             document.getElementById('allowedRead').value,
             document.getElementById('allowedWrite').value,
-            document.getElementById('channelAdmins').value)"
-          >
-            Edit Channel
-          </button>
-        </form>
-        <label for="deleteChannel">Name of the channel to delete</label>
-        <input id="deleteChannel" type="text" placeholder="channel name" />
-        <button
-          onclick="deleteChannel(document.getElementById('deleteChannel').value)"
-        >
-          Delete Channel
-        </button>
-        <form>
-          <label for="squeals">Channel's squeals</label>
-          <input
-            type="text"
-            id="squeals"
-            placeholder="id of the squeals separated by ','"
-          />
-          <button
-            onclick="updateChannelSqueals(document.getElementById('channelName').value,document.getElementById('squeals').value)"
-          >
-            Update Squeals
-          </button>
-        </form>
-      </div>
+            document.getElementById('channelAdmins').value)">
+                    Edit Channel
+                </button>
+            </form>
+            <label for="deleteChannel">Name of the channel to delete</label>
+            <input id="deleteChannel" type="text" placeholder="channel name" />
+            <button onclick="deleteChannel(document.getElementById('deleteChannel').value)">
+                Delete Channel
+            </button>
+            <form>
+                <label for="squeals">Channel's squeals</label>
+                <input type="text" id="squeals" placeholder="id of the squeals separated by ','" />
+                <button
+                    onclick="updateChannelSqueals(document.getElementById('channelName').value,document.getElementById('squeals').value)">
+                    Update Squeals
+                </button>
+            </form>
+        </div>
     </main>
-  </body>
+</body>
+
 </html>

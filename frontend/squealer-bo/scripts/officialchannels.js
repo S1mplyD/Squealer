@@ -9,8 +9,8 @@ const createOfficiaChannelsTable = async () => {
     const channels = await getAll();
     const newMain = document.getElementById("officialtable");
     newMain.innerHTML =
-      "<table id='table'>" +
-      "<tr><th>Expand</th><th>Id</th><th>Name</th><th>Squeals</th><th>Channel admins</th><th>Allowed Read</th><th>Allowed Write</th></tr>" +
+      "<table id='table' class='table'>" +
+      "<tr><th>Id</th><th>Name</th><th>Squeals</th><th>Channel admins</th><th>Allowed Read</th><th>Allowed Write</th></tr>" +
       "</table>";
     fillTable(channels);
   } else {
@@ -23,7 +23,6 @@ const fillTable = (items) => {
   for (let i of items) {
     table.innerHTML +=
       "<tr>" +
-      "<td> </td>" +
       "<td>" +
       i._id +
       "</td>" +

@@ -12,7 +12,7 @@ const createSquealTable = async () => {
     const squeals = await getAll();
     const newMain = document.getElementById("squealtable");
     newMain.innerHTML =
-      "<table id='table'>" +
+      "<table id='table' class='table'>" +
       "<tr><th>Id</th><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
       "</table>";
     fillTable(squeals);
@@ -29,6 +29,7 @@ const changeSquealRecipients = async (squealId, recipients) => {
   return response.data;
 };
 
+//TODO
 const changeReactions = async (
   squealId,
   positiveReactions,
@@ -49,7 +50,7 @@ const fillTable = (items) => {
         "<td>" +
         "<img src='/" +
         i.body +
-        "'/>" +
+        "' class='w-50 h-50'/>" +
         "</td>" +
         "<td>" +
         i.author +
@@ -140,7 +141,7 @@ const orderBySender = async () => {
   senderAsc = !senderAsc;
   const newMain = document.getElementById("squealtable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
     "</table>";
   fillTable(orderedSqueals);
@@ -153,7 +154,7 @@ const orderByDate = async () => {
   dateAsc = !dateAsc;
   const newMain = document.getElementById("squealtable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
     "</table>";
   fillTable(orderedSqueals);
@@ -166,7 +167,7 @@ const orderByRecipients = async () => {
   recipientsAsc = !recipientsAsc;
   const newMain = document.getElementById("squealtable");
   newMain.innerHTML =
-    "<table id='table'>" +
+    "<table id='table' class='table'>" +
     "<tr><th>Body</th><th>Author</th><th>Date</th><th>Recipients</th><th>Channels</th><th>Location</th><th>Category</th><th>Positive Reactions</th><th>Negative Reactions</th></tr>" +
     "</table>";
   fillTable(orderedSqueals);
