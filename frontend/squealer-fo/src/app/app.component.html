@@ -1,16 +1,16 @@
 <div class="content" role="main" [class.example-is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="menu.toggle()">
-      <mat-icon>menu</mat-icon>
+    <button aria-label="Button to open side menu" mat-icon-button (click)="menu.toggle()">
+      <mat-icon style="color:black">menu</mat-icon>
     </button>
     <img width="40" alt="Squealer Logo" src="../assets/1511304664.png" />
-    <span>Squealer</span>
+    <span style="color:black">Squealer</span>
   </mat-toolbar>
   <div class="example-sidenav-container" fxLayout="row" fxFlex>
     <mat-sidenav-container fxFlex fxLayout="row" hasBackdrop="true">
       <mat-sidenav #menu mode="over" opened="false" class="navBar">
         <mat-accordion>
-          <mat-list fxLayoutAlign="space-around center" fxLayout="column">
+          <mat-list fxLayoutAlign="space-around center" fxLayout="column" class="menuSelect">
             <div *ngIf="isLoggedIn">
               <mat-list-item>
                 <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
@@ -28,6 +28,12 @@
                 <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
                   style="color: white">
                   <mat-icon>whatshot</mat-icon>&nbsp;Best 3 Squeals of the week
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/channels']" (click)="menu.toggle()"
+                  style="color: white">
+                  <mat-icon>grade</mat-icon>&nbsp;Squealer's Channels
                 </button>
               </mat-list-item>
               <mat-list-item>
@@ -69,8 +75,8 @@
     </mat-sidenav-container>
   </div>
   <mat-toolbar fxLayout="row" ngClass-xs="footerToolbarXs footerToolbarTextXs" ngClass="footerToolbar footerToolbarText"
-    color="primary">
-    Squealer &copy; &nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" style="color: white">Squealer
+    color="primary" style="color: black">
+    Squealer &copy; &nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" style="color: black">Squealer
       Inc.</a>
   </mat-toolbar>
 </div>

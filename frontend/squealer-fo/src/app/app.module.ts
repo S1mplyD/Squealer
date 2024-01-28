@@ -30,6 +30,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { Best3SquealsComponent } from './best-3-squeals/best-3-squeals.component';
+import { ChannelListsComponent } from './channel-follow/channels.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { Best3SquealsComponent } from './best-3-squeals/best-3-squeals.component
     AccountListComponent,
     UserPageComponent,
     AuthComponent,
-    Best3SquealsComponent
+    Best3SquealsComponent,
+    ChannelListsComponent
   ],
   imports: [
     MatTabsModule,

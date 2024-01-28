@@ -8,17 +8,22 @@
   background-color: #8a8a8a;
 }
 
+.feed-container {
+  margin: 40px;
+}
+
 @media only screen and (max-width: 600px) {
   .hometitle {
     margin-top: 30px;
+    color:#ec8b0d;
   }
 
   .squealTitle {
-    color: white;
+    color: black;
   }
 
   .squealText {
-    color: white;
+    color: black;
   }
 
   .upvoteText {
@@ -28,13 +33,13 @@
   .full-width {
     width: 100%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .thirtythree-width {
     width: 33%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .feed-container {
@@ -88,7 +93,7 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    color: #fff;
+    color: black;
     border: none;
     display: flex;
     justify-content: center;
@@ -98,7 +103,7 @@
   }
 
   .upvote {
-    background-color: #e9664f;
+    background-color: #e4cac5;
   }
 
   .stop-scrolling {
@@ -135,13 +140,14 @@
 @media only screen and (min-width: 600px) {
   .hometitle {
     margin-top: 30px;
+    color:#ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
 
   .squealText {
-    color: white;
+    color: black;
   }
 
   .map-container {
@@ -155,13 +161,13 @@
   .full-width {
     width: 100%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .thirtythree-width {
     width: 33%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .feed-container {
@@ -225,7 +231,7 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    color: #fff;
+    color: black;
     border: none;
     display: flex;
     justify-content: center;
@@ -235,7 +241,7 @@
   }
 
   .upvote {
-    background-color: #e9664f;
+    background-color: #e4cac5;
   }
 
   .stop-scrolling {
@@ -244,7 +250,7 @@
   }
 
   .popup {
-    background-color: #e9664f;
+    background-color: #5c3838;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
@@ -272,13 +278,14 @@
 @media only screen and (min-width: 768px) {
   .hometitle {
     margin-top: 30px;
+    color:#ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
 
   .squealText {
-    color: white;
+    color: black;
   }
 
   .upvoteText {
@@ -288,13 +295,13 @@
   .full-width {
     width: 100%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .thirtythree-width {
     width: 33%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .feed-container {
@@ -348,7 +355,7 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    color: #fff;
+    color: black;
     border: none;
     display: flex;
     justify-content: center;
@@ -358,7 +365,7 @@
   }
 
   .upvote {
-    background-color: #e9664f;
+    background-color: #e4cac5;
   }
 
   .stop-scrolling {
@@ -395,13 +402,14 @@
 @media only screen and (min-width: 992px) {
   .hometitle {
     margin-top: 30px;
+    color:#ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
 
   .squealText {
-    color: white;
+    color: black;
   }
 
   .upvoteText {
@@ -411,13 +419,13 @@
   .full-width {
     width: 100%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .thirtythree-width {
     width: 33%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .feed-container {
@@ -471,7 +479,7 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    color: #fff;
+    color: black;
     border: none;
     display: flex;
     justify-content: center;
@@ -481,7 +489,7 @@
   }
 
   .upvote {
-    background-color: #e9664f;
+    background-color: #e4cac5;
   }
 
   .stop-scrolling {
@@ -519,14 +527,15 @@
 @media only screen and (min-width: 1200px) {
   .hometitle {
     margin-top: 20px;
+    color:#ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
     font-size: xx-large;
   }
 
   .squealText {
-    color: white;
+    color: black;
   }
 
   .upvoteText {
@@ -536,13 +545,13 @@
   .full-width {
     width: 100%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .thirtythree-width {
     width: 33%;
     background: none !important;
-    color: white;
+    color: black;
   }
 
   .feed-container {
@@ -596,7 +605,7 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    color: #fff;
+    color: black;
     border: none;
     display: flex;
     justify-content: center;
@@ -606,7 +615,7 @@
   }
 
   .upvote {
-    background-color: #e9664f;
+    background-color: #e4cac5;
   }
 
   .stop-scrolling {

@@ -100,17 +100,11 @@ export class UsersService {
   }
 
   follow(username: string): Observable<any> {
-    const params = {
-      'username': username + ''
-    }
-    return this.http.post<any>(`${this.followApiUrl}/follow/${username}`, {params: params});
+    return this.http.post<any>(`${this.followApiUrl}/follow/${username}`, {});
   }
 
   unfollow(username: string): Observable<any> {
-    const params = {
-      'username': username + ''
-    }
-    return this.http.post<any>(`${this.followApiUrl}/unfollow/${username}`, {params: params});
+    return this.http.post<any>(`${this.followApiUrl}/unfollow/${username}`, {});
   }
 
   followers(username: string): Observable<User[]> {
