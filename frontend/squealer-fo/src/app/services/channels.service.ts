@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Channel } from 'app/interfaces/channels.interface';
-import { Squeal } from 'app/interfaces/squeal.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -44,8 +43,21 @@ export class ChannelsService {
     return this.http.get<any[]>(`${this.apiUrl}/squeals`, {params: params});
   }
 
+  followChannel(name: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/channel/${name}`, {});
+  }
+
+  unfollowChannel(name: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/channel/${name}`, {});
+  }
+
+
   getUserChannels(): Observable<Channel[]> {
     return this.http.get<Channel[]>(`${this.apiUrl}/userchannel`);
+  }
+
+  getKeywordsChannels(): Observable<Channel[]> {
+    return this.http.get<Channel[]>(`${this.apiUrl}/keyword`);
   }
 
   getOfficialChannels(): Observable<Channel[]> {

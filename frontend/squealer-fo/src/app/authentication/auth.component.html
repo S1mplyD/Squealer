@@ -2,61 +2,57 @@
 
 <div class="posts" color="primary">
   <div fxLayout="column" class="responsive-mat-form" *ngIf="!isLoggedIn">
-    <h2>Log In with Google</h2>
-    <div class="button-group">
-      <button mat-raised-button color="primary" (click)="loginWithGoogle()">Login with Google</button>
+    <h2 id="LoginGoogleTitle">Log In with Google</h2>
+    <div class="button-group" aria-labelledby="LoginGoogleTitle">
+      <button aria-label="Button to Login with Google" mat-raised-button color="primary" (click)="loginWithGoogle()">Login with Google</button>
     </div>
     <br>
-    <h2>Log In</h2>
-    <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" id="forms">
+    <h2 id="LoginTitle">Log In</h2>
+    <mat-expansion-panel aria-labelledby="LoginTitle" fxLayoutAlign="space-around center" fxLayout="column" id="forms">
       <mat-expansion-panel-header>Click here to Log In</mat-expansion-panel-header>
       <mat-accordion>
         <form [formGroup]="loginForm" (ngSubmit)="loginWithEmail()">
           <mat-form-field class="full-width" appearance="outline" color="primary">
-            <mat-label color="primary">Email</mat-label>
-            <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+            <mat-label id="Email" color="primary">Email</mat-label>
+            <input color="primary" aria-labelledby="Email" matInput type="email" formControlName="email" placeholder="Email" required>
           </mat-form-field>
           <mat-form-field class="full-width" appearance="outline" color="primary">
-            <mat-label color="primary">Password</mat-label>
-            <input color="primary" matInput type="password" formControlName="password" placeholder="Password" required>
+            <mat-label id="Password" color="primary">Password</mat-label>
+            <input color="primary" aria-labelledby="Password" matInput type="password" formControlName="password" placeholder="Password" required>
           </mat-form-field>
           <div class="button-group">
-            <button mat-raised-button color="primary" type="submit">Login</button>
+            <button aria-label="Button to Login with your account email and password" mat-raised-button color="primary" type="submit">Login</button>
           </div>
         </form>
       </mat-accordion>
     </mat-expansion-panel>
   </div>
 
-  <div *ngIf="isLoggedIn">
-    <h2>Welcome, {{ userName }}!</h2>
-    <button (click)="logout()">Logout</button>
-  </div>
   <br>
   <div fxLayout="column">
-    <h2>Sign Up</h2>
-    <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" id="forms">
+    <h2 id="SignInTitle">Sign Up</h2>
+    <mat-expansion-panel aria-labelledby="SignInTitle" fxLayoutAlign="space-around center" fxLayout="column" id="forms">
       <mat-expansion-panel-header>Click here to Sign Up</mat-expansion-panel-header>
       <mat-accordion>
         <form [formGroup]="signupForm" (ngSubmit)="signup()">
           <mat-form-field class="full-width" appearance="outline" color="primary">
             <mat-label color="primary">Email</mat-label>
-            <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+            <input aria-label="Email form" color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
           </mat-form-field>
           <mat-form-field class="full-width" appearance="outline" color="primary">
             <mat-label color="primary">Password</mat-label>
-            <input color="primary" matInput type="password" formControlName="password" placeholder="Password" required>
+            <input aria-label="Password form" color="primary" matInput type="password" formControlName="password" placeholder="Password" required>
           </mat-form-field>
           <mat-form-field class="full-width" appearance="outline" color="primary">
             <mat-label color="primary">Username</mat-label>
-            <input color="primary" matInput type="text" formControlName="username" placeholder="Username" required>
+            <input aria-label="Username form" color="primary" matInput type="text" formControlName="username" placeholder="Username" required>
           </mat-form-field>
           <mat-form-field class="full-width" appearance="outline" color="primary">
             <mat-label color="primary">Name</mat-label>
-            <input color="primary" matInput type="text" formControlName="name" placeholder="Name" required>
+            <input aria-label="Name form" color="primary" matInput type="text" formControlName="name" placeholder="Name" required>
           </mat-form-field>
           <div class="button-group">
-            <button mat-raised-button color="primary" type="submit">Sign Up</button>
+            <button aria-label="Button to Sign up" mat-raised-button color="primary" type="submit">Sign Up</button>
           </div>
         </form>
       </mat-accordion>
@@ -65,16 +61,21 @@
   </div>
   <br>
   <div>
-    <h2>Recover Password</h2>
-    <form [formGroup]="recoverPasswordForm" (ngSubmit)="recoverPassword()">
-      <mat-form-field class="full-width" appearance="outline" color="primary">
-        <mat-label color="primary">Email</mat-label>
-        <input color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
-      </mat-form-field>
-      <div class="button-group">
-        <button mat-raised-button color="primary" type="submit">Recover Password</button>
-      </div>
-    </form>
+    <h2 id="RecoverPasswordTitle">Recover Password</h2>
+    <mat-expansion-panel aria-labelledby="RecoverPasswordTitle" fxLayoutAlign="space-around center" fxLayout="column" id="forms">
+      <mat-expansion-panel-header >Click here to recover your password</mat-expansion-panel-header>
+      <mat-accordion>
+        <form [formGroup]="recoverPasswordForm" (ngSubmit)="recoverPassword()">
+          <mat-form-field class="full-width" appearance="outline" color="primary">
+            <mat-label color="primary">Email</mat-label>
+            <input aria-label="Email form" color="primary" matInput type="email" formControlName="email" placeholder="Email" required>
+          </mat-form-field>
+          <div class="button-group">
+            <button aria-label="Button to send email with new password" mat-raised-button color="primary" type="submit">Recover Password</button>
+          </div>
+        </form>
+      </mat-accordion>
+    </mat-expansion-panel>
   </div>
 
 </div>

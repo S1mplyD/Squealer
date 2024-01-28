@@ -1,7 +1,8 @@
 /* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {
+@media only screen and (min-height: 667px) {
   .user-profile {
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   #squeal {
@@ -9,10 +10,10 @@
     background-color: #ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
   .squealText {
-    color: white;
+    color: black;
   }
 
   .account-card {
@@ -62,9 +63,10 @@
 
 }
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
+@media only screen and (min-height: 844px) {
   .user-profile {
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   #squeal {
@@ -72,10 +74,10 @@
     background-color: #ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
   .squealText {
-    color: white;
+    color: black;
   }
 
   .account-card {
@@ -126,9 +128,10 @@
 
 }
 /* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {
+@media only screen and (min-height: 896px) {
   .user-profile {
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   #squeal {
@@ -136,10 +139,10 @@
     background-color: #ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
   .squealText {
-    color: white;
+    color: black;
   }
 
   .account-card {
@@ -193,9 +196,10 @@
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
+@media only screen and (min-height: 933px) {
   .user-profile {
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   #squeal {
@@ -203,10 +207,10 @@
     background-color: #ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
   }
   .squealText {
-    color: white;
+    color: black;
   }
 
   .account-card {
@@ -256,9 +260,10 @@
 
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
+@media only screen and (min-height: 1000px) {
   .user-profile {
     margin: 0 auto;
+    margin-top: 50px;
   }
 
   #squeal {
@@ -266,11 +271,11 @@
     background-color: #ec8b0d;
   }
   .squealTitle {
-    color: white;
+    color: black;
     font-size: xx-large;
   }
   .squealText {
-    color: white;
+    color: black;
   }
 
   .account-card {

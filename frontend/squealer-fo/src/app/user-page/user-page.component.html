@@ -5,33 +5,33 @@
         <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
         <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
       </div>
-      <mat-card-title style="color: white;"><h1><b>{{ account?.name }}</b></h1></mat-card-title>
+      <mat-card-title style="color: black;"><h1><b>{{ account?.name }}</b></h1></mat-card-title>
       <br>
       <mat-card-subtitle>
-        <p style="color: white;">@{{ account?.username }}</p>
+        <p style="color: black;">&#64;{{ account?.username }}</p>
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content *ngIf="account?.followers && account?.following">
-      <p><mat-icon>people_outline</mat-icon>&nbsp; <b>Followers:</b> {{ account?.followers?.length }}</p>
-      <p><mat-icon>people</mat-icon>&nbsp; <b>Following:</b> {{ account?.following?.length }}</p>
-      <p><mat-icon>cake</mat-icon>&nbsp; <b>Joined:</b> {{ formatDate(account?.createdAt) }}</p>
-      <p><b>Daily Characters:</b> {{ account?.dailyCharacters }}</p>
-      <p><b>Weekly Characters:</b> {{ account?.weeklyCharacters }}</p>
-      <p><b>Monthly Characters:</b> {{ account?.monthlyCharacters }}</p>
+      <p style="color: black;"><mat-icon>people_outline</mat-icon>&nbsp; <b>Followers:</b> {{ account?.followers?.length }}</p>
+      <p style="color: black;"><mat-icon>people</mat-icon>&nbsp; <b>Following:</b> {{ account?.following?.length }}</p>
+      <p style="color: black;"><mat-icon>cake</mat-icon>&nbsp; <b>Joined:</b> {{ formatDate(account?.createdAt) }}</p>
+      <p style="color: black;"><b>Daily Characters:</b> {{ account?.dailyCharacters }}</p>
+      <p style="color: black;"><b>Weekly Characters:</b> {{ account?.weeklyCharacters }}</p>
+      <p style="color: black;"><b>Monthly Characters:</b> {{ account?.monthlyCharacters }}</p>
       <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
-      <div class="file-upload">
+      <div *ngIf="un === account?.username" class="file-upload" style="color: black;">
         {{fileName || "No file uploaded yet."}}
-        <button *ngIf="un === account?.username" mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;" alt="Image change button">
+        <button aria-label="Button to change profile image" *ngIf="un === account?.username" mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;" alt="Image change button">
           <mat-icon>attach_file</mat-icon>
         </button>
       </div>
-      <button *ngIf="un !== account?.username && !isFollowed" mat-raised-button (click)="follow()" style="background-color: #ebcc67;" alt="Button to follow user">Follow user</button>
-      <button *ngIf="un !== account?.username && isFollowed" mat-raised-button (click)="unfollow()" style="background-color: #ebcc67;" lt="Button to unfollow user">Unfollow user</button>
+      <button style="color: black; background-color: #e4cac5;" *ngIf="un !== account?.username && !isFollowed" mat-raised-button (click)="follow()" alt="Button to follow user">Follow user</button>
+      <button style="color: black; background-color: #e4cac5;" *ngIf="un !== account?.username && isFollowed" mat-raised-button (click)="unfollow()" alt="Button to unfollow user">Unfollow user</button>
     </mat-card-content>
    </mat-card>
 
   <mat-tab-group mat-stretch-tabs [backgroundColor]="'primary'">
-    <mat-tab label="Recent Posts" aria-label="primary">
+    <mat-tab aria-label="Recent Posts tab" label="Recent Posts" aria-label="primary">
       <div class="post-list">
         <div class="post" *ngFor="let post of recentPosts">
           <mat-card id="squeal">
@@ -40,7 +40,7 @@
                 <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
                 <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
               </div>
-              <mat-card-title class="squealTitle">@{{ post.author }}</mat-card-title>
+              <mat-card-title class="squealTitle">&#64;{{ post.author }}</mat-card-title>
               <br>
               <mat-card-subtitle class="squealText">{{ formatDate(post.date) }}</mat-card-subtitle>
             </mat-card-header>
@@ -52,7 +52,7 @@
       </div>
     </mat-tab>
 
-    <mat-tab label="Tagged Answers" aria-label="primary">
+    <mat-tab aria-label="Tagged Answers tab" label="Tagged Answers" aria-label="primary">
       <div class="answer-list">
         <div  *ngFor="let answer of taggedPosts">
           <div class="answer" *ngIf="answer.recipients.includes('@'+ userName)">
@@ -64,7 +64,7 @@
                     <img *ngIf="answer?.author === user.username && !user.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" />
                   </div>
                 </div>
-                <mat-card-title class="squealTitle">@{{ answer.author }}</mat-card-title>
+                <mat-card-title class="squealTitle">&#64;{{ answer.author }}</mat-card-title>
                 <br>
                 <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
               </mat-card-header>

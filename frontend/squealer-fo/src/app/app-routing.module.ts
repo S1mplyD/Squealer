@@ -9,6 +9,7 @@ import { AccountListComponent } from './followed-accounts/account-list.component
 import { UserPageComponent } from './user-page/user-page.component';
 import { AuthComponent } from './authentication/auth.component';
 import { Best3SquealsComponent } from './best-3-squeals/best-3-squeals.component';
+import { ChannelListsComponent } from './channel-follow/channels.component';
 AccountListComponent
 const routes: Routes = [
   { path: 'authentication', component: AuthComponent},
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'best3Squeals', component: Best3SquealsComponent},
   { path: 'following', component: AccountListComponent },
   { path: 'following/:username', component: UserPageComponent},
+  { path: 'channels', component: ChannelListsComponent}
 ];
 
 @NgModule({

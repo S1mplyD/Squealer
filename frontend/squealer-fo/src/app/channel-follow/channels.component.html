@@ -1,0 +1,50 @@
+<div class="posts">
+  <h2>Official Channels</h2>
+  <div class="account-list" tabindex="0">
+    <br>
+    <div class="account-card" *ngFor="let offChan of officialChannels.channel">
+      <mat-card style="background-color: #ec8b0d;">
+        <mat-card-header>
+          <mat-card-title style="color: black;"><h3>{{ offChan.name }}</h3></mat-card-title>
+        </mat-card-header>
+        <mat-card-actions>
+          <button class="upvote" *ngIf="!officialChannels.isFollowed[officialChannels.channel.indexOf(offChan)]" mat-raised-button (click)="followChannel(offChan.name)">Follow channel</button>
+          <button class="upvote" *ngIf="officialChannels.isFollowed[officialChannels.channel.indexOf(offChan)]" mat-raised-button (click)="unfollowChannel(offChan.name)">Unfollow channel</button>
+        </mat-card-actions>
+       </mat-card>
+    </div>
+  </div>
+  <br>
+  <h2>Keyboard Channels</h2>
+  <div class="account-list" tabindex="0">
+    <br>
+    <div class="account-card" *ngFor="let keyChan of keywordChannels.channel">
+      <mat-card style="background-color: #ec8b0d;">
+        <mat-card-header>
+          <mat-card-title style="color: black;"><h3>{{ keyChan.name }}</h3></mat-card-title>
+        </mat-card-header>
+        <mat-card-actions>
+          <button class="upvote" *ngIf="!keywordChannels.isFollowed[keywordChannels.channel.indexOf(keyChan)]" mat-raised-button (click)="followChannel(keyChan.name)">Follow channel</button>
+          <button class="upvote" *ngIf="keywordChannels.isFollowed[keywordChannels.channel.indexOf(keyChan)]" mat-raised-button (click)="unfollowChannel(keyChan.name)">Unfollow channel</button>
+        </mat-card-actions>
+       </mat-card>
+    </div>
+  </div>
+  <br>
+  <h2>User Channels</h2>
+  <div class="account-list" tabindex="0">
+    <br>
+    <div class="account-card" *ngFor="let uChan of userChannels.channel">
+      <mat-card style="background-color: #ec8b0d;">
+        <mat-card-header>
+          <mat-card-title style="color: black;"><h3>{{ uChan.name }}</h3></mat-card-title>
+        </mat-card-header>
+        <mat-card-actions>
+          <button class="upvote" *ngIf="!userChannels.isFollowed[userChannels.channel.indexOf(uChan)]" mat-raised-button (click)="followChannel(uChan.name)">Follow channel</button>
+          <button class="upvote" *ngIf="userChannels.isFollowed[userChannels.channel.indexOf(uChan)]" mat-raised-button (click)="unfollowChannel(uChan.name)">Unfollow channel</button>
+        </mat-card-actions>
+       </mat-card>
+    </div>
+  </div>
+
+</div>

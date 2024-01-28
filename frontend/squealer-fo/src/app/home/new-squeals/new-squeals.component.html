@@ -58,14 +58,14 @@
         <input matInput [(ngModel)]="recipients" />
       </mat-form-field>
       <div *ngIf="squealType === 'media'">
-        <img [src]="newSqueal.body" class="preview" />
+        <img alt="Image preview" [src]="newSqueal.body" class="preview" />
       </div>
 
       <div class="button-group">
-        <button mat-raised-button color="primary" type="submit" (click)="addPost()">
+        <button aria-label="Button to add post" mat-raised-button color="primary" type="submit" (click)="addPost()">
           Add Post
         </button>
-        <button mat-raised-button color="primary" (click)="closePopup()">
+        <button aria-label="Button to stop adding post" mat-raised-button color="primary" (click)="closePopup()">
           Cancel
         </button>
       </div>
@@ -85,10 +85,10 @@
       </mat-form-field>
 
       <div class="button-group">
-        <button mat-raised-button color="primary" type="submit" (click)="addPost()">
+        <button aria-label="Button to add post" mat-raised-button color="primary" type="submit" (click)="addPost()">
           Add Post
         </button>
-        <button mat-raised-button color="primary" (click)="closeAnswer()">
+        <button aria-label="Button to stop adding post" mat-raised-button color="primary" (click)="closeAnswer()">
           Cancel
         </button>
       </div>
@@ -96,7 +96,7 @@
   </div>
 
   <div class="login" *ngIf="!isLoggedIn">
-    <button mat-raised-button color="primary" [routerLink]="['/authentication']">
+    <button aria-label="Button to login" mat-raised-button color="primary" [routerLink]="['/authentication']">
       Login
     </button>
     <p *ngIf="!isLoggedIn">Please login to add a post.</p>
@@ -130,16 +130,16 @@
         <mat-card-content *ngIf="squeal.type === 'text'">
           <h2 class="squealText">{{ squeal.body }}</h2>
           <div class="button-group">
-            <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
-              <mat-icon>thumb_up</mat-icon>
+            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+              <p aria-label="Number of upvotes" class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
+              <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
-              <mat-icon>thumb_down</mat-icon>
+            <button aria-label="Button to downvote" class="upvote" mat-raised-button  (click)="addDownvote(squeal._id)">
+              <p aria-label="Number of downvotes" class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
+              <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button class="upvote" mat-raised-button color="primary" (click)="openAnswer(squeal._id)">
-              <mat-icon>question_answer</mat-icon>
+            <button aria-label="Button to see answers" class="upvote" mat-raised-button (click)="openAnswer(squeal._id)">
+              <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
           <br />
@@ -177,17 +177,17 @@
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <h2 class="squealText">{{ answer.body }}</h2>
                   <div class="button-group">
-                    <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(answer._id)">
+                      <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
-                      <mat-icon>thumb_up</mat-icon>
+                      <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
                     </button>
-                    <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(answer._id)">
+                      <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
-                      <mat-icon>thumb_down</mat-icon>
+                      <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
                     </button>
                   </div>
                 </mat-card-content>
@@ -196,18 +196,18 @@
           </div>
         </mat-card-content>
         <mat-card-content *ngIf="squeal.type === 'media'">
-          <img [src]="squeal.body" />
+          <img [alt]="'Image present in the body of the squeal from' + squeal.author" [src]="squeal.body" />
           <div class="button-group">
-            <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
-              <mat-icon>thumb_up</mat-icon>
+            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+              <p aria-label="Number of upvotes" class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
+              <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
-              <mat-icon>thumb_down</mat-icon>
+            <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(squeal._id)">
+              <p aria-label="Number of downvotes" class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
+              <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button class="upvote" mat-raised-button color="primary" (click)="openAnswer(squeal._id)">
-              <mat-icon>question_answer</mat-icon>
+            <button aria-label="Button to open answers" class="upvote" mat-raised-button (click)="openAnswer(squeal._id)">
+              <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
           <br />
@@ -244,17 +244,17 @@
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <p class="squealText">{{ answer.body }}</p>
                   <div class="button-group">
-                    <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(answer._id)">
+                      <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
-                      <mat-icon>thumb_up</mat-icon>
+                      <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
                     </button>
-                    <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(answer._id)">
+                      <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
-                      <mat-icon>thumb_down</mat-icon>
+                      <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
                     </button>
                   </div>
                 </mat-card-content>
@@ -265,41 +265,41 @@
         <mat-card-content *ngIf="squeal.type === 'geo'">
           <div class="button-group" *ngIf="squeal.lat && squeal.lng">
             <div *ngIf="squeal.locationName">
-              <button mat-raised-button color="primary" *ngIf="!checkMapOpened(squeal._id)"
+              <button aria-label="Button to open map" mat-raised-button class="upvote" *ngIf="!checkMapOpened(squeal._id)"
                 (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)">
                 Generate map on {{ squeal.locationName }}
               </button>
-              <button mat-raised-button color="primary" *ngIf="checkMapOpened(squeal._id)"
+              <button aria-label="Button to close map" mat-raised-button class="upvote" *ngIf="checkMapOpened(squeal._id)"
                 (click)="closeMap(squeal._id)">
                 Close
               </button>
             </div>
             <div *ngif="!squeal.locationName">
-              <button mat-raised-button color="primary" *ngIf="!mapOpened"
+              <button aria-label="Button to open map" mat-raised-button class="upvote" *ngIf="!mapOpened"
                 (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)">
                 Generate map
               </button>
-              <button mat-raised-button color="primary" *ngIf="mapOpened" (click)="closeMap(squeal._id)">
+              <button aria-label="Button to close map" mat-raised-button class="upvote" *ngIf="mapOpened" (click)="closeMap(squeal._id)">
                 Close <Map></Map>
               </button>
             </div>
           </div>
-          <div *ngIf="checkMapOpened(squeal._id)" [id]="squeal._id" style="height: 300px" leaflet [leafletOptions]="
+          <div aria-label="Map of the squeal" *ngIf="checkMapOpened(squeal._id)" [id]="squeal._id" style="height: 300px" leaflet [leafletOptions]="
               createOptions(squeal.lat + '', squeal.lng + '', squeal._id)
             " (leafletMapReady)="
               addMarker($event, squeal.lat + '', squeal.lng + '', squeal._id)
             "></div>
           <div class="button-group">
-            <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
-              <mat-icon>thumb_up</mat-icon>
+            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+              <p aria-label="Number of upvotes" class="upvoteText">{{ squeal.positiveReactions?.length }}</p>
+              <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(squeal._id)">
-              <p class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
-              <mat-icon>thumb_down</mat-icon>
+            <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(squeal._id)">
+              <p aria-label="Number of downvotes" class="upvoteText">{{ squeal.negativeReactions?.length }}</p>
+              <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button class="upvote" color="primary" mat-raised-button (click)="openAnswer(squeal._id)">
-              <mat-icon>question_answer</mat-icon>
+            <button aria-label="Button to open answers" class="upvote" mat-raised-button (click)="openAnswer(squeal._id)">
+              <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
           <br />
@@ -336,14 +336,14 @@
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <p class="squealText">{{ answer.body }}</p>
                   <div class="button-group">
-                    <button class="upvote" mat-raised-button color="primary" (click)="addUpvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(answer._id)">
+                      <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
                       <mat-icon>thumb_up</mat-icon>
                     </button>
-                    <button class="upvote" mat-raised-button color="primary" (click)="addDownvote(answer._id)">
-                      <p class="upvoteText">
+                    <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(answer._id)">
+                      <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
                       <mat-icon>thumb_down</mat-icon>
@@ -357,10 +357,10 @@
       </mat-card>
     </div>
   </div>
-  <div *ngIf="isLoggedIn">
-    <!--    -->
-    <button mat-fab color="primary" class="floating-button" (click)="openPopup()" *ngIf="!isPopupOpen">
+</div>
+
+<div *ngIf="isLoggedIn">
+    <button aria-label="Button to open popup to add squeal" mat-fab class="floating-button" (click)="openPopup()" *ngIf="!isPopupOpen">
       <mat-icon>plus_one</mat-icon>
     </button>
-  </div>
 </div>

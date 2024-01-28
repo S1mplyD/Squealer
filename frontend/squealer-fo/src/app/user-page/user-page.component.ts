@@ -55,14 +55,15 @@ export class UserPageComponent implements OnInit {
     .subscribe((response) => {
       this.users = response;
     })
-    this.usersService.following(this.un ? this.un: '')
+    this.usersService.followers(String(this.activeRoute.snapshot.paramMap.get("username")))
     .pipe(takeUntil(this._unsubscribeAll)).subscribe((res) => {
       for (const foll of res) {
-        if (this.userName === foll.username) {
+        if (this.un === foll.username) {
           this.isFollowed = true;
         }
       }
     });
+    this.userName =String(this.activeRoute.snapshot.paramMap.get("username"));
   }
 
   formatDate(date: Date | undefined): string | null{
@@ -102,7 +103,7 @@ export class UserPageComponent implements OnInit {
 
 
   follow() {
-    this.usersService.follow(this.userName)
+    this.usersService.follow(String(this.activeRoute.snapshot.paramMap.get("username")))
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
       this._snackBar.open('You followed this user.', 'Close', {
@@ -114,7 +115,7 @@ export class UserPageComponent implements OnInit {
 
 
   unfollow() {
-    this.usersService.unfollow(this.userName)
+    this.usersService.unfollow(String(this.activeRoute.snapshot.paramMap.get("username")))
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(res => {
       if (res === 'OK') this.isFollowed = false;
