@@ -24,7 +24,7 @@ export type User = {
   name: string; //Nome completo (nome e cognome)
   username: string; // Username dell'utente
   mail: string; // Mail dell'utente
-  serviceId: number | undefined; // id del servizio di login usato (E.s.: Google)
+  serviceId?: number; // id del servizio di login usato (E.s.: Google)
   password: string | undefined;
   profilePicture: string | undefined; // Immagine profilo
   dailyCharacters: number; //Caratteri giornalieri
@@ -40,6 +40,7 @@ export type User = {
   status: string;
   blockedFor: number;
   notification: string[];
+  popularity: number;
 };
 export type Analytic = {
   _id: string;
