@@ -80,41 +80,50 @@ export function Characters() {
           </select>
         ) : null}
         <h1 className="font-bold">Buy More Characters</h1>
-        <label htmlFor="daily" className="mr-4">
-          Daily characters
-        </label>
-        <input
-          id="daily"
-          type="number"
-          placeholder="Daily characters"
-          defaultValue={0}
-          min={0}
-          onChange={getPrice}
-        />
-        <label htmlFor="weekly" className="mr-4">
-          Weekly characters
-        </label>
-        <input
-          type="number"
-          placeholder="Weekly characters"
-          id="weekly"
-          defaultValue={0}
-          min={0}
-          onChange={getPrice}
-        />
-        <label htmlFor="monthly" className="mr-4">
-          Monthly characters
-        </label>
-        <input
-          type="number"
-          placeholder="Monthly characters"
-          id="monthly"
-          defaultValue={0}
-          min={0}
-          onChange={getPrice}
-        />
+        <div className="flex flex-col ">
+          <div>
+            <label htmlFor="daily" className="mr-4">
+              Daily characters
+            </label>
+            <input
+              id="daily"
+              type="number"
+              placeholder="Daily characters"
+              defaultValue={0}
+              min={0}
+              onChange={getPrice}
+            />
+          </div>
+          <div>
+            <label htmlFor="weekly" className="mr-4">
+              Weekly characters
+            </label>
+            <input
+              type="number"
+              placeholder="Weekly characters"
+              id="weekly"
+              defaultValue={0}
+              min={0}
+              onChange={getPrice}
+            />
+          </div>
+          <div>
+            <label htmlFor="monthly" className="mr-4">
+              Monthly characters
+            </label>
+            <input
+              type="number"
+              placeholder="Monthly characters"
+              id="monthly"
+              defaultValue={0}
+              min={0}
+              onChange={getPrice}
+            />
+          </div>
+        </div>
         <div>The price is {price.toFixed(2)}€</div>
         <button
+          className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
           onClick={async () => {
             const result = await buyCharacters();
             if (result) {
