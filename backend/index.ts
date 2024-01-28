@@ -106,7 +106,14 @@ app.listen(port, () => {
 });
 
 const fix = async () => {
+    // await squealModel.deleteMany({
+    //     $and: [{ originalSqueal: { $ne: "" } }, { time: { $gt: 0 } }],
+    // });
     await squealModel.deleteMany({
-        $and: [{ originalSqueal: { $ne: "" } }, { time: { $gt: 0 } }],
+        $or: [
+            { author: "LBAdmin" },
+            { author: "Lorenzo_De_Luise" },
+            { author: "testusername" },
+        ],
     });
 };
