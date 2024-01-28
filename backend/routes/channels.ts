@@ -17,7 +17,7 @@ import {
   editOfficialChannel,
   updateOfficialSqueals,
 } from "../database/queries/channels";
-import { SquealerError, catchError } from "../util/errors";
+import { SquealerError } from "../util/errors";
 import { Channel, Squeal, Success, User } from "../util/types";
 import channelsModel from "../database/models/channels.model";
 
@@ -110,7 +110,44 @@ router
       if (error instanceof SquealerError) res.sendStatus(404);
       else res.status(500).send(error);
     }
+  })
+  .post(async (req, res) => {
+    try {
+      if (req.user && (req.user as User).status === "normal") {
+        const channel: Channel = await getChannel(req.params.name);
+        await channelsModel.updateOne(
+          { _id: channel._id },
+          {
+            $push: {
+              allowedRead: (req.user as User)._id,
+              allowedWrite: (req.user as User)._id,
+            },
+          },
+        );
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      if (req.user && (req.user as User).status === "normal") {
+        const channel: Channel = await getChannel(req.params.name);
+        await channelsModel.updateOne(
+          { _id: channel._id },
+          {
+            $pull: {
+              allowedRead: (req.user as User)._id,
+              allowedWrite: (req.user as User)._id,
+            },
+          },
+        );
+      } else res.sendStatus(401);
+    } catch (e) {
+      res.status(500).send(e);
+    }
   });
+
 router
   .route("/userchannel")
   /**
