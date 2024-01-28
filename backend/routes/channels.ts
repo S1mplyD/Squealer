@@ -124,6 +124,7 @@ router
             },
           },
         );
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (e) {
       res.status(500).send(e);
@@ -142,6 +143,7 @@ router
             },
           },
         );
+        res.sendStatus(200);
       } else res.sendStatus(401);
     } catch (e) {
       res.status(500).send(e);
