@@ -67,24 +67,43 @@ export function Characters() {
   if (!loading && user && user.plan === "professional") {
     return (
       <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange">
-        {managedUsers ? (
-          <select
-            id="manageduserselect"
-            onChange={() => {
-              handleChange();
-            }}
-          >
-            {managedUsers.map((managedUser) => (
-              <option key={managedUser.username}>{managedUser.username}</option>
-            ))}
-          </select>
-        ) : null}
+        <div className="font-bold">
+          <label htmlFor="manageduserselect" className="font-bold">
+            User
+          </label>
+          {managedUsers ? (
+            <select
+              id="manageduserselect"
+              onChange={() => {
+                handleChange();
+              }}
+            >
+              {managedUsers.map((managedUser) => (
+                <option key={managedUser.username}>
+                  {managedUser.username}
+                </option>
+              ))}
+            </select>
+          ) : null}
+        </div>
+        <label htmlFor="characters" className="font-bold">
+          Characters
+        </label>
+        <div id="characters" className="flex flex-row ">
+          <p className="mr-4">
+            Daily Characters Left: {selectedUser?.dailyCharacters}
+          </p>
+          <p className="mr-4">
+            Weekly Characters Left: {selectedUser?.weeklyCharacters}
+          </p>
+          <p className="mr-4">
+            Monthly Characters Left: {selectedUser?.monthlyCharacters}
+          </p>
+        </div>
         <h1 className="font-bold">Buy More Characters</h1>
-        <div className="flex flex-col ">
-          <div>
-            <label htmlFor="daily" className="mr-4">
-              Daily characters
-            </label>
+        <div className="flex flex-col justify-between items-center mx-4 px-4 md:flex-row">
+          <div className="my-4 flex flex-col justify-between items-center">
+            <label htmlFor="daily">Daily characters</label>
             <input
               id="daily"
               type="number"
@@ -94,10 +113,8 @@ export function Characters() {
               onChange={getPrice}
             />
           </div>
-          <div>
-            <label htmlFor="weekly" className="mr-4">
-              Weekly characters
-            </label>
+          <div className="my-4 flex flex-col justify-between items-center">
+            <label htmlFor="weekly">Weekly characters</label>
             <input
               type="number"
               placeholder="Weekly characters"
@@ -107,10 +124,8 @@ export function Characters() {
               onChange={getPrice}
             />
           </div>
-          <div>
-            <label htmlFor="monthly" className="mr-4">
-              Monthly characters
-            </label>
+          <div className="my-4 flex flex-col justify-between items-center">
+            <label htmlFor="monthly">Monthly characters</label>
             <input
               type="number"
               placeholder="Monthly characters"

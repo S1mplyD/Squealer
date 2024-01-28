@@ -126,34 +126,66 @@ export function Analytics() {
   if (!isLoading && user && user.plan === "professional") {
     return (
       <>
-        <div className="flex flex-row m-4 p-4 bg-orange rounded-lg">
-          {managedUsers ? (
-            <select
-              id="manageduserselect"
-              onChange={() => {
-                handleChange();
-              }}
+        <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange ">
+          <div>
+            <label htmlFor="manageduserselect" className="font-bold">
+              Selected User:{" "}
+            </label>
+            {managedUsers ? (
+              <select
+                id="manageduserselect"
+                onChange={() => {
+                  handleChange();
+                }}
+              >
+                {managedUsers.map((managedUser) => (
+                  <option key={managedUser.username}>
+                    {managedUser.username}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+          </div>
+          <label htmlFor="characters" className="font-bold">
+            Characters
+          </label>
+          <div id="characters" className="flex flex-row ">
+            <p className="mr-4">
+              Daily Characters Left: {selectedUser?.dailyCharacters}
+            </p>
+            <p className="mr-4">
+              Weekly Characters Left: {selectedUser?.weeklyCharacters}
+            </p>
+            <p className="mr-4">
+              Monthly Characters Left: {selectedUser?.monthlyCharacters}
+            </p>
+          </div>
+          <div>
+            <button
+              className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
+              onClick={handleShowAll}
             >
-              {managedUsers.map((managedUser) => (
-                <option key={managedUser.username}>
-                  {managedUser.username}
-                </option>
-              ))}
-            </select>
-          ) : null}
-          {selectedUser ? (
-            <div className="flex flex-row m-4 p-4">
-              <ul>
-                <li>{selectedUser.dailyCharacters}</li>
-                <li>{selectedUser.weeklyCharacters}</li>
-                <li>{selectedUser.monthlyCharacters}</li>
-              </ul>
-            </div>
-          ) : null}
-          <button onClick={handleShowAll}>All squeals</button>
-          <button onClick={handleShowPopular}>Popular</button>
-          <button onClick={handleShowUnpopular}>Unpopular</button>
-          <button onClick={handleShowControversial}>Controversial</button>
+              All squeals
+            </button>
+            <button
+              className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
+              onClick={handleShowPopular}
+            >
+              Popular
+            </button>
+            <button
+              className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px] "
+              onClick={handleShowUnpopular}
+            >
+              Unpopular
+            </button>
+            <button
+              className="btn-link bg-grey text-white rounded-lg p-4 m-2 w-[200px]"
+              onClick={handleShowControversial}
+            >
+              Controversial
+            </button>
+          </div>
         </div>
         <div>
           {showAll && squeals ? (

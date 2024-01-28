@@ -137,11 +137,20 @@ const CreateSqueal: React.FC = () => {
                 </select>
               </div>
             ) : null}
-            <label htmlFor="characters">Characters</label>
-            <div id="characters">
-              <p>{selectedUser?.dailyCharacters}</p>
-              <p>{selectedUser?.weeklyCharacters}</p>
-              <p>{selectedUser?.monthlyCharacters}</p>
+
+            <label htmlFor="characters" className="font-bold">
+              Characters
+            </label>
+            <div id="characters" className="flex flex-row ">
+              <p className="mr-4">
+                Daily Characters Left: {selectedUser?.dailyCharacters}
+              </p>
+              <p className="mr-4">
+                Weekly Characters Left: {selectedUser?.weeklyCharacters}
+              </p>
+              <p className="mr-4">
+                Monthly Characters Left: {selectedUser?.monthlyCharacters}
+              </p>
             </div>
             <label htmlFor="radiodiv" className="font-bold">
               Type
