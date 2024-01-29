@@ -78,7 +78,6 @@ export async function getAllPublicSqueals() {
             },
         ],
     });
-    console.log(squeals);
     return squeals;
 }
 
