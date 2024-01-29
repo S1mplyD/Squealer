@@ -1,4 +1,10 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { AuthService } from 'app/services/auth.service'; // Your authentication service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,10 +18,11 @@ import { ComponentCacheService } from 'app/services/component-cache.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit, OnDestroy{
+export class AuthComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   userName: string = '';
   user: User = {
+    _id: '',
     name: '',
     username: '',
     mail: '',
@@ -26,11 +33,11 @@ export class AuthComponent implements OnInit, OnDestroy{
     resetToken: '',
     createdAt: new Date(),
     status: '',
-    blockedFor: 0
+    blockedFor: 0,
   };
   parameters = {
-    dataSource: []
-  }
+    dataSource: [],
+  };
   loginForm: FormGroup;
   signupForm: FormGroup;
   recoverPasswordForm: FormGroup;
@@ -40,7 +47,7 @@ export class AuthComponent implements OnInit, OnDestroy{
     private formBuilder: FormBuilder,
     private router: Router,
     private _snackBar: MatSnackBar,
-    private componentCacheService: ComponentCacheService
+    private componentCacheService: ComponentCacheService,
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
@@ -66,40 +73,48 @@ export class AuthComponent implements OnInit, OnDestroy{
   }
 
   loginWithGoogle() {
-    this.authService.loginWithGoogle()
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((acc) => {
-      this.user = acc;
-      sessionStorage.setItem('username', this.user.username)
-    });
+    this.authService
+      .loginWithGoogle()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((acc) => {
+        this.user = acc;
+        sessionStorage.setItem('username', this.user.username);
+      });
     this.router.navigateByUrl('');
   }
 
   loginWithEmail() {
     const email = this.loginForm.value.email;
     const password = this.loginForm.value.password;
-    this.authService.loginWithEmail(email, password)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((acc) => {
-      this.user = acc;
-      this.authService.isAuthenticated()
+    this.authService
+      .loginWithEmail(email, password)
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        if (res.status !== '404') {
-          this.isLoggedIn = true;
-          this.user = res;
-          sessionStorage.setItem('username', this.user.username)
-          sessionStorage.setItem('isLoggedIn', 'true');
-          this.router.navigateByUrl('');
-        }
-    });
-
-    },
-    (error) => {
-      this._snackBar.open('Email or password are not correct! Retry.', 'Close', {
-        duration: 3000
-      });
-    });
+      .subscribe(
+        (acc) => {
+          this.user = acc;
+          this.authService
+            .isAuthenticated()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((res) => {
+              if (res.status !== '404') {
+                this.isLoggedIn = true;
+                this.user = res;
+                sessionStorage.setItem('username', this.user.username);
+                sessionStorage.setItem('isLoggedIn', 'true');
+                this.router.navigateByUrl('');
+              }
+            });
+        },
+        (error) => {
+          this._snackBar.open(
+            'Email or password are not correct! Retry.',
+            'Close',
+            {
+              duration: 3000,
+            },
+          );
+        },
+      );
   }
 
   signup() {
@@ -107,14 +122,15 @@ export class AuthComponent implements OnInit, OnDestroy{
     const password = this.signupForm.value.password;
     const username = this.signupForm.value.username.Replace(' ', '_');
     const name = this.signupForm.value.name;
-    this.authService.signUp(email, password, username, name)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe((acc) => {
-      this.user = acc;
-      sessionStorage.setItem('username', this.user.username)
-      sessionStorage.setItem('isLoggedIn', 'true');
-      this.router.navigateByUrl('');
-    });
+    this.authService
+      .signUp(email, password, username, name)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((acc) => {
+        this.user = acc;
+        sessionStorage.setItem('username', this.user.username);
+        sessionStorage.setItem('isLoggedIn', 'true');
+        this.router.navigateByUrl('');
+      });
   }
 
   recoverPassword() {
