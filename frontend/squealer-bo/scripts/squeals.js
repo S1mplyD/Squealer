@@ -68,6 +68,9 @@ const fillTable = (items) => {
         i.locationName +
         "</td>" +
         "<td>" +
+        i.category +
+        "</td>" +
+        "<td>" +
         i.positiveReactions.length +
         "</td>" +
         "<td>" +
@@ -97,6 +100,9 @@ const fillTable = (items) => {
         "</td>" +
         "<td>" +
         i.locationName +
+        "</td>" +
+        "<td>" +
+        i.category +
         "</td>" +
         "<td>" +
         i.positiveReactions.length +
