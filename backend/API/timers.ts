@@ -51,6 +51,8 @@ export async function startTimer(s_squeal: Squeal) {
         author: newSqueal.author,
         type: newSqueal.type,
         originalSqueal: newSqueal._id,
+        positiveReactions: [],
+        negativeReactions: [],
         _id: "",
       };
       await postSqueal(squeal, user);
