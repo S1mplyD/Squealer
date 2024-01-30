@@ -38,6 +38,7 @@ import { Squeal, Success, User } from "../util/types";
 import { SquealerError } from "../util/errors";
 import { startTimer } from "../API/timers";
 import { getUserByUsername } from "../database/queries/users";
+import squealModel from "../database/models/squeals.model";
 
 export const router = express.Router();
 
@@ -554,7 +555,15 @@ router.route("/nologin3best").get(async (req, res) => {
     try {
         if (!req.user) {
             const squeals: Squeal[] = await getAllSquealsWithoutLogin();
-            squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions)&&(a.positiveReactions?.length >= b.positiveReactions?.length) ? 1 : -1));
+            squeals.sort(
+                (a, b) =>
+                    0 -
+                    (a.positiveReactions &&
+                        b.positiveReactions &&
+                        a.positiveReactions?.length >= b.positiveReactions?.length
+                        ? 1
+                        : -1),
+            );
             let squeals3Best: Squeal[] = [];
             for (let i = 0; i < 3; i++) {
                 squeals3Best.push(squeals[i]);
@@ -576,7 +585,15 @@ router.route("/login3best").get(async (req, res) => {
             const squeals: Squeal[] | undefined = await getAllSquealsWithLogin(
                 req.user as User,
             );
-            squeals.sort((a, b) => 0 - ((a.positiveReactions && b.positiveReactions)&&(a.positiveReactions?.length >= b.positiveReactions?.length) ? 1 : -1));
+            squeals.sort(
+                (a, b) =>
+                    0 -
+                    (a.positiveReactions &&
+                        b.positiveReactions &&
+                        a.positiveReactions?.length >= b.positiveReactions?.length
+                        ? 1
+                        : -1),
+            );
             let squeals3Best: Squeal[] = [];
             for (let i = 0; i < 3; i++) {
                 squeals3Best.push(squeals[i]);
@@ -589,4 +606,22 @@ router.route("/login3best").get(async (req, res) => {
     }
 });
 
-
+router
+    .route("/editreactions/:squealId")
+    .post(async (req: ExpressRequest, res: ExpressResponse) => {
+        try {
+            if (req.user && (req.user as User).plan === "admin") {
+                const squeal: Squeal = await getSquealById(req.params.squealId);
+                if (squeal.positiveReactions && squeal.negativeReactions) {
+                    if (
+                        squeal.positiveReactions.length >= req.body.postiveReactions &&
+                        squeal.negativeReactions?.length >= req.body.negativeReactions
+                    ) {
+                        await squealModel.updateOne({ _id: req.params.squealId }, {});
+                    }
+                }
+            } else res.sendStatus(401);
+        } catch (e) {
+            res.status(500).send(e);
+        }
+    });

@@ -45,21 +45,24 @@
         </div>
         <div id="squealtable"></div>
         <div>
-            <label for="id">Squeal ID</label>
-            <input type="text" id="id" placeholder="id" />
             <form>
+                <label for="idRec">Squeal ID</label>
+                <input type="text" id="idRec" placeholder="id" />
                 <label for="recipients">Recipients</label>
                 <input type="text" id="recipients" placeholder="@mention, #keyword or §channel" />
                 <button
-                    onclick="changeSquealRecipients(document.getElementById('id').value, document.getElementById('recipients').value)">
+                    onclick="changeSquealRecipients(document.getElementById('idRec').value, document.getElementById('recipients').value)">
                     SUBMIT
                 </button>
             </form>
             <form>
+                <label for="id">Squeal ID</label>
+                <input type="text" id="id" placeholder="id"
+                    onchange="updateReactions(document.getElementById('id').value)" />
                 <label for="positive">Positive reactions</label>
-                <input type="number" id="positive" placeholder="Positive reactions" />
+                <input type="number" id="positive" placeholder="Positive reactions" min="0" />
                 <label for="negative">Negative reactions</label>
-                <input type="number" id="negative" placeholder="Negative reactions" />
+                <input type="number" id="negative" placeholder="Negative reactions" min="0" />
                 <button
                     onclick="changeReactions(document.getElementById('id').value, document.getElementById('positive').value,document.getElementById('negative').value)">
                     SUBMIT
