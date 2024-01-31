@@ -589,18 +589,18 @@ export async function getSquealResponses(id: string) {
     }
     return responses;
 }
-
 export async function updateSquealRecipients(
     squealId: string,
-    recipients: string[],
+    newRecipients: string[],
 ) {
     const update = await squealModel.updateOne(
         { _id: squealId },
-        { recipients: recipients },
+        { $set: { recipients: newRecipients } },
     );
+    console.log(update);
     if (update.modifiedCount < 1) {
         throw cannot_update;
-    } else return updated;
+    }
 }
 
 export const getSquealsBySenderAsc = async () => {

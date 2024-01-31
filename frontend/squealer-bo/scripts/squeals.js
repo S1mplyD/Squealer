@@ -22,11 +22,13 @@ const createSquealTable = async () => {
 };
 
 const changeSquealRecipients = async (squealId, recipients) => {
+    console.log(recipients.replaceAll(" ", "").split(","));
+    const body = { recipients: recipients.replaceAll(" ", "").split(",") };
     const response = await axios.post(
         `/api/squeals/recipients/${squealId}`,
-        recipients.replaceAll(" ", "").split(","),
+        body,
     );
-    return response.data;
+    console.log(response.data);
 };
 
 const changeReactions = async (
