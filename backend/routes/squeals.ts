@@ -418,7 +418,6 @@ router
                 (req.user as User).status !== "ban" &&
                 (req.user as User).status !== "block"
             ) {
-                console.log("here");
                 const newSqueal: Squeal = await postResponse(
                     req.body,
                     req.params.id,

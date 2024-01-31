@@ -268,14 +268,17 @@ export async function postSqueal(squeal: Squeal, user: User) {
         const channels: null | Channel[] = await channelsModel.find({
             name: { $in: squeal.channels },
         });
-        console.log(channels);
-        console.log(squeal.channels);
         let rec: string[] = [];
-        if (channels.length < 1) {
+        if (channels.length < 1 && squeal.channels.length > 0) {
             for (let i of squeal.channels) {
                 await createChannel(i.substring(1), await checkChannelType(i), user);
             }
         }
+        if (squeal.recipients)
+            squeal.recipients = squeal.recipients.filter((el) => {
+                el !== "";
+            });
+        console.log(squeal.recipients?.length);
         if (squeal.recipients && squeal.recipients.length > 0) {
             for (let i of squeal.recipients) {
                 rec.push(i.replace(" ", ""));

@@ -55,7 +55,7 @@ export class NewSquealsComponent implements OnInit {
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
     locationName: '',
-    time: 0
+    time: 0,
   };
 
   newAnswer: Squeal = {
@@ -71,7 +71,7 @@ export class NewSquealsComponent implements OnInit {
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
     locationName: '',
-    time: 0
+    time: 0,
   };
 
   isLoggedIn: boolean = false;
@@ -384,26 +384,25 @@ export class NewSquealsComponent implements OnInit {
     console.log(this.isLoggedIn);
     if (this.isLoggedIn) {
       this.squealService
-      .getSquealsLogin()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        this.squeals = res;
-        for (const squeal of this.squeals) {
-          this.loadAnswers(squeal._id);
-        }
-      });
+        .getSquealsLogin()
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          this.squeals = res;
+          for (const squeal of this.squeals) {
+            this.loadAnswers(squeal._id);
+          }
+        });
     } else {
       this.squealService
-      .getSquealsNoLogin()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((res) => {
-        this.squeals = res;
-        for (const squeal of this.squeals) {
-          this.loadAnswers(squeal._id);
-        }
-      });
+        .getSquealsNoLogin()
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((res) => {
+          this.squeals = res;
+          for (const squeal of this.squeals) {
+            this.loadAnswers(squeal._id);
+          }
+        });
     }
-
   }
 
   loadAnswers(id: string): void {
@@ -415,6 +414,7 @@ export class NewSquealsComponent implements OnInit {
         for (const answer of resp) {
           this.responses.push(answer);
         }
+        console.log(this.responses);
       });
   }
 
@@ -505,9 +505,9 @@ export class NewSquealsComponent implements OnInit {
     window.location.reload();
   }
 
-  answer(id: string): void {
+  answer(): void {
     if (this.squealType === 'text') {
-      let numChar = this.newSqueal.body.length;
+      let numChar = this.newAnswer.body.length;
       if (this.dailyChars - numChar >= 0) {
         const answer: Squeal = {
           _id: '',
@@ -527,7 +527,7 @@ export class NewSquealsComponent implements OnInit {
           locationName: this.newAnswer.locationName,
         };
         this.squealService
-          .addResponse(answer, id)
+          .addResponse(answer, this.answeredId)
           .pipe(takeUntil(this._unsubscribeAll))
           .subscribe((res) => {
             if (res) {
@@ -535,6 +535,7 @@ export class NewSquealsComponent implements OnInit {
             }
           });
         this.closeAnswer();
+        window.location.reload();
       } else {
         this._snackBar.open(
           'You finished your daily chars! Try again tomorrow, loser!',

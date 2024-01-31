@@ -3,7 +3,7 @@
   background-color: #ec8b0d;
 }
 
-#answer {
+.answer {
   margin-bottom: 20px;
   background-color: #8a8a8a;
 }
@@ -11,7 +11,7 @@
 @media only screen and (min-height: 667px) {
   .hometitle {
     margin-top: 40px;
-    color:#ec8b0d;
+    color: #ec8b0d;
   }
 
   .squealTitle {
@@ -44,7 +44,7 @@
 
   .posts {
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -62,7 +62,6 @@
   .posts::-webkit-scrollbar {
     display: none;
   }
-
 
   .post {
     margin-bottom: 10px;
@@ -137,7 +136,7 @@
 @media only screen and (min-height: 896px) {
   .hometitle {
     margin-top: 40px;
-    color:#ec8b0d;
+    color: #ec8b0d;
   }
   .squealTitle {
     color: black;
@@ -173,7 +172,7 @@
 
   .posts {
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -201,7 +200,6 @@
   .posts::-webkit-scrollbar {
     display: none;
   }
-
 
   .post {
     margin-bottom: 10px;
@@ -276,7 +274,7 @@
 @media only screen and (min-height: 844px) {
   .hometitle {
     margin-top: 40px;
-    color:#ec8b0d;
+    color: #ec8b0d;
   }
   .squealTitle {
     color: black;
@@ -308,7 +306,7 @@
 
   .posts {
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -326,7 +324,6 @@
   .posts::-webkit-scrollbar {
     display: none;
   }
-
 
   .post {
     margin-bottom: 10px;
@@ -401,7 +398,7 @@
 @media only screen and (min-height: 933px) {
   .hometitle {
     margin-top: 40px;
-    color:#ec8b0d;
+    color: #ec8b0d;
   }
   .squealTitle {
     color: black;
@@ -433,7 +430,7 @@
 
   .posts {
     margin: auto;
-    height:800px;
+    height: 800px;
     width: 50%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -451,7 +448,6 @@
   .posts::-webkit-scrollbar {
     display: none;
   }
-
 
   .post {
     margin-bottom: 10px;
@@ -527,7 +523,7 @@
 @media only screen and (min-height: 1000px) {
   .hometitle {
     margin-top: 40px;
-    color:#ec8b0d;
+    color: #ec8b0d;
   }
   .squealTitle {
     color: black;
@@ -560,7 +556,7 @@
 
   .posts {
     margin: auto;
-    height:920px;
+    height: 920px;
     width: 50%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -578,7 +574,6 @@
   .posts::-webkit-scrollbar {
     display: none;
   }
-
 
   .post {
     margin-bottom: 10px;
@@ -649,5 +644,4 @@
     left: 0px;
     top: 0px;
   }
-
 }
