@@ -65,19 +65,21 @@ export async function getAllSquealsWithLogin(user: User) {
 }
 
 export async function getAllPublicSqueals() {
-    const squeals: Squeal[] = await squealModel.find({
-        $and: [
-            { channels: { $size: 0 } },
-            {
-                $or: [
-                    { category: "public" },
-                    { category: "pupular" },
-                    { category: "unpupular" },
-                    { category: "controversial" },
-                ],
-            },
-        ],
-    });
+    const squeals: Squeal[] = await squealModel
+        .find({
+            $and: [
+                { channels: { $size: 0 } },
+                {
+                    $or: [
+                        { category: "public" },
+                        { category: "pupular" },
+                        { category: "unpupular" },
+                        { category: "controversial" },
+                    ],
+                },
+            ],
+        })
+        .sort({ date: -1 });
     return squeals;
 }
 
@@ -455,9 +457,11 @@ export async function getSquealsByRecipients(recipient: string) {
  * @returns squeals appartenenti al canale scelto
  */
 export async function getSquealsByChannel(channel: string) {
-    const squeals: Squeal[] = await squealModel.find({
-        channels: channel,
-    });
+    const squeals: Squeal[] = await squealModel
+        .find({
+            channels: channel,
+        })
+        .sort({ date: -1 });
     return squeals;
 }
 
