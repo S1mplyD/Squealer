@@ -610,13 +610,10 @@ router
     .route("/editreactions/:squealId")
     .post(async (req: ExpressRequest, res: ExpressResponse) => {
         try {
-            console.log(req.body);
             if (req.user && (req.user as User).plan === "admin") {
                 const squeal: Squeal = await getSquealById(req.params.squealId);
                 if (squeal.positiveReactions) {
-                    console.log("positive exist");
-                    if (squeal.positiveReactions.length < req.body.postiveReactions) {
-                        console.log("add positive");
+                    if (squeal.positiveReactions.length < req.body.positiveReactions) {
                         let positive: Array<string> = new Array(
                             req.body.positiveReactions - squeal.positiveReactions.length,
                         ).fill("guest");
@@ -636,13 +633,13 @@ router
                             squeal.positiveReactions.length - req.body.positiveReactions;
                         await squealModel.updateOne(
                             { _id: req.params.squealId },
-                            { $pop: { positiveReactions: toRemove } },
+                            {
+                                $push: { positiveReactions: { $each: [], $slice: toRemove } },
+                            },
                         );
                     }
                     if (squeal.negativeReactions) {
-                        console.log("negative exist");
                         if (squeal.negativeReactions.length < req.body.negativeReactions) {
-                            console.log("add negative");
                             let negative: Array<string> = new Array(
                                 req.body.negativeReactions - squeal.negativeReactions.length,
                             ).fill("guest");
@@ -662,7 +659,9 @@ router
                                 squeal.negativeReactions.length - req.body.negativeReactions;
                             await squealModel.updateOne(
                                 { _id: req.params.squealId },
-                                { $pop: { negativeReactions: toRemove } },
+                                {
+                                    $push: { negativeReactions: { $each: [], $slice: toRemove } },
+                                },
                             );
                         }
                     }
