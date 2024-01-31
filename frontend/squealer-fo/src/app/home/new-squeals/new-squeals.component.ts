@@ -137,7 +137,6 @@ export class NewSquealsComponent implements OnInit {
     } else if (sessionStorage.getItem('isLoggedIn') == 'false') {
       this.isLoggedIn = false;
     }
-    this.loadSqueals();
     this.userService
       .getAllUsers()
       .pipe(takeUntil(this._unsubscribeAll))
@@ -161,7 +160,6 @@ export class NewSquealsComponent implements OnInit {
           this.username = res.username + '';
           this.plan = res.plan + '';
           this.dailyChars = res.dailyCharacters;
-          console.log(this.dailyChars);
           this.loadSqueals();
         } else {
           this.isLoggedIn = false;
@@ -414,7 +412,6 @@ export class NewSquealsComponent implements OnInit {
         for (const answer of resp) {
           this.responses.push(answer);
         }
-        console.log(this.responses);
       });
   }
 
