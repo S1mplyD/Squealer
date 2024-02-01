@@ -1,72 +1,246 @@
 <div class="user-profile">
-  <mat-card style="background-color: #ec8b0d;">
+  <mat-card style="background-color: #ec8b0d">
     <mat-card-header>
       <div mat-card-avatar class="profile-image">
-        <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
-        <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
+        <img
+          *ngIf="account?.profilePicture"
+          [src]="account?.profilePicture"
+          [alt]="'profile image of ' + account?.name"
+        />
+        <img
+          *ngIf="!account?.profilePicture"
+          src="../../assets/1511304664.png"
+          [alt]="
+            'profile image of ' +
+            account?.name +
+            ', but it seems to not be working properly...'
+          "
+        />
       </div>
-      <mat-card-title style="color: black;"><h1><b>{{ account?.name }}</b></h1></mat-card-title>
-      <br>
+      <mat-card-title style="color: black">
+        <h1>
+          <b>{{ account?.name }}</b>
+        </h1>
+      </mat-card-title>
+      <br />
       <mat-card-subtitle>
-        <p style="color: black;">&#64;{{ account?.username }}</p>
+        <p style="color: black">&#64;{{ account?.username }}</p>
       </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content *ngIf="account?.followers && account?.following">
-      <p style="color: black;"><mat-icon>people_outline</mat-icon>&nbsp; <b>Followers:</b> {{ account?.followers?.length }}</p>
-      <p style="color: black;"><mat-icon>people</mat-icon>&nbsp; <b>Following:</b> {{ account?.following?.length }}</p>
-      <p style="color: black;"><mat-icon>cake</mat-icon>&nbsp; <b>Joined:</b> {{ formatDate(account?.createdAt) }}</p>
-      <p style="color: black;"><b>Daily Characters:</b> {{ account?.dailyCharacters }}</p>
-      <p style="color: black;"><b>Weekly Characters:</b> {{ account?.weeklyCharacters }}</p>
-      <p style="color: black;"><b>Monthly Characters:</b> {{ account?.monthlyCharacters }}</p>
-      <input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
-      <div *ngIf="un === account?.username" class="file-upload" style="color: black;">
-        {{fileName || "No file uploaded yet."}}
-        <button aria-label="Button to change profile image" *ngIf="un === account?.username" mat-mini-fab (click)="fileUpload.click()" style="background-color: #ebcc67;" alt="Image change button">
+      <p style="color: black">
+        <mat-icon>people_outline</mat-icon>&nbsp; <b>Followers:</b>
+        {{ account?.followers?.length }}
+      </p>
+      <p style="color: black">
+        <mat-icon>people</mat-icon>&nbsp; <b>Following:</b>
+        {{ account?.following?.length }}
+      </p>
+      <p style="color: black">
+        <mat-icon>cake</mat-icon>&nbsp; <b>Joined:</b>
+        {{ formatDate(account?.createdAt) }}
+      </p>
+      <p style="color: black">
+        <b>Daily Characters:</b> {{ account?.dailyCharacters }}
+      </p>
+      <p style="color: black">
+        <b>Weekly Characters:</b> {{ account?.weeklyCharacters }}
+      </p>
+      <p style="color: black">
+        <b>Monthly Characters:</b> {{ account?.monthlyCharacters }}
+      </p>
+      <input
+        type="file"
+        class="file-input"
+        (change)="onFileSelected($event)"
+        #fileUpload
+      />
+      <div
+        *ngIf="un === account?.username"
+        class="file-upload"
+        style="color: black"
+      >
+        {{ fileName || "No file uploaded yet." }}
+        <button
+          aria-label="Button to change profile image"
+          *ngIf="un === account?.username"
+          mat-mini-fab
+          (click)="fileUpload.click()"
+          style="background-color: #ebcc67"
+          alt="Image change button"
+        >
           <mat-icon>attach_file</mat-icon>
         </button>
       </div>
-      <button style="color: black; background-color: #e4cac5;" *ngIf="un !== account?.username && !isFollowed" mat-raised-button (click)="follow()" alt="Button to follow user">Follow user</button>
-      <button style="color: black; background-color: #e4cac5;" *ngIf="un !== account?.username && isFollowed" mat-raised-button (click)="unfollow()" alt="Button to unfollow user">Unfollow user</button>
+      <button
+        style="color: black; background-color: #e4cac5"
+        *ngIf="un !== account?.username && !isFollowed"
+        mat-raised-button
+        (click)="follow()"
+        alt="Button to follow user"
+      >
+        Follow user
+      </button>
+      <button
+        style="color: black; background-color: #e4cac5"
+        *ngIf="un !== account?.username && isFollowed"
+        mat-raised-button
+        (click)="unfollow()"
+        alt="Button to unfollow user"
+      >
+        Unfollow user
+      </button>
     </mat-card-content>
-   </mat-card>
+  </mat-card>
 
   <mat-tab-group mat-stretch-tabs [backgroundColor]="'primary'">
-    <mat-tab aria-label="Recent Posts tab" label="Recent Posts" aria-label="primary">
+    <mat-tab
+      aria-label="Recent Posts tab"
+      label="Recent Posts"
+      aria-label="primary"
+    >
       <div class="post-list">
         <div class="post" *ngFor="let post of recentPosts">
           <mat-card id="squeal">
             <mat-card-header>
               <div mat-card-avatar class="profile-image">
-                <img *ngIf="account?.profilePicture" [src]="account?.profilePicture" [alt]="'profile image of ' + account?.name" />
-                <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account?.name + ', but it seems to not be working properly...'" />
+                <img
+                  *ngIf="account?.profilePicture"
+                  [src]="account?.profilePicture"
+                  [alt]="'profile image of ' + account?.name"
+                />
+                <img
+                  *ngIf="!account?.profilePicture"
+                  src="../../assets/1511304664.png"
+                  [alt]="
+                    'profile image of ' +
+                    account?.name +
+                    ', but it seems to not be working properly...'
+                  "
+                />
               </div>
-              <mat-card-title class="squealTitle">&#64;{{ post.author }}</mat-card-title>
-              <br>
-              <mat-card-subtitle class="squealText">{{ formatDate(post.date) }}</mat-card-subtitle>
+              <mat-card-title class="squealTitle"
+                >&#64;{{ post.author }}</mat-card-title
+              >
+              <br />
+              <mat-card-subtitle class="squealText">{{
+                formatDate(post.date)
+              }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <h2 class="squealText">{{ post.body }}</h2>
+              <h2 *ngIf="post.type === 'text'" class="squealText">
+                {{ post.body }}
+              </h2>
+              <img
+                *ngIf="post.type === 'media'"
+                class="squealimg"
+                [src]="post.body"
+                alt="squeal image"
+              />
+              <div *ngIf="post.type === 'geo'">
+                <div class="button-group" *ngIf="post.lat && post.lng">
+                  <div *ngIf="post.locationName">
+                    <button
+                      aria-label="Button to open map"
+                      mat-raised-button
+                      class="upvote"
+                      *ngIf="!checkMapOpened(post._id)"
+                      (click)="generateSquealMap(post._id)"
+                    >
+                      Generate map on {{ post.locationName }}
+                    </button>
+                    <button
+                      aria-label="Button to close map"
+                      mat-raised-button
+                      class="upvote"
+                      *ngIf="checkMapOpened(post._id)"
+                      (click)="closeMap(post._id)"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div *ngif="!post.locationName">
+                    <button
+                      aria-label="Button to open map"
+                      mat-raised-button
+                      class="upvote"
+                      *ngIf="!mapOpened"
+                      (click)="generateSquealMap(post._id)"
+                    >
+                      Generate map
+                    </button>
+                    <button
+                      aria-label="Button to close map"
+                      mat-raised-button
+                      class="upvote"
+                      *ngIf="mapOpened"
+                      (click)="closeMap(post._id)"
+                    >
+                      Close <Map></Map>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  aria-label="Map of the squeal"
+                  *ngIf="checkMapOpened(post._id)"
+                  [id]="post._id"
+                  style="height: 300px"
+                  leaflet
+                  [leafletOptions]="createOptions(post.lat + '', post.lng + '')"
+                  (leafletMapReady)="
+                    addMarker($event, post.lat + '', post.lng + '')
+                  "
+                ></div>
+                <br />
+              </div>
             </mat-card-content>
           </mat-card>
         </div>
       </div>
     </mat-tab>
 
-    <mat-tab aria-label="Tagged Answers tab" label="Tagged Answers" aria-label="primary">
+    <mat-tab
+      aria-label="Tagged Answers tab"
+      label="Tagged Answers"
+      aria-label="primary"
+    >
       <div class="answer-list">
-        <div  *ngFor="let answer of taggedPosts">
-          <div class="answer" *ngIf="answer.recipients.includes('@'+ userName)">
+        <div *ngFor="let answer of taggedPosts">
+          <div
+            class="answer"
+            *ngIf="answer.recipients.includes('@' + userName)"
+          >
             <mat-card id="squeal">
               <mat-card-header>
                 <div mat-card-avatar class="profile-image">
-                  <div  *ngFor="let user of users">
-                    <img *ngIf="answer?.author === user.username && user.profilePicture" [src]="user?.profilePicture" [alt]="'profile image of ' + answer?.author" />
-                    <img *ngIf="answer?.author === user.username && !user.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + answer?.author + ', but it seems to not be working properly...'" />
+                  <div *ngFor="let user of users">
+                    <img
+                      *ngIf="
+                        answer?.author === user.username && user.profilePicture
+                      "
+                      [src]="user?.profilePicture"
+                      [alt]="'profile image of ' + answer?.author"
+                    />
+                    <img
+                      *ngIf="
+                        answer?.author === user.username && !user.profilePicture
+                      "
+                      src="../../assets/1511304664.png"
+                      [alt]="
+                        'profile image of ' +
+                        answer?.author +
+                        ', but it seems to not be working properly...'
+                      "
+                    />
                   </div>
                 </div>
-                <mat-card-title class="squealTitle">&#64;{{ answer.author }}</mat-card-title>
-                <br>
-                <mat-card-subtitle class="squealText">{{ formatDate(answer.date) }}</mat-card-subtitle>
+                <mat-card-title class="squealTitle"
+                  >&#64;{{ answer.author }}</mat-card-title
+                >
+                <br />
+                <mat-card-subtitle class="squealText">{{
+                  formatDate(answer.date)
+                }}</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
                 <h2 class="squealText">{{ answer.body }}</h2>

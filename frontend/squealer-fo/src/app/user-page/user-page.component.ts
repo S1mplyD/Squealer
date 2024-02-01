@@ -7,6 +7,8 @@ import { ActivatedRoute } from '@angular/router';
 import { UsersService } from 'app/services/users.service';
 import { Subject, takeUntil } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LatLng, TileLayer } from 'leaflet';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-user-page',
@@ -22,6 +24,7 @@ export class UserPageComponent implements OnInit {
   taggedPosts!: Squeal[];
   userName!: string;
   isFollowed: boolean = false;
+  mapOpened: string[] = [];
   un = sessionStorage.getItem('username');
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
@@ -30,7 +33,7 @@ export class UserPageComponent implements OnInit {
     public activeRoute: ActivatedRoute,
     private usersService: UsersService,
     private _snackBar: MatSnackBar,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.usersService
@@ -132,5 +135,48 @@ export class UserPageComponent implements OnInit {
         });
       });
     this.reloadPage();
+  }
+
+  createOptions(
+    lat: string,
+    lng: string,
+  ): { center: LatLng; layers: TileLayer[]; zoom: number } {
+    return {
+      layers: [
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '...',
+        }),
+      ],
+      zoom: 13,
+      center: L.latLng(+lat, +lng),
+    };
+  }
+
+  checkMapOpened(id: string): boolean {
+    return this.mapOpened.includes(id);
+  }
+
+  generateSquealMap(id: string) {
+    if (!this.mapOpened.includes(id)) {
+      this.mapOpened.push(id);
+    }
+  }
+
+  closeMap(id: string) {
+    if (this.mapOpened.includes(id)) {
+      this.mapOpened = this.mapOpened.filter((el) => el !== id);
+    }
+  }
+
+  addMarker(map: L.Map, lat: string, lng: string) {
+    L.marker([+lat, +lng], {
+      icon: L.icon({
+        ...L.Icon.Default.prototype.options,
+        iconUrl: 'assets/marker-icon.png',
+        iconRetinaUrl: 'assets/marker-icon-2x.png',
+        shadowUrl: 'assets/marker-shadow.png',
+      }),
+    }).addTo(map);
   }
 }

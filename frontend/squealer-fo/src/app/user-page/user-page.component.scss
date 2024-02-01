@@ -5,6 +5,13 @@
     margin-top: 50px;
   }
 
+  .squealimg {
+    height: 75%;
+    width: 75%;
+    max-width: 600px;
+    max-height: 650px;
+  }
+
   #squeal {
     margin-bottom: 20px;
     background-color: #ec8b0d;
@@ -40,7 +47,7 @@
   .answer-list {
     margin-top: 20px;
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -60,7 +67,6 @@
     padding: 10px;
     margin-bottom: 10px;
   }
-
 }
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-height: 844px) {
@@ -104,7 +110,7 @@
   .answer-list {
     margin-top: 20px;
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -125,7 +131,6 @@
     margin-bottom: 10px;
     scrollbar-width: none;
   }
-
 }
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-height: 896px) {
@@ -169,7 +174,7 @@
   .answer-list {
     margin-top: 20px;
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -237,7 +242,7 @@
   .answer-list {
     margin-top: 20px;
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 100%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -257,7 +262,6 @@
     padding: 10px;
     margin-bottom: 10px;
   }
-
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-height: 1000px) {
@@ -302,7 +306,7 @@
   .answer-list {
     margin-top: 20px;
     margin: auto;
-    height:600px;
+    height: 600px;
     width: 50%;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -322,7 +326,4 @@
     padding: 10px;
     margin-bottom: 10px;
   }
-
 }
-
-
