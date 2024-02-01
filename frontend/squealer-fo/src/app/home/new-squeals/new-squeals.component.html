@@ -2,41 +2,81 @@
   <h2 class="hometitle">Homepage</h2>
 
   <div class="button-group" *ngIf="isLoggedIn">
-    <a mat-raised-button color="primary" *ngIf="plan === 'admin'" type="button" class="button-href"
-      href="/backoffice">Go to Backoffice</a>
-    <a mat-raised-button color="primary" *ngIf="plan === 'professional'" type="button" class="button-href"
-      href="/smm">Go to SMM</a>
+    <a
+      mat-raised-button
+      color="primary"
+      *ngIf="plan === 'admin'"
+      type="button"
+      class="button-href"
+      href="/backoffice"
+      >Go to Backoffice</a
+    >
+    <a
+      mat-raised-button
+      color="primary"
+      *ngIf="plan === 'professional'"
+      type="button"
+      class="button-href"
+      href="/smm"
+      >Go to SMM</a
+    >
   </div>
 
   <div fxLayout="column" class="responsive-mat-form" *ngIf="isLoggedIn">
     <!--    *ngIf="isLoggedIn"-->
     <div *ngIf="isPopupOpen" class="popup">
       <label for="type">Pick the type of the squeal:</label>
-      <mat-radio-group id="type" aria-labelledby="type" [(ngModel)]="squealType">
+      <mat-radio-group
+        id="type"
+        aria-labelledby="type"
+        [(ngModel)]="squealType"
+      >
         <mat-radio-button value="text">Text</mat-radio-button>
         <mat-radio-button value="media">Media</mat-radio-button>
         <mat-radio-button value="geo">Geo</mat-radio-button>
       </mat-radio-group>
       <mat-form-field class="full-width" appearance="outline" color="primary">
-        <mat-label *ngIf="squealType === 'text'">What are you thinking?</mat-label>
-        <input *ngIf="squealType === 'text'" matInput [(ngModel)]="newSqueal.body" />
+        <mat-label *ngIf="squealType === 'text'"
+          >What are you thinking?</mat-label
+        >
+        <input
+          *ngIf="squealType === 'text'"
+          matInput
+          [(ngModel)]="newSqueal.body"
+        />
         <div *ngIf="squealType === 'media'">
-          <mat-label color="primary">What do you want to show to the world?</mat-label>
+          <mat-label color="primary"
+            >What do you want to show to the world?</mat-label
+          >
           <mat-toolbar>
-            <input matInput [value]="selectedFileName ? selectedFileName : 'Select Image'" />
+            <input
+              matInput
+              [value]="selectedFileName ? selectedFileName : 'Select Image'"
+            />
           </mat-toolbar>
-          <input type="file" id="fileInput" name="fileInput" accept="image/*" (change)="selectFiles($event)" />
+          <input
+            type="file"
+            id="fileInput"
+            name="fileInput"
+            accept="image/*"
+            (change)="selectFiles($event)"
+          />
         </div>
         <div *ngIf="squealType === 'geo'">
           <mat-label color="primary">Where are you?</mat-label>
-          <div style="height: 300px" leaflet [leafletOptions]="options" (leafletMapReady)="
+          <div
+            style="height: 300px"
+            leaflet
+            [leafletOptions]="options"
+            (leafletMapReady)="
               addMarker(
                 $event,
                 this.getCoords().lat + '',
                 this.getCoords().lng + '',
                 ''
               )
-            "></div>
+            "
+          ></div>
         </div>
       </mat-form-field>
       <br />
@@ -46,14 +86,27 @@
           <mat-checkbox [(ngModel)]="squealSubType">Timed</mat-checkbox>
         </section>
         <div *ngIf="squealSubType">
-          <mat-label color="primary">Set the frequency of the post (in minutes):</mat-label>
-          <mat-slider min="0" max="60" step="5" showTickMarks discrete [displayWith]="formatLabel">
+          <mat-label color="primary"
+            >Set the frequency of the post (in minutes):</mat-label
+          >
+          <mat-slider
+            min="0"
+            max="60"
+            step="5"
+            showTickMarks
+            discrete
+            [displayWith]="formatLabel"
+          >
             <input matSliderThumb [(ngModel)]="newSqueal.time" />
           </mat-slider>
         </div>
       </div>
       <br />
-      <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
+      <mat-form-field
+        class="thirtythree-width"
+        appearance="outline"
+        color="primary"
+      >
         <mat-label>Recipients (they must be separated by comma):</mat-label>
         <input matInput [(ngModel)]="recipients" />
       </mat-form-field>
@@ -62,10 +115,21 @@
       </div>
 
       <div class="button-group">
-        <button aria-label="Button to add post" mat-raised-button color="primary" type="submit" (click)="addPost()">
+        <button
+          aria-label="Button to add post"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          (click)="addPost()"
+        >
           Add Post
         </button>
-        <button aria-label="Button to stop adding post" mat-raised-button color="primary" (click)="closePopup()">
+        <button
+          aria-label="Button to stop adding post"
+          mat-raised-button
+          color="primary"
+          (click)="closePopup()"
+        >
           Cancel
         </button>
       </div>
@@ -79,16 +143,31 @@
         </div>
       </mat-form-field>
       <br />
-      <mat-form-field class="thirtythree-width" appearance="outline" color="primary">
+      <mat-form-field
+        class="thirtythree-width"
+        appearance="outline"
+        color="primary"
+      >
         <mat-label>Recipients (they must be separated by comma):</mat-label>
         <input matInput [(ngModel)]="recipients" />
       </mat-form-field>
 
       <div class="button-group">
-        <button aria-label="Button to add post" mat-raised-button color="primary" type="submit" (click)="answer()">
+        <button
+          aria-label="Button to add post"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          (click)="answer()"
+        >
           Add Response
         </button>
-        <button aria-label="Button to stop adding post" mat-raised-button color="primary" (click)="closeAnswer()">
+        <button
+          aria-label="Button to stop adding post"
+          mat-raised-button
+          color="primary"
+          (click)="closeAnswer()"
+        >
           Cancel
         </button>
       </div>
@@ -96,7 +175,12 @@
   </div>
 
   <div class="login" *ngIf="!isLoggedIn">
-    <button aria-label="Button to login" mat-raised-button color="primary" [routerLink]="['/authentication']">
+    <button
+      aria-label="Button to login"
+      mat-raised-button
+      color="primary"
+      [routerLink]="['/authentication']"
+    >
       Login
     </button>
     <p *ngIf="!isLoggedIn">Please login to add a post.</p>
@@ -109,41 +193,66 @@
         <mat-card-header>
           <div mat-card-avatar class="profile-image">
             <div *ngFor="let account of accounts">
-              <img *ngIf="
+              <img
+                *ngIf="
                   squeal?.author === account?.username &&
                   account?.profilePicture
-                " [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
-              <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="
+                "
+                [src]="account?.profilePicture"
+                [alt]="'profile image of ' + squeal?.author"
+              />
+              <img
+                *ngIf="!account?.profilePicture"
+                src="../../assets/1511304664.png"
+                [alt]="
                   'profile image of ' +
                   squeal?.author +
                   ', but it seems to not be working properly...'
-                " />
+                "
+              />
             </div>
           </div>
-          <mat-card-title class="squealTitle" [routerLink]="['/following/' + squeal.author]">{{ squeal.author
-            }}</mat-card-title>
+          <mat-card-title
+            class="squealTitle"
+            [routerLink]="['/following/' + squeal.author]"
+            >{{ squeal.author }}</mat-card-title
+          >
           <br />
           <mat-card-subtitle class="squealText">{{
             formatDate(squeal.date)
-            }}</mat-card-subtitle>
+          }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content *ngIf="squeal.type === 'text'">
           <h2 class="squealText">{{ squeal.body }}</h2>
           <div class="button-group">
-            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+            <button
+              aria-label="Button to upvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addUpvote(squeal._id)"
+            >
               <p aria-label="Number of upvotes" class="upvoteText">
                 {{ squeal.positiveReactions?.length }}
               </p>
               <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(squeal._id)">
+            <button
+              aria-label="Button to downvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addDownvote(squeal._id)"
+            >
               <p aria-label="Number of downvotes" class="upvoteText">
                 {{ squeal.negativeReactions?.length }}
               </p>
               <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button aria-label="Button to see answers" class="upvote" mat-raised-button
-              (click)="openAnswer(squeal._id)">
+            <button
+              aria-label="Button to see answers"
+              class="upvote"
+              mat-raised-button
+              (click)="openAnswer(squeal._id)"
+            >
               <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
@@ -154,43 +263,64 @@
                 <mat-card-header>
                   <div mat-card-avatar class="profile-image">
                     <div *ngFor="let account of accounts">
-                      <img *ngIf="
+                      <img
+                        *ngIf="
                           squeal?.author === account?.username &&
                           account?.profilePicture
-                        " [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
-                      <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="
+                        "
+                        [src]="account?.profilePicture"
+                        [alt]="'profile image of ' + squeal?.author"
+                      />
+                      <img
+                        *ngIf="!account?.profilePicture"
+                        src="../../assets/1511304664.png"
+                        [alt]="
                           'profile image of ' +
                           squeal?.author +
                           ', but it seems to not be working properly...'
-                        " />
+                        "
+                      />
                     </div>
                   </div>
-                  <mat-card-title class="squealTitle" [routerLink]="['/following/' + answer.author]">{{ answer.author
-                    }}</mat-card-title>
+                  <mat-card-title
+                    class="squealTitle"
+                    [routerLink]="['/following/' + answer.author]"
+                    >{{ answer.author }}</mat-card-title
+                  >
 
                   <br />
                   <div *ngIf="answer.locationName">
-                    <mat-card-subtitle class="squealText">{{ answer.locationName }},
-                      {{ formatDate(answer.date) }}</mat-card-subtitle>
+                    <mat-card-subtitle class="squealText"
+                      >{{ answer.locationName }},
+                      {{ formatDate(answer.date) }}</mat-card-subtitle
+                    >
                   </div>
                   <div *ngIf="!answer.locationName">
                     <mat-card-subtitle class="squealText">{{
                       formatDate(answer.date)
-                      }}</mat-card-subtitle>
+                    }}</mat-card-subtitle>
                   </div>
                 </mat-card-header>
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <h2 class="squealText">{{ answer.body }}</h2>
                   <div class="button-group">
-                    <button aria-label="Button to upvote" class="upvote" mat-raised-button
-                      (click)="addUpvote(answer._id)">
+                    <button
+                      aria-label="Button to upvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addUpvote(answer._id)"
+                    >
                       <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
                       <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
                     </button>
-                    <button aria-label="Button to downvote" class="upvote" mat-raised-button
-                      (click)="addDownvote(answer._id)">
+                    <button
+                      aria-label="Button to downvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addDownvote(answer._id)"
+                    >
                       <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
@@ -203,24 +333,42 @@
           </div>
         </mat-card-content>
         <mat-card-content *ngIf="squeal.type === 'media'">
-          <img [alt]="
-              'Image present in the body of the squeal from' + squeal.author
-            " [src]="squeal.body" />
+          <img
+            [alt]="
+              'Image present in the body of the squeal from ' + squeal.author
+            "
+            [src]="squeal.body"
+            class="squealimg"
+          />
           <div class="button-group">
-            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+            <button
+              aria-label="Button to upvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addUpvote(squeal._id)"
+            >
               <p aria-label="Number of upvotes" class="upvoteText">
                 {{ squeal.positiveReactions?.length }}
               </p>
               <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(squeal._id)">
+            <button
+              aria-label="Button to downvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addDownvote(squeal._id)"
+            >
               <p aria-label="Number of downvotes" class="upvoteText">
                 {{ squeal.negativeReactions?.length }}
               </p>
               <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button aria-label="Button to open answers" class="upvote" mat-raised-button
-              (click)="openAnswer(squeal._id)">
+            <button
+              aria-label="Button to open answers"
+              class="upvote"
+              mat-raised-button
+              (click)="openAnswer(squeal._id)"
+            >
               <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
@@ -231,42 +379,63 @@
                 <mat-card-header>
                   <div mat-card-avatar class="profile-image">
                     <div *ngFor="let account of accounts">
-                      <img *ngIf="
+                      <img
+                        *ngIf="
                           squeal?.author === account?.username &&
                           account?.profilePicture
-                        " [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
-                      <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="
+                        "
+                        [src]="account?.profilePicture"
+                        [alt]="'profile image of ' + squeal?.author"
+                      />
+                      <img
+                        *ngIf="!account?.profilePicture"
+                        src="../../assets/1511304664.png"
+                        [alt]="
                           'profile image of ' +
                           squeal?.author +
                           ', but it seems to not be working properly...'
-                        " />
+                        "
+                      />
                     </div>
                   </div>
-                  <mat-card-title class="squealTitle" [routerLink]="['/following/' + answer.author]">{{ answer.author
-                    }}</mat-card-title>
+                  <mat-card-title
+                    class="squealTitle"
+                    [routerLink]="['/following/' + answer.author]"
+                    >{{ answer.author }}</mat-card-title
+                  >
                   <br />
                   <div *ngIf="answer.locationName">
-                    <mat-card-subtitle class="squealText">{{ answer.locationName }},
-                      {{ formatDate(answer.date) }}</mat-card-subtitle>
+                    <mat-card-subtitle class="squealText"
+                      >{{ answer.locationName }},
+                      {{ formatDate(answer.date) }}</mat-card-subtitle
+                    >
                   </div>
                   <div *ngIf="!answer.locationName">
                     <mat-card-subtitle class="squealText">{{
                       formatDate(answer.date)
-                      }}</mat-card-subtitle>
+                    }}</mat-card-subtitle>
                   </div>
                 </mat-card-header>
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <p class="squealText">{{ answer.body }}</p>
                   <div class="button-group">
-                    <button aria-label="Button to upvote" class="upvote" mat-raised-button
-                      (click)="addUpvote(answer._id)">
+                    <button
+                      aria-label="Button to upvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addUpvote(answer._id)"
+                    >
                       <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
                       <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
                     </button>
-                    <button aria-label="Button to downvote" class="upvote" mat-raised-button
-                      (click)="addDownvote(answer._id)">
+                    <button
+                      aria-label="Button to downvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addDownvote(answer._id)"
+                    >
                       <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
@@ -281,47 +450,88 @@
         <mat-card-content *ngIf="squeal.type === 'geo'">
           <div class="button-group" *ngIf="squeal.lat && squeal.lng">
             <div *ngIf="squeal.locationName">
-              <button aria-label="Button to open map" mat-raised-button class="upvote"
-                *ngIf="!checkMapOpened(squeal._id)" (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)">
+              <button
+                aria-label="Button to open map"
+                mat-raised-button
+                class="upvote"
+                *ngIf="!checkMapOpened(squeal._id)"
+                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"
+              >
                 Generate map on {{ squeal.locationName }}
               </button>
-              <button aria-label="Button to close map" mat-raised-button class="upvote"
-                *ngIf="checkMapOpened(squeal._id)" (click)="closeMap(squeal._id)">
+              <button
+                aria-label="Button to close map"
+                mat-raised-button
+                class="upvote"
+                *ngIf="checkMapOpened(squeal._id)"
+                (click)="closeMap(squeal._id)"
+              >
                 Close
               </button>
             </div>
             <div *ngif="!squeal.locationName">
-              <button aria-label="Button to open map" mat-raised-button class="upvote" *ngIf="!mapOpened"
-                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)">
+              <button
+                aria-label="Button to open map"
+                mat-raised-button
+                class="upvote"
+                *ngIf="!mapOpened"
+                (click)="generateSquealMap(squeal.lat, squeal.lng, squeal._id)"
+              >
                 Generate map
               </button>
-              <button aria-label="Button to close map" mat-raised-button class="upvote" *ngIf="mapOpened"
-                (click)="closeMap(squeal._id)">
+              <button
+                aria-label="Button to close map"
+                mat-raised-button
+                class="upvote"
+                *ngIf="mapOpened"
+                (click)="closeMap(squeal._id)"
+              >
                 Close <Map></Map>
               </button>
             </div>
           </div>
-          <div aria-label="Map of the squeal" *ngIf="checkMapOpened(squeal._id)" [id]="squeal._id" style="height: 300px"
-            leaflet [leafletOptions]="
+          <div
+            aria-label="Map of the squeal"
+            *ngIf="checkMapOpened(squeal._id)"
+            [id]="squeal._id"
+            style="height: 300px"
+            leaflet
+            [leafletOptions]="
               createOptions(squeal.lat + '', squeal.lng + '', squeal._id)
-            " (leafletMapReady)="
+            "
+            (leafletMapReady)="
               addMarker($event, squeal.lat + '', squeal.lng + '', squeal._id)
-            "></div>
+            "
+          ></div>
           <div class="button-group">
-            <button aria-label="Button to upvote" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
+            <button
+              aria-label="Button to upvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addUpvote(squeal._id)"
+            >
               <p aria-label="Number of upvotes" class="upvoteText">
                 {{ squeal.positiveReactions?.length }}
               </p>
               <mat-icon aria-label="Upvote icon">thumb_up</mat-icon>
             </button>
-            <button aria-label="Button to downvote" class="upvote" mat-raised-button (click)="addDownvote(squeal._id)">
+            <button
+              aria-label="Button to downvote"
+              class="upvote"
+              mat-raised-button
+              (click)="addDownvote(squeal._id)"
+            >
               <p aria-label="Number of downvotes" class="upvoteText">
                 {{ squeal.negativeReactions?.length }}
               </p>
               <mat-icon aria-label="Downvote icon">thumb_down</mat-icon>
             </button>
-            <button aria-label="Button to open answers" class="upvote" mat-raised-button
-              (click)="openAnswer(squeal._id)">
+            <button
+              aria-label="Button to open answers"
+              class="upvote"
+              mat-raised-button
+              (click)="openAnswer(squeal._id)"
+            >
               <mat-icon aria-label="Answers icon">question_answer</mat-icon>
             </button>
           </div>
@@ -332,42 +542,63 @@
                 <mat-card-header>
                   <div mat-card-avatar class="profile-image">
                     <div *ngFor="let account of accounts">
-                      <img *ngIf="
+                      <img
+                        *ngIf="
                           squeal?.author === account?.username &&
                           account?.profilePicture
-                        " [src]="account?.profilePicture" [alt]="'profile image of ' + squeal?.author" />
-                      <img *ngIf="!account?.profilePicture" src="../../assets/1511304664.png" [alt]="
+                        "
+                        [src]="account?.profilePicture"
+                        [alt]="'profile image of ' + squeal?.author"
+                      />
+                      <img
+                        *ngIf="!account?.profilePicture"
+                        src="../../assets/1511304664.png"
+                        [alt]="
                           'profile image of ' +
                           squeal?.author +
                           ', but it seems to not be working properly...'
-                        " />
+                        "
+                      />
                     </div>
                   </div>
-                  <mat-card-title class="squealTitle" [routerLink]="['/following/' + answer.author]">{{ answer.author
-                    }}</mat-card-title>
+                  <mat-card-title
+                    class="squealTitle"
+                    [routerLink]="['/following/' + answer.author]"
+                    >{{ answer.author }}</mat-card-title
+                  >
                   <br />
                   <div *ngIf="answer.locationName">
-                    <mat-card-subtitle class="squealText">{{ answer.locationName }},
-                      {{ formatDate(answer.date) }}</mat-card-subtitle>
+                    <mat-card-subtitle class="squealText"
+                      >{{ answer.locationName }},
+                      {{ formatDate(answer.date) }}</mat-card-subtitle
+                    >
                   </div>
                   <div *ngIf="!answer.locationName">
                     <mat-card-subtitle class="squealText">{{
                       formatDate(answer.date)
-                      }}</mat-card-subtitle>
+                    }}</mat-card-subtitle>
                   </div>
                 </mat-card-header>
                 <mat-card-content *ngIf="answer.type === 'text'">
                   <p class="squealText">{{ answer.body }}</p>
                   <div class="button-group">
-                    <button aria-label="Button to upvote" class="upvote" mat-raised-button
-                      (click)="addUpvote(answer._id)">
+                    <button
+                      aria-label="Button to upvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addUpvote(answer._id)"
+                    >
                       <p aria-label="Number of upvotes" class="upvoteText">
                         {{ answer.positiveReactions?.length }}
                       </p>
                       <mat-icon>thumb_up</mat-icon>
                     </button>
-                    <button aria-label="Button to downvote" class="upvote" mat-raised-button
-                      (click)="addDownvote(answer._id)">
+                    <button
+                      aria-label="Button to downvote"
+                      class="upvote"
+                      mat-raised-button
+                      (click)="addDownvote(answer._id)"
+                    >
                       <p aria-label="Number of downvotes" class="upvoteText">
                         {{ answer.negativeReactions?.length }}
                       </p>
@@ -385,8 +616,13 @@
 </div>
 
 <div *ngIf="isLoggedIn">
-  <button aria-label="Button to open popup to add squeal" mat-fab class="floating-button" (click)="openPopup()"
-    *ngIf="!isPopupOpen">
+  <button
+    aria-label="Button to open popup to add squeal"
+    mat-fab
+    class="floating-button"
+    (click)="openPopup()"
+    *ngIf="!isPopupOpen"
+  >
     <mat-icon>plus_one</mat-icon>
   </button>
 </div>
