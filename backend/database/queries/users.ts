@@ -83,7 +83,7 @@ export async function createDefaultUser(
         mail: mail,
         password: password,
         createdAt: new Date(),
-        profilePicture: "/public/default.png",
+        profilePicture: "/default.png",
     });
     if (!doc) throw cannot_create;
     else return doc;
@@ -227,7 +227,6 @@ export async function updateResetToken(mail: string, token: string) {
         { resetToken: token },
     );
     if (result.modifiedCount < 1) throw cannot_update;
-    else return updated;
 }
 
 /**
