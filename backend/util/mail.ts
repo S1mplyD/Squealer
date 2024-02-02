@@ -27,14 +27,7 @@ export async function sendMail(token: string, mail: string) {
         subject: "Password reset",
         html: `<h1>Reset passoword</h1><br><p>Your password reset token is: ${token}</p>`,
     };
-    let returnValue;
-    transporter.sendMail(mailOptions, function(error, info) {
+    transporter.sendMail(mailOptions, function() {
         console.log("[SENDING EMAIL...]");
-        if (error) {
-            returnValue = cannot_send;
-        } else {
-            returnValue = sent;
-        }
     });
-    return returnValue;
 }

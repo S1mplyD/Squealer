@@ -140,8 +140,12 @@ export class AuthComponent implements OnInit, OnDestroy {
         this.recoverPasswordForm.value.password,
       )
       .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((_) => {
-        alert('Password changed correctly');
+      .subscribe((res) => {
+        if (res === 'OK') {
+          this._snackBar.open('Password changed correctly', 'Close', {
+            duration: 3000,
+          });
+        }
       });
   }
 
@@ -150,7 +154,11 @@ export class AuthComponent implements OnInit, OnDestroy {
       .tokenRecoverPassword(this.mail)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
-        this.recoveryCode = res;
+        if (res) {
+          this._snackBar.open('Recovery code sended correctly', 'Close', {
+            duration: 3000,
+          });
+        }
       });
   }
 

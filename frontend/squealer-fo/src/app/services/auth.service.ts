@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from 'app/interfaces/account.interface';
 
@@ -35,7 +35,7 @@ export class AuthService {
   }
 
   tokenRecoverPassword(email: string) {
-    return this.http.get<string>(`${this.apiUrl}/forgotPassword/${email}`);
+    return this.http.get(`${this.apiUrl}/forgotPassword/${email}`);
   }
 
   recoverPassword(email: string, token: string, password: string) {
@@ -43,10 +43,9 @@ export class AuthService {
       token: token,
       password: password,
     };
-    return this.http.post<string>(
-      `${this.apiUrl}/forgotPassword/${email}`,
-      body,
-    );
+    return this.http.post(`${this.apiUrl}/forgotPassword/${email}`, body, {
+      responseType: 'text',
+    });
   }
 
   logout(): Observable<string> {
