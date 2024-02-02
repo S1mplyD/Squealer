@@ -210,9 +210,9 @@
               color="primary"
               matInput
               type="text"
-              formControlName="recoverycode"
               placeholder="Recovery code"
               required
+              formControlName="recovery"
               [(ngModel)]="recoveryCode"
             />
           </mat-form-field>
@@ -229,6 +229,7 @@
               type="password"
               placeholder="New Password"
               required
+              formControlName="password"
               matInput
               [(ngModel)]="newPassword"
             />

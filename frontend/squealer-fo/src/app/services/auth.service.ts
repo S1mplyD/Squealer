@@ -38,11 +38,7 @@ export class AuthService {
     return this.http.get<string>(`${this.apiUrl}/forgotPassword/${email}`);
   }
 
-  recoverPassword(
-    email: string,
-    token: string,
-    password: string,
-  ): Observable<string> {
+  recoverPassword(email: string, token: string, password: string) {
     const body = {
       token: token,
       password: password,

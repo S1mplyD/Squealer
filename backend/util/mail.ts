@@ -8,11 +8,11 @@ config();
  * transporter con i dati del servizio utilizzato per la mail
  */
 var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GOOGLE_MAIL,
-    pass: process.env.PASSWORD,
-  },
+    service: "gmail",
+    auth: {
+        user: process.env.GOOGLE_MAIL,
+        pass: process.env.PASSWORD,
+    },
 });
 
 /**
@@ -21,22 +21,20 @@ var transporter = nodemailer.createTransport({
  * @param mail mail dell'utente
  */
 export async function sendMail(token: string, mail: string) {
-  let mailOptions = {
-    from: "test@test.com",
-    to: mail,
-    subject: "Password reset",
-    html: `<h1>Reset passoword</h1><br><p>Your password reset token is: ${token}</p>`,
-  };
-  let returnValue;
-  transporter.sendMail(mailOptions, function (error, info) {
-    console.log("[SENDING EMAIL...]");
-    if (error) {
-      returnValue = cannot_send;
-      console.log(error);
-    } else {
-      returnValue = sent;
-      console.log("[EMAIL SENT!]\n" + info.response);
-    }
-  });
-  return returnValue;
+    let mailOptions = {
+        from: "test@test.com",
+        to: mail,
+        subject: "Password reset",
+        html: `<h1>Reset passoword</h1><br><p>Your password reset token is: ${token}</p>`,
+    };
+    let returnValue;
+    transporter.sendMail(mailOptions, function(error, info) {
+        console.log("[SENDING EMAIL...]");
+        if (error) {
+            returnValue = cannot_send;
+        } else {
+            returnValue = sent;
+        }
+    });
+    return returnValue;
 }

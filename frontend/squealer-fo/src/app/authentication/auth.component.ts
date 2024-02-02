@@ -60,6 +60,8 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     this.recoverPasswordForm = this.formBuilder.group({
       email: ['', Validators.required],
+      recovery: ['', Validators.required],
+      password: ['', Validators.required],
     });
   }
   ngOnDestroy(): void {
@@ -131,11 +133,16 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   recoverPassword() {
-    this.authService.recoverPassword(
-      this.mail,
-      this.recoveryCode,
-      this.newPassword,
-    );
+    this.authService
+      .recoverPassword(
+        this.mail,
+        this.recoverPasswordForm.value.recovery,
+        this.recoverPasswordForm.value.password,
+      )
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((_) => {
+        alert('Password changed correctly');
+      });
   }
 
   sendRecoveryCode() {
