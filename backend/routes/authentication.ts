@@ -163,36 +163,37 @@ router.get("/logout", (req, res) => {
     }
 });
 router
-    .route("/forgotPassword")
+    .route("/forgotPassword/:mail")
     /**
      * Genero un token e lo invio per mail all'utente
      */
     .get(async (req, res) => {
-        const mail: string = req.query.mail as string;
-        const token: string = generate();
+        try {
+            const mail: string = req.params.mail as string;
+            const token: string = generate();
 
-        const returnValue = await sendMail(token, mail);
-        const queryResult: SquealerError | Success | undefined =
+            await sendMail(token, mail);
             await updateResetToken(mail, token);
-        if (queryResult === undefined) res.sendStatus(500);
-        else if (returnValue instanceof SquealerError) res.sendStatus(500);
-        else res.status(200);
+            res.status(200).send(token);
+        } catch (e) {
+            res.status(500).send(e);
+        }
     })
     /**
      * controllo se il token inserito dall'utente è uguale a quello del server e aggiorno la password
      */
     .post(async (req, res) => {
         try {
+            const token: any = req.body.token;
+            const mail: any = req.params.mail;
+            const user: any = await userModel.findOne({ mail: mail });
+            const password: any = req.body.password;
+            const encryptedPassword = await bcrypt.hash(password, 10);
+            if (token === user.resetToken) {
+                const ret: Success = await updatePassword(mail, encryptedPassword);
+                res.sendStatus(200);
+            }
         } catch (e) {
             res.status(500).send(e);
-        }
-        const token: any = req.body.token;
-        const mail: any = req.query.mail;
-        const user: any = await userModel.findOne({ mail: mail });
-        const password: any = req.body.password;
-        const encryptedPassword = await bcrypt.hash(password, 10);
-        if (token === user.resetToken) {
-            const ret: Success = await updatePassword(mail, encryptedPassword);
-            res.sendStatus(200);
         }
     });

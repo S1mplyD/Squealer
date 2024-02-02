@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from 'app/services/auth.service'; // Your authentication service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -35,6 +29,9 @@ export class AuthComponent implements OnInit, OnDestroy {
     status: '',
     blockedFor: 0,
   };
+  newPassword: string = '';
+  recoveryCode: string = '';
+  mail: string = '';
   parameters = {
     dataSource: [],
   };
@@ -120,7 +117,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   signup() {
     const email = this.signupForm.value.email;
     const password = this.signupForm.value.password;
-    const username = this.signupForm.value.username.Replace(' ', '_');
+    const username = this.signupForm.value.username.replaceAll(' ', '_');
     const name = this.signupForm.value.name;
     this.authService
       .signUp(email, password, username, name)
@@ -134,8 +131,20 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   recoverPassword() {
-    const email = this.recoverPasswordForm.value.email;
-    this.authService.recoverPassword(email);
+    this.authService.recoverPassword(
+      this.mail,
+      this.recoveryCode,
+      this.newPassword,
+    );
+  }
+
+  sendRecoveryCode() {
+    this.authService
+      .tokenRecoverPassword(this.mail)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.recoveryCode = res;
+      });
   }
 
   logout() {
