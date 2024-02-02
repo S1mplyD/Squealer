@@ -90,6 +90,35 @@
       >
         Unfollow user
       </button>
+      <div *ngIf="un === account?.username">
+        <button
+          *ngIf="!isChangePasswordOpened"
+          (click)="toggleChangePassword()"
+        >
+          Change Password
+        </button>
+        <div *ngIf="isChangePasswordOpened">
+          <input
+            type="password"
+            placeholder="Old password"
+            id="oldPassword"
+            [(ngModel)]="oldPassword"
+          />
+          <input
+            type="password"
+            placeholder="New password"
+            id="newPassword"
+            [(ngModel)]="newPassword"
+          />
+          <button (click)="changePassword()">Change Password</button>
+          <button
+            *ngIf="isChangePasswordOpened"
+            (click)="toggleChangePassword()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 

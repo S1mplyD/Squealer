@@ -25,6 +25,9 @@ export class UserPageComponent implements OnInit {
   userName!: string;
   isFollowed: boolean = false;
   mapOpened: string[] = [];
+  isChangePasswordOpened: boolean = false;
+  oldPassword: string = '';
+  newPassword: string = '';
   un = sessionStorage.getItem('username');
   private _unsubscribeAll: Subject<void> = new Subject<void>();
   constructor(
@@ -178,5 +181,22 @@ export class UserPageComponent implements OnInit {
         shadowUrl: 'assets/marker-shadow.png',
       }),
     }).addTo(map);
+  }
+
+  toggleChangePassword() {
+    this.isChangePasswordOpened = !this.isChangePasswordOpened;
+  }
+
+  changePassword() {
+    this.usersService
+      .changePassword(this.oldPassword, this.newPassword)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        if (res === 'OK') this.isChangePasswordOpened = false;
+        this._snackBar.open('Password updated correctly', 'Close', {
+          duration: 3000,
+        });
+      });
+    this.reloadPage();
   }
 }

@@ -1,21 +1,26 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {User} from 'app/interfaces/account.interface';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { User } from 'app/interfaces/account.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
-
   private apiUrl = 'http://localhost:3000/api/users'; // Replace with your authentication API URL
 
   private followApiUrl = 'http://localhost:3000/api/follow';
 
   private mediaApiUrl = 'http://localhost:3000/api/media';
 
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient) {
+  changePassword(oldPassword: string, newPassword: string) {
+    const body = {
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    };
+    return this.http.post<string>(`${this.apiUrl}/changePassword`, body);
   }
 
   getAllUsers(): Observable<User[]> {
@@ -24,10 +29,10 @@ export class UsersService {
 
   deleteUser(mail: string, password: string): Observable<any> {
     const params = {
-      'mail': mail + '',
-      'password': password + ''
+      mail: mail + '',
+      password: password + '',
     };
-    return this.http.delete<any>(this.apiUrl, {params: params});
+    return this.http.delete<any>(this.apiUrl, { params: params });
   }
 
   getUserById(id: string): Observable<User> {
@@ -42,61 +47,75 @@ export class UsersService {
     return this.http.put<User>(`${this.apiUrl}/user/${username}`, user);
   }
 
-  updateUserPictureByUsername(username: string, filename: string): Observable<any> {
+  updateUserPictureByUsername(
+    username: string,
+    filename: string,
+  ): Observable<any> {
     const params = {
-      'filename': filename + ''
+      filename: filename + '',
     };
-    return this.http.put<any>(`${this.apiUrl}/${username}/profilePicture`, {params: params});
+    return this.http.put<any>(`${this.apiUrl}/${username}/profilePicture`, {
+      params: params,
+    });
   }
 
-  deleteUserPictureByUsername(username: string, filename: string): Observable<any> {
+  deleteUserPictureByUsername(
+    username: string,
+    filename: string,
+  ): Observable<any> {
     const params = {
-      'filename': filename + ''
+      filename: filename + '',
     };
-    return this.http.delete<any>(`${this.apiUrl}/${username}/profilePicture`, {params: params});
+    return this.http.delete<any>(`${this.apiUrl}/${username}/profilePicture`, {
+      params: params,
+    });
   }
 
   grantPermission(id: string): Observable<any> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/grantPermissions`, {params: params});
+      id: id + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/grantPermissions`, {
+      params: params,
+    });
   }
 
   revokePermission(id: string): Observable<any> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/revokePermissions`, {params: params});
+      id: id + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/revokePermissions`, {
+      params: params,
+    });
   }
 
   ban(id: string): Observable<any> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/ban`, {params: params});
+      id: id + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/ban`, { params: params });
   }
 
   unban(id: string): Observable<any> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/unban`, {params: params});
+      id: id + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/unban`, { params: params });
   }
 
   block(id: string, time: number): Observable<any> {
     const params = {
-      'id': id + '',
-      'time': time + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/block`, {params: params});
+      id: id + '',
+      time: time + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/block`, { params: params });
   }
 
   unblock(id: string): Observable<any> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.put<any>(`${this.apiUrl}/unblock`, {params: params});
+      id: id + '',
+    };
+    return this.http.put<any>(`${this.apiUrl}/unblock`, { params: params });
   }
 
   follow(username: string): Observable<any> {
@@ -120,10 +139,10 @@ export class UsersService {
   }
 
   changeProfilePicture(formaData: FormData): Observable<string> {
-    const headers = new HttpHeaders({Accept: 'text/plain'});
+    const headers = new HttpHeaders({ Accept: 'text/plain' });
     return this.http.post(`${this.mediaApiUrl}`, formaData, {
       headers,
-      responseType: 'text'
+      responseType: 'text',
     });
   }
 
@@ -131,6 +150,9 @@ export class UsersService {
     // const params = {
     //   'filename': fileName + ''
     // }
-    return this.http.patch<string>(`${this.apiUrl}/user/${username}/profilePicture`, {filename: fileName+''});
+    return this.http.patch<string>(
+      `${this.apiUrl}/user/${username}/profilePicture`,
+      { filename: fileName + '' },
+    );
   }
 }
