@@ -9,6 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LatLng, TileLayer } from 'leaflet';
 import * as L from 'leaflet';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-user-page',
@@ -26,6 +27,7 @@ export class UserPageComponent implements OnInit {
   isFollowed: boolean = false;
   mapOpened: string[] = [];
   isChangePasswordOpened: boolean = false;
+  changePasswordForm: FormGroup;
   oldPassword: string = '';
   newPassword: string = '';
   un = sessionStorage.getItem('username');
@@ -36,7 +38,13 @@ export class UserPageComponent implements OnInit {
     public activeRoute: ActivatedRoute,
     private usersService: UsersService,
     private _snackBar: MatSnackBar,
-  ) { }
+    private formBuilder: FormBuilder,
+  ) {
+    this.changePasswordForm = this.formBuilder.group({
+      oldPassword: ['', Validators.required],
+      newPassword: ['', Validators.required],
+    });
+  }
 
   ngOnInit() {
     this.usersService

@@ -54,13 +54,8 @@ ngOnInit(): void {
   });
 }
 
-logout(): void {
-  this.authService.logout()
-  .pipe(takeUntil(this._unsubscribeAll))
-  .subscribe((res) => {
-    this.isLoggedIn = false;
-  });
-  location.reload();
+clearSession(): void {
+  sessionStorage.clear();
 }
 
 ngOnDestroy(): void {

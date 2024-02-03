@@ -39,10 +39,49 @@
     margin-top: 70px;
   }
 
-  .navBar {
-    background-color: #0c0c0c;
-    color:white;
-    flex: 1;
+  @media only screen and (min-height: 667px) {
+    .navBar {
+      background-color: #0c0c0c;
+      color:white;
+      width: 375px;
+      flex: 1;
+    }
+  }
+
+  @media only screen and (min-height: 844px) {
+    .navBar {
+      background-color: #0c0c0c;
+      color:white;
+      width: 390px;
+      flex: 1;
+    }
+  }
+
+  @media only screen and (min-height: 896px) {
+    .navBar {
+      background-color: #0c0c0c;
+      color:white;
+      width: 414px;
+      flex: 1;
+    }
+  }
+
+  @media only screen and (min-height: 933px) {
+    .navBar {
+      background-color: #0c0c0c;
+      color:white;
+      width: 414px;
+      flex: 1;
+    }
+  }
+
+  @media only screen and (min-height: 1000px) {
+    .navBar {
+      background-color: #0c0c0c;
+      color:white;
+      width: 375px;
+      flex: 1;
+    }
   }
 
   .sideButton {

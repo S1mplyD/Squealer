@@ -43,7 +43,7 @@
                 </button>
               </mat-list-item>
               <mat-list-item *ngIf="isLoggedIn">
-                <button mat-button fxFlex fxLayoutAlign="start center" style="color: white">
+                <button mat-button fxFlex fxLayoutAlign="start center" (click)="clearSession()" style="color: white">
                   <mat-icon>exit_to_app</mat-icon>&nbsp;<a href="/api/auth/logout" style="text-decoration: none; color: white;">Logout</a>
                 </button>
               </mat-list-item>
@@ -51,7 +51,7 @@
             <div *ngIf="!isLoggedIn">
               <mat-list-item>
                 <p fxFlex fxLayoutAlign="start center" style="color: white">
-                  You are not logged in. If you are logged in, try to reload the
+                  You are not logged in. If you are logged in, <br> try to reload the
                   page.
                 </p>
               </mat-list-item>
