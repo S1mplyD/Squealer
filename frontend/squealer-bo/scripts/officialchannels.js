@@ -64,6 +64,22 @@ const addChannel = async (channelName) => {
     return response.data;
 };
 
+const loadValues = async () => {
+    const channelName = document.getElementById("oldChannelName").value;
+    const response = await axios.get(`/api/channels/channel/${channelName}`);
+    console.log(response);
+    document.getElementById("newName").value = channelName;
+    document.getElementById("allowedRead").value = response.data.allowedRead
+        ? response.data.allowedRead
+        : "";
+    document.getElementById("allowedWrite").value = response.data.allowedWrite
+        ? response.data.allowedWrite
+        : "";
+    document.getElementById("channelAdmins").value = response.data.channelAdmins
+        ? response.data.channelAdmins
+        : "";
+};
+
 const editChannel = async (
     name,
     newName,

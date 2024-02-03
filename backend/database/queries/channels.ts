@@ -215,12 +215,14 @@ export async function editOfficialChannel(
     channelAdmins: string[],
 ): Promise<Success> {
     const update: UpdateWriteOpResult = await channelsModel.updateOne(
-        { name: name },
+        { $and: [{ name: name }, { type: "officialchannel" }] },
         {
             name: newName,
-            allowedRead: allowedRead,
-            allowedWrite: allowedWrite,
-            channelAdmins: channelAdmins,
+            $set: {
+                allowedRead: allowedRead,
+                allowedWrite: allowedWrite,
+                channelAdmins: channelAdmins,
+            },
         },
     );
     if (update.modifiedCount > 0) return updated;
