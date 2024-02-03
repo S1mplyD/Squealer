@@ -30,6 +30,7 @@ export default function Analytic(props: {
                     <img
                         src={"/" + props.squeal.originalSqueal.body}
                         className="w-1/2 h-1/2"
+                        alt="squeal picture"
                     ></img>
                 ) : props.squeal.originalSqueal.type === "geo" ? (
                     <div id={"map"}>
@@ -89,7 +90,7 @@ export default function Analytic(props: {
                                     {el.body}
                                 </div>
                             ) : el.type === "media" ? (
-                                <img key={index} src={el.body}></img>
+                                <img key={index} src={el.body} alt="response image"></img>
                             ) : el.type === "geo" ? (
                                 <div key={index}>map</div>
                             ) : null}
