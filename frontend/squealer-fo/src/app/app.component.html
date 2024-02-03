@@ -1,6 +1,6 @@
 <div class="content" role="main" [class.example-is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button aria-label="Button to open side menu" mat-icon-button (click)="menu.toggle()">
+    <button tabindex="0" aria-label="Button to open side menu" mat-icon-button (click)="menu.toggle()">
       <mat-icon style="color:black">menu</mat-icon>
     </button>
     <img width="40" alt="Squealer Logo" src="../assets/1511304664.png" />
@@ -13,37 +13,37 @@
           <mat-list fxLayoutAlign="space-around center" fxLayout="column" class="menuSelect">
             <div *ngIf="isLoggedIn">
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>home</mat-icon>&nbsp;Homepage
+                  <mat-icon>home</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Homepage</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']"
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']"
                   (click)="menu.toggle()" style="color: white">
-                  <mat-icon>group</mat-icon>&nbsp;Followed Accounts
+                  <mat-icon>group</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Followed Accounts</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>whatshot</mat-icon>&nbsp;Best 3 Squeals of the week
+                  <mat-icon>whatshot</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Best 3 Squeals of the week</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/channels']" (click)="menu.toggle()"
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/channels']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>grade</mat-icon>&nbsp;Squealer's Channels
+                  <mat-icon>grade</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Squealer's Channels</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
-                <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + username]"
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + username]"
                   (click)="menu.toggle()" style="color: white">
-                  <mat-icon>account_circle</mat-icon>&nbsp;Your Account
+                  <mat-icon>account_circle</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Your Account</a>
                 </button>
               </mat-list-item>
               <mat-list-item *ngIf="isLoggedIn">
-                <button mat-button fxFlex fxLayoutAlign="start center" (click)="clearSession()" style="color: white">
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" (click)="clearSession()" style="color: white">
                   <mat-icon>exit_to_app</mat-icon>&nbsp;<a href="/api/auth/logout" style="text-decoration: none; color: white;">Logout</a>
                 </button>
               </mat-list-item>
