@@ -232,7 +232,7 @@ export async function editOfficialChannel(
 export async function updateOfficialSqueals(name: string, squeals: string[]) {
     const update: UpdateWriteOpResult = await channelsModel.updateOne(
         { name: name },
-        { squeals: squeals },
+        { $set: { squeals: squeals } },
     );
     if (update.modifiedCount > 0) return updated;
     else throw cannot_update;

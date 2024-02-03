@@ -5,7 +5,7 @@ const getAll = async () => {
 
 const createOfficiaChannelsTable = async () => {
     const me = await getMe();
-    if (me.status !== 404 && me.data.plan === "admin") {
+    if (me.data !== "Not authenticated" && me.data.plan === "admin") {
         const channels = await getAll();
         const newMain = document.getElementById("officialtable");
         newMain.innerHTML =
@@ -14,7 +14,7 @@ const createOfficiaChannelsTable = async () => {
             "</table>";
         fillTable(channels);
     } else {
-        await createLoginForm("squealmain");
+        await createLoginForm("officialmain");
     }
 };
 
@@ -46,29 +46,30 @@ const fillTable = (items) => {
 };
 
 const deleteChannel = async (name) => {
-    const response = await axios.delete("/api/channels/", null, {
-        params: {
-            name: name,
-        },
-    });
-    return response.data;
+    await axios.delete(`/api/channels/deleteOfficial/${name}`);
+    window.location.reload();
+};
+
+const loadSqueals = async (name) => {
+    const squeals = await axios.get(`/api/channels/channel/${name}`);
+    document.getElementById("squeals").value =
+        squeals.data.squeals.length > 0 ? squeals.data.squeals : "";
 };
 
 const addChannel = async (channelName) => {
     const response = await axios.post("/api/channels", null, {
         params: {
-            name: channelName,
+            name: channelName.toUpperCase(),
             type: "officialchannel",
         },
     });
     return response.data;
 };
 
-const loadValues = async () => {
-    const channelName = document.getElementById("oldChannelName").value;
-    const response = await axios.get(`/api/channels/channel/${channelName}`);
+const loadValues = async (name) => {
+    const response = await axios.get(`/api/channels/channel/${name}`);
     console.log(response);
-    document.getElementById("newName").value = channelName;
+    document.getElementById("newName").value = name;
     document.getElementById("allowedRead").value = response.data.allowedRead
         ? response.data.allowedRead
         : "";
@@ -99,9 +100,8 @@ const editChannel = async (
 };
 
 const updateChannelSqueals = async (channelName, squeals) => {
-    const response = await axios.patch(
-        `/api/channels/official/${channelName}`,
-        squeals.replaceAll(" ", "").split(","),
-    );
-    return response.data;
+    const body = { squeals: squeals.replaceAll(" ", "").split(",") };
+    console.log(body);
+    await axios.patch(`/api/channels/official/${channelName}`, body);
+    window.location.reload();
 };

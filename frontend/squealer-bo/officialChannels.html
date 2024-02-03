@@ -46,36 +46,44 @@
                     Add Channel
                 </button>
             </form>
-            <label for="oldChannelName" onchange="loadValues()">Channel Name</label>
-            <input id="oldChannelName" type="text" placeholder="Old Channel Name" />
-            <label for="newName">New Channel Name</label>
-            <input type="text" id="newName" placeholder="new channel name" />
-            <label for="allowedRead">Users allowed to read</label>
-            <input type="text" id="allowedRead" placeholder="id of users allowed to read separated by ','" />
-            <label for="allowedWrite">Users allowed to write</label>
-            <input type="text" id="allowedWrite" placeholder="id of users allowed to write separated by ','" />
-            <label for="channelAdmins">Channel's admins</label>
-            <input type="text" id="channelAdmins" placeholder="id of the admins separated by ','" />
-            <button onclick="editChannel(document.getElementById('oldChannelName').value,
+            <form>
+                <label for="oldChannelName">Channel Name</label>
+                <input id="oldChannelName" type="text" placeholder="Old Channel Name"
+                    onchange="loadValues(document.getElementById('oldChannelName').value)" />
+                <label for="newName">New Channel Name</label>
+                <input type="text" id="newName" placeholder="new channel name" />
+                <label for="allowedRead">Users allowed to read</label>
+                <input type="text" id="allowedRead" placeholder="id of users allowed to read separated by ','" />
+                <label for="allowedWrite">Users allowed to write</label>
+                <input type="text" id="allowedWrite" placeholder="id of users allowed to write separated by ','" />
+                <label for="channelAdmins">Channel's admins</label>
+                <input type="text" id="channelAdmins" placeholder="id of the admins separated by ','" />
+                <button onclick="editChannel(document.getElementById('oldChannelName').value,
             document.getElementById('newName').value,
             document.getElementById('allowedRead').value,
             document.getElementById('allowedWrite').value,
             document.getElementById('channelAdmins').value)">
-                Edit Channel
-            </button>
-            <label for="deleteChannel">Name of the channel to delete</label>
-            <input id="deleteChannel" type="text" placeholder="channel name" />
-            <button onclick="deleteChannel(document.getElementById('deleteChannel').value)">
-                Delete Channel
-            </button>
-            <form>
+                    Edit Channel
+                </button>
+            </form>
+            <div>
+                <label for="deleteChannel">Name of the channel to delete</label>
+                <input id="deleteChannel" type="text" placeholder="channel name" />
+                <button onclick="deleteChannel(document.getElementById('deleteChannel').value)">
+                    Delete Channel
+                </button>
+            </div>
+            <div>
+                <label for="squealsChannelName">Channel Name</label>
+                <input id="squealsChannelName" type="text" placeholder="Channel Name"
+                    onchange="loadSqueals(document.getElementById('squealsChannelName').value)" />
                 <label for="squeals">Channel's squeals</label>
                 <input type="text" id="squeals" placeholder="id of the squeals separated by ','" />
                 <button
-                    onclick="updateChannelSqueals(document.getElementById('channelName').value,document.getElementById('squeals').value)">
+                    onclick="updateChannelSqueals(document.getElementById('squealsChannelName').value,document.getElementById('squeals').value)">
                     Update Squeals
                 </button>
-            </form>
+            </div>
         </div>
     </main>
 </body>
