@@ -393,8 +393,8 @@ router
 
 router.route("/me").get(async (req: ExpressRequest, res: ExpressResponse) => {
     try {
-        if (req.user) res.send(req.user);
-        else res.sendStatus(404);
+        if (req.user) res.status(200).send(req.user);
+        else res.status(200).send("Not authenticated");
     } catch (e) {
         res.status(500).send(e);
     }

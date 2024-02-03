@@ -155,17 +155,17 @@ export class NewSquealsComponent implements OnInit {
       .isAuthenticated()
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res) => {
-        if (res.status !== '404') {
+        if (res && res !== 'Not authenticated') {
           this.isLoggedIn = true;
           this.username = res.username + '';
           this.plan = res.plan + '';
           this.dailyChars = res.dailyCharacters;
-          this.loadSqueals();
-        } else {
+        } else if (res && res === 'Not authenticated') {
           this.isLoggedIn = false;
-          this.loadSqueals();
         }
       });
+      console.log(this.isLoggedIn);
+    this.loadSqueals();
     this.getPosition();
   }
 
@@ -387,7 +387,9 @@ export class NewSquealsComponent implements OnInit {
         .subscribe((res) => {
           this.squeals = res;
           for (const squeal of this.squeals) {
-            this.loadAnswers(squeal._id);
+            if (this.responses.length === 0) {
+              this.loadAnswers(squeal._id);
+            }
           }
         });
     } else {
@@ -397,7 +399,9 @@ export class NewSquealsComponent implements OnInit {
         .subscribe((res) => {
           this.squeals = res;
           for (const squeal of this.squeals) {
-            this.loadAnswers(squeal._id);
+            if (this.responses.length === 0) {
+              this.loadAnswers(squeal._id);
+            }
           }
         });
     }

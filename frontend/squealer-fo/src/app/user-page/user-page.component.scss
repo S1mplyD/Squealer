@@ -1,4 +1,12 @@
+#forms {
+  background-color: #ebcc67;
+  color: #333;
+  flex: 1;
+}
+
 /* Extra small devices (phones, 600px and down) */
+
+
 @media only screen and (min-height: 667px) {
   .user-profile {
     margin: 0 auto;
@@ -22,6 +30,8 @@
   .squealText {
     color: black;
   }
+
+
 
   .account-card {
     display: flex;

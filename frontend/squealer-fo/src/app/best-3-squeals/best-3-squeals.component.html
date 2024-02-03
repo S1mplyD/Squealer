@@ -94,7 +94,7 @@
           </div>
         </mat-card-content>
         <mat-card-content *ngIf="squeal.type === 'media'">
-          <img [src]="squeal.body" />
+          <img [src]="squeal.body" [alt]="'Image that ' + squeal?.author + ' posted.'" />
           <div class="button-group">
             <button aria-label="Upvote Button" class="upvote" mat-raised-button (click)="addUpvote(squeal._id)">
               <p aria-label="Number of upvotes" class="upvoteText">{{ squeal.positiveReactions?.length }}</p>

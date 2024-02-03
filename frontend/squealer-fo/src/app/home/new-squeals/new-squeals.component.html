@@ -334,9 +334,7 @@
         </mat-card-content>
         <mat-card-content *ngIf="squeal.type === 'media'">
           <img
-            [alt]="
-              'Image present in the body of the squeal from ' + squeal.author
-            "
+          [alt]="'Image that ' + squeal?.author + ' posted.'"
             [src]="squeal.body"
             class="squealimg"
           />
