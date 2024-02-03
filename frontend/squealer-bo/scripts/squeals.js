@@ -70,7 +70,7 @@ const fillTable = (items) => {
                 "<td>" +
                 "<img src='/" +
                 i.body +
-                "' class='w-50 h-50'/>" +
+                "' class='w-50 h-50' alt='squeal image'/>" +
                 "</td>" +
                 "<td>" +
                 i.author +

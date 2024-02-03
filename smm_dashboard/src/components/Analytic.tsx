@@ -21,8 +21,7 @@ export default function Analytic(props: {
         <div className="container mx-auto mt-4 p-4 sm:px-6 lg:px-8 rounded-lg bg-orange">
             <div className="bg-grey rounded-lg p-4 m-4">
                 <div className="text-white font-bold">
-                    Author:
-                    {props.squeal.originalSqueal.author}
+                    Author: {props.squeal.originalSqueal.author}
                 </div>
                 {props.squeal.originalSqueal.type === "text" ? (
                     <div className="text-white">{props.squeal.originalSqueal.body}</div>
@@ -84,7 +83,7 @@ export default function Analytic(props: {
                             key={index}
                             className="text-white font-bold bg-grey rounded-lg m-4 p-4 "
                         >
-                            {el.author}
+                            Author: {el.author}
                             {el.type === "text" ? (
                                 <div key={index} className="text-white">
                                     {el.body}
