@@ -1,51 +1,72 @@
-
 <div class="content" role="main" [class.example-is-mobile]="mobileQuery.matches">
   <mat-toolbar color="primary" class="toolbar">
-    <button mat-icon-button (click)="menu.toggle()"><mat-icon>menu</mat-icon></button>
-    <img width="40" alt="Squealer Logo" src="../assets/1511304664.png"/>
-    <span>Squealer</span>
+    <button tabindex="0" aria-label="Button to open side menu" mat-icon-button (click)="menu.toggle()">
+      <mat-icon style="color:black">menu</mat-icon>
+    </button>
+    <img width="40" alt="Squealer Logo" src="../assets/1511304664.png" />
+    <span style="color:black">Squealer</span>
   </mat-toolbar>
   <div class="example-sidenav-container" fxLayout="row" fxFlex>
     <mat-sidenav-container fxFlex fxLayout="row" hasBackdrop="true">
       <mat-sidenav #menu mode="over" opened="false" class="navBar">
         <mat-accordion>
-          <mat-list fxLayoutAlign="space-around center" fxLayout="column">
-            <mat-list-item>
-              <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                <mat-icon>home</mat-icon>&nbsp;Homepage
-              </button>
-            </mat-list-item>
-            <mat-expansion-panel fxLayoutAlign="space-around center" fxLayout="column" class="navBar"
-            style="width:100%;box-shadow: none;">
-              <mat-expansion-panel-header>Socials</mat-expansion-panel-header>
-              <mat-accordion>
-                <mat-list>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>group</mat-icon>&nbsp;Followed Accounts
-                    </button>
-                  </mat-list-item>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>public</mat-icon>&nbsp;Explore Squeals
-                    </button>
-                  </mat-list-item>
-                  <mat-list-item>
-                    <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()" style="color: white;">
-                      <mat-icon>whatshot</mat-icon>&nbsp;What's the best Post?
-                    </button>
-                  </mat-list-item>
-                </mat-list>
-              </mat-accordion>
-            </mat-expansion-panel>
+          <mat-list fxLayoutAlign="space-around center" fxLayout="column" class="menuSelect">
+            <div *ngIf="isLoggedIn">
+              <mat-list-item>
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['']" (click)="menu.toggle()"
+                  style="color: white">
+                  <mat-icon>home</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Homepage</a>
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']"
+                  (click)="menu.toggle()" style="color: white">
+                  <mat-icon>group</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Followed Accounts</a>
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
+                  style="color: white">
+                  <mat-icon>whatshot</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Best 3 Squeals of the week</a>
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/channels']" (click)="menu.toggle()"
+                  style="color: white">
+                  <mat-icon>grade</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Squealer's Channels</a>
+                </button>
+              </mat-list-item>
+              <mat-list-item>
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + username]"
+                  (click)="menu.toggle()" style="color: white">
+                  <mat-icon>account_circle</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Your Account</a>
+                </button>
+              </mat-list-item>
+              <mat-list-item *ngIf="isLoggedIn">
+                <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" (click)="clearSession()" style="color: white">
+                  <mat-icon>exit_to_app</mat-icon>&nbsp;<a href="/api/auth/logout" style="text-decoration: none; color: white;">Logout</a>
+                </button>
+              </mat-list-item>
+            </div>
+            <div *ngIf="!isLoggedIn">
+              <mat-list-item>
+                <p fxFlex fxLayoutAlign="start center" style="color: white">
+                  You are not logged in. If you are logged in, <br> try to reload the
+                  page.
+                </p>
+              </mat-list-item>
+            </div>
           </mat-list>
         </mat-accordion>
       </mat-sidenav>
       <mat-sidenav-content fxFlex="100" fxLayout="row">
         <mat-card fxLayout="column" fxFlex class="mainContent">
           <mat-card-content fxLayout="column" fxFlex>
-            <div class="mainContentBody"
-              [ngStyle]="{'width.px': screenWidth, 'min-width.px': screenWidth, 'max-width.px': screenWidth}">
+            <div class="mainContentBody" [ngStyle]="{
+                'width.px': screenWidth,
+                'min-width.px': screenWidth,
+                'max-width.px': screenWidth
+              }">
               <router-outlet></router-outlet>
             </div>
           </mat-card-content>
@@ -54,10 +75,8 @@
     </mat-sidenav-container>
   </div>
   <mat-toolbar fxLayout="row" ngClass-xs="footerToolbarXs footerToolbarTextXs" ngClass="footerToolbar footerToolbarText"
-    color="primary">
-    Squealer &copy; &nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" style="color: white;">Squealer Inc.</a>
+    color="primary" style="color: black">
+    Squealer &copy; &nbsp;&nbsp;<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" style="color: black">Squealer
+      Inc.</a>
   </mat-toolbar>
-
-
 </div>
-

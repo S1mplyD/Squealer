@@ -1,88 +1,106 @@
 // tweet.service.ts
 import { Injectable } from '@angular/core';
-import { Squeal } from 'app/interfaces/squeal.interface';
+import { Squeal} from 'app/interfaces/squeal.interface';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { User } from 'app/interfaces/account.interface';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SquealService {
-  private squeals: Squeal[] = [
-    // Example tweets
-    {
-      id: 1,
-      username: 'johndoe',
-      profileImage: '',
-      content: 'Hello, Squealer!',
-      timestamp: new Date()
-    },
-    {
-      id: 2,
-      username: 'janesmith',
-      profileImage: '',
-      content: 'Angular is awesome! @johndoe RULES!',
-      timestamp: new Date()
-    },
-    {
-      id: 3,
-      username: 'marco_rossi',
-      profileImage: '',
-      content: 'Hello, Squealer!',
-      timestamp: new Date()
-    },
-    {
-      id: 4,
-      username: 'fabio_vitali',
-      profileImage: '',
-      content: 'Che figata!',
-      timestamp: new Date()
-    },
-    {
-      id: 5,
-      username: 'luca_bennati',
-      profileImage: '',
-      content: 'SIUUUUM!',
-      timestamp: new Date()
-    },
-    {
-      id: 6,
-      username: 'mia_khalifa',
-      profileImage: '',
-      content: '@johndoe, HI!',
-      timestamp: new Date()
-    },
-    {
-      id: 7,
-      username: 'delusional',
-      profileImage: '',
-      content: '@johndoe u r n idiot!',
-      timestamp: new Date()
-    }
-    // Add more tweets as needed
-  ];
 
-  getTweets(): Squeal[] {
+  private apiUrl = 'http://localhost:3000/api/squeals/type'; // Replace with your authentication API URL
+  private newApiUrl = 'http://localhost:3000/api/squeals';
+
+  constructor(private http: HttpClient) {
+  }
+
+  getAllSqueals(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}`);
+  }
+
+  getAllSquealsRecipients(username: string): Observable<User[]> {
+    const params = {
+      'recipient': username + ''
+    }
+    return this.http.get<User[]>(`${this.newApiUrl}/recipients`, {params: params});
+  }
+
+  getAllTextSqueals(): Observable<Squeal[]> {
     // Sort tweets by timestamp in descending order
-    return this.squeals.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  }
-  getTweetsForUsers(username: string): Squeal[] {
-    let squeals: Squeal[] = [];
-    for (const squeal of this.squeals) {
-      if (squeal.username == username) {
-        squeals.push(squeal);
-      }
-    }
-    return squeals;
+    return this.http.get<Squeal[]>(`${this.apiUrl}/text`);
   }
 
-  getAnswersForUsers(username: string): Squeal[] {
-    let squeals: Squeal[] = [];
-    for (const squeal of this.squeals) {
-      if (squeal.content.includes('@' + username)) {
-        squeals.push(squeal);
-      }
+  getSquealsForUsers(username: string): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/user/${username}`);
+  }
+
+  getAllMediaSqueals(): Observable<Squeal[]> {
+    // Sort tweets by timestamp in descending order
+    return this.http.get<Squeal[]>(`${this.apiUrl}/media`);
+  }
+  getMediaSquealsForUsers(username: string): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/user/${username}`);
+  }
+
+  getAllGeoSqueals(): Observable<Squeal[]> {
+    // Sort tweets by timestamp in descending order
+    return this.http.get<Squeal[]>(`${this.apiUrl}/geo`);
+  }
+
+  getGeoSquealsForUsers(username: string): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.apiUrl}/user/${username}`);
+  }
+
+  getAllTimedSqueals(): Observable<Squeal[]>  {
+    return this.http.get<Squeal[]>(`${this.apiUrl}/timed`);
+  }
+
+  getResponses(squealId: string): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/response/${squealId}`);
+  }
+
+  addUpvote(squealId: string): Observable<string> {
+    const params = {
+      'squealId': squealId + ''
     }
-    return squeals;
+    return this.http.post<string>(`${this.newApiUrl}/positiveReactions?squealId=${squealId}`, { params: params });
   }
-  assignProfileImage(squeal: Squeal, url: string): void {
-    squeal.profileImage = url;
+
+  addDownvote(squealId: string): Observable<string> {
+    const params = {
+      'squealId': squealId + ''
+    }
+    return this.http.post<string>(`${this.newApiUrl}/negativeReactions?squealId=${squealId}`, { params: params });
   }
- }
+
+  addSqueal(squeal: Squeal): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}`, squeal);
+  }
+
+  addResponse(squeal: Squeal, originalId: string): Observable<any> {
+    return this.http.post<any>(`${this.newApiUrl}/response/${originalId}`, squeal);
+  }
+
+  deleteSqueal(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}`, {params: {'id': id + ''}});
+  }
+
+  getSquealsNoLogin(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/nologin`);
+  }
+
+  getSquealsLogin(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/login`);
+  }
+
+  getSquealsNoLogin3Best(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/nologin3best`);
+  }
+
+  getSquealsLogin3Best(): Observable<Squeal[]> {
+    return this.http.get<Squeal[]>(`${this.newApiUrl}/login3best`);
+  }
+
+}

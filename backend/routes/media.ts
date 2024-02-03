@@ -1,8 +1,10 @@
 import multer from "multer";
 import express from "express";
-import { resolve } from "path";
+import { resolve, join } from "path";
+import { User } from "../util/types";
+import fs from "fs";
 
-const publicUploadPath = resolve(__dirname, "../..", "public/uploads/");
+const publicUploadPath = resolve(__dirname, "../..", "public/");
 
 export const router = express.Router();
 
@@ -21,7 +23,7 @@ const storage = multer.diskStorage({
         "-" +
         uniqueSuffix +
         "." +
-        file.originalname.split(".").pop()
+        file.originalname.split(".").pop(),
     );
   },
 });
@@ -34,8 +36,19 @@ const upload = multer({ storage: storage });
  */
 router.route("/").post(upload.single("file"), (req, res) => {
   try {
-    res.send(req.file?.filename);
+    if (
+      req.user &&
+      ((req.user as User).status !== "ban" ||
+        (req.user as User).status !== "block")
+    )
+      res.status(201).send(req.file?.filename);
+    else {
+      fs.unlink(join(publicUploadPath, req.file!.filename), (err) => {
+        if (err) console.log(err);
+      });
+      res.sendStatus(401);
+    }
   } catch (error: any) {
-    res.send({ errorName: error.name, errorDescription: error.message });
+    res.status(500).send(error);
   }
 });

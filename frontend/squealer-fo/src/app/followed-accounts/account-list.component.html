@@ -1,19 +1,26 @@
-<h1>Followed Accounts</h1>
+<div class="following">
+  <h1>Followed Accounts</h1>
 
-<div class="account-list">
+<div class="account-list" *ngIf="accounts.length > 0">
   <div class="account-card" *ngFor="let account of accounts">
     <mat-card style="background-color: #ec8b0d;">
       <mat-card-header>
         <div mat-card-avatar class="profile-image">
-          <img *ngIf="account.profileImage" [src]="account.profileImage" [alt]="'profile image of ' + account.name" />
-          <img *ngIf="!account.profileImage" src="../../assets/1511304664.png" [alt]="'profile image of ' + account.name + ', but it seems to not be working properly...'" />
+          <img *ngIf="account.profilePicture" [src]="account.profilePicture" [alt]="'profile image of ' + account.name" />
+          <img *ngIf="!account.profilePicture" src="../../assets/1511304664.png" [alt]="'profile image of ' + account.name + ', but it seems to not be working properly...'" />
         </div>
         <mat-card-title style="color: white;"><h3>{{ account.name }}</h3></mat-card-title>
         <br>
         <mat-card-subtitle>
-          <button mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + account.username]"  style="color: white;">@{{ account.username }}</button>
+          <button aria-label="Button to go to see the User Account" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + account.username]"  style="color: white;">&#64;{{ account.username }}</button>
         </mat-card-subtitle>
       </mat-card-header>
      </mat-card>
   </div>
+</div>
+
+<div class="account-list" *ngIf="accounts.length === 0">
+  <h2>It seems a bit empty in here...</h2>
+</div>
+
 </div>

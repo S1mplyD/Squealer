@@ -1,8 +1,11 @@
 // account-list.component.ts
 import { Component, OnInit } from '@angular/core';
-import { Account } from 'app/interfaces/account.interface';
+import { User } from 'app/interfaces/account.interface';
 import { Router } from '@angular/router';
-import { AccountService } from 'app/services/account.service';
+import { FollowService } from 'app/services/follow.service';
+import { Subject, takeUntil } from 'rxjs';
+import { UsersService } from 'app/services/users.service';
+import { AuthService } from 'app/services/auth.service';
 
 @Component({
   selector: 'app-account-list',
@@ -10,10 +13,20 @@ import { AccountService } from 'app/services/account.service';
   styleUrls: ['./account-list.component.scss'],
 })
 export class AccountListComponent implements OnInit{
-  accounts: Account[] = [];
-  constructor(private router: Router,
-    private accountService: AccountService) {}
+  accounts: User[] = [];
+  username: string = '';
+  private _unsubscribeAll: Subject<void> = new Subject<void>();
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private userService: UsersService) {}
     ngOnInit(): void {
-        this.accounts = this.accountService.getAccounts();
+      this.authService.isAuthenticated()
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res) => {
+        this.userService.following(res.username)
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe(resp => this.accounts = resp)
+      })
     }
 }

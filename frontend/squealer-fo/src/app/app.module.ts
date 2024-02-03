@@ -14,10 +14,23 @@ import { HomeComponent } from './home/home.component';
 import { MatCardModule } from '@angular/material/card';
 import { NewSquealsComponent } from './home/new-squeals/new-squeals.component';
 import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { AccountListComponent } from './followed-accounts/account-list.component';
 import { UserPageComponent } from './user-page/user-page.component';
+import { AuthComponent } from './authentication/auth.component';
+import { HttpClientModule } from '@angular/common/http'
+import { MatDialogModule } from '@angular/material/dialog';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { Best3SquealsComponent } from './best-3-squeals/best-3-squeals.component';
+import { ChannelListsComponent } from './channel-follow/channels.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +38,10 @@ import { UserPageComponent } from './user-page/user-page.component';
     HomeComponent,
     NewSquealsComponent,
     AccountListComponent,
-    UserPageComponent
+    UserPageComponent,
+    AuthComponent,
+    Best3SquealsComponent,
+    ChannelListsComponent
   ],
   imports: [
     MatTabsModule,
@@ -39,7 +55,19 @@ import { UserPageComponent } from './user-page/user-page.component';
     MatButtonModule,
     MatListModule,
     MatExpansionModule,
-    FormsModule, MatInputModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    FormsModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    HttpClientModule,
+    MatRadioModule,
+    MatCheckboxModule,
+    MatSliderModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    LeafletModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

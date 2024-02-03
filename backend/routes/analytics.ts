@@ -1,30 +1,80 @@
-import chartjs from "chart.js"
+import express from "express";
+import { Squeal, User } from "../util/types";
+import {
+    getAllUserSquealsResponses,
+    getControversialPosts,
+    getPopularPosts,
+    getUnpopularPosts,
+} from "../database/queries/analytics";
+import { getUserByUsername } from "../database/queries/users";
 
-/**
- * funzione che ritorna le visualizzazioni di un post
- * @params id {string}
- */
-export async function getPostVisual(id: string){
+export const router = express.Router();
 
-}
+router.route("/responses/:username").get(async (req, res) => {
+    try {
+        const user = await getUserByUsername(req.params.username);
+        if (
+            req.user &&
+            ((req.user as User).managedAccounts.includes(user._id) ||
+                (req.user as User).username === user.username)
+        ) {
+            const responses:
+                | { originalSqueal: Squeal; responses: Squeal[] }[]
+                | undefined = await getAllUserSquealsResponses(req.params.username);
+            if (responses) res.status(200).send(responses);
+            else res.sendStatus(404);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
 
-/**
- * funzione che ritorna un grafico delle visualizzazioni del post
- * @params id {string} id del post
- */
-export async function getPostVisualChart(id: string){
+router.route("/popular/:username").get(async (req, res) => {
+    try {
+        const user = await getUserByUsername(req.params.username);
+        if (
+            req.user &&
+            ((req.user as User).managedAccounts.includes(user._id) ||
+                (req.user as User).username === user.username)
+        ) {
+            const squeals: Squeal[] = await getPopularPosts(req.params.username);
+            res.status(200).send(squeals);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
 
-}
+router.route("/unpopular/:username").get(async (req, res) => {
+    try {
+        const user = await getUserByUsername(req.params.username);
+        if (
+            req.user &&
+            ((req.user as User).managedAccounts.includes(user._id) ||
+                (req.user as User).username === user.username)
+        ) {
+            const squeals: Squeal[] = await getUnpopularPosts(req.params.username);
+            res.status(200).send(squeals);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
 
-/**
- * funzione che ritorna le visualizzazioni di tutti i post
- * @params id {string} id dell'utente 
- *
- */
-export async function getAllPostsVisuals(id: string){
-
-}
-
-export async function getPostImpressions(id: string){
-
-}
+router.route("/controversial/:username").get(async (req, res) => {
+    try {
+        const user = await getUserByUsername(req.params.username);
+        if (
+            req.user &&
+            ((req.user as User).managedAccounts.includes(user._id) ||
+                (req.user as User).username === user.username)
+        ) {
+            const squeals: Squeal[] = await getControversialPosts(
+                req.params.username,
+            );
+            res.status(200).send(squeals);
+        } else res.sendStatus(401);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
