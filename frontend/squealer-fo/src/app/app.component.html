@@ -21,25 +21,25 @@
               <mat-list-item>
                 <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following']"
                   (click)="menu.toggle()" style="color: white">
-                  <mat-icon>group</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Followed Accounts</a>
+                  <mat-icon>group</mat-icon>&nbsp;<a href="/following" style="text-decoration: none; color: white;">Followed Accounts</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
                 <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/best3Squeals']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>whatshot</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Best 3 Squeals of the week</a>
+                  <mat-icon>whatshot</mat-icon>&nbsp;<a href="/best3Squeals" style="text-decoration: none; color: white;">Best 3 Squeals of the week</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
                 <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/channels']" (click)="menu.toggle()"
                   style="color: white">
-                  <mat-icon>grade</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Squealer's Channels</a>
+                  <mat-icon>grade</mat-icon>&nbsp;<a href="/channels" style="text-decoration: none; color: white;">Squealer's Channels</a>
                 </button>
               </mat-list-item>
               <mat-list-item>
                 <button tabindex="0" mat-button fxFlex fxLayoutAlign="start center" [routerLink]="['/following/' + username]"
                   (click)="menu.toggle()" style="color: white">
-                  <mat-icon>account_circle</mat-icon>&nbsp;<a href="" style="text-decoration: none; color: white;">Your Account</a>
+                  <mat-icon>account_circle</mat-icon>&nbsp;<a [href]="'/following/' + username" style="text-decoration: none; color: white;">Your Account</a>
                 </button>
               </mat-list-item>
               <mat-list-item *ngIf="isLoggedIn">
