@@ -28,7 +28,9 @@ const CreateSqueal: React.FC = () => {
     lng: 11.1478767,
   });
   const [user, setUser] = useState<User>();
-  const [locationName, setLocationName] = useState<string>();
+  const [locationName, setLocationName] = useState<string>(
+    "Marzabotto, Bologna, Emilia-Romagna, Italy",
+  );
   const [timed, setTimed] = useState(false);
   const [geo, setGeo] = useState(false);
   const [text, setText] = useState(true);

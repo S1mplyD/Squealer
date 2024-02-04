@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Squeal, User } from "./utils/types";
 
-const path: string = "http://localhost:3000";
+const path: string = "";
 
 export async function postSqueal(
   category: string,
