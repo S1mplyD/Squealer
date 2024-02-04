@@ -54,7 +54,7 @@ export class NewSquealsComponent implements OnInit {
     originalSqueal: '',
     lat: this.initialMarker.position.lat + '',
     lng: this.initialMarker.position.lng + '',
-    locationName: '',
+    locationName: 'Marzabotto, Bologna, Emilia-Romagna, Italy',
     time: 0,
   };
 
@@ -283,7 +283,6 @@ export class NewSquealsComponent implements OnInit {
           reverseGeocodeResult.features[0].properties.geocoding.country;
       });
     }
-    console.log(this.newSqueal.locationName);
   }
   closeMap(id: string) {
     if (this.mapOpened.includes(id)) {
@@ -315,9 +314,12 @@ export class NewSquealsComponent implements OnInit {
   }
 
   async reverseGeocode(lat: number, lng: number) {
+    console.log('reverse');
+    console.log(lat, lng);
     const response = await axios.get(
       `https://nominatim.openstreetmap.org/reverse?format=geocodejson&lat=${lat}&lon=${lng}`,
     );
+    console.log(response);
     return response.data;
   }
 
