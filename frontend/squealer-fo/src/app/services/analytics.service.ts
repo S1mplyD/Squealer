@@ -8,9 +8,7 @@ import { Analytics } from 'app/interfaces/analytics.interface';
   providedIn: 'root',
 })
 export class AnalyticsService {
-
-  private apiUrl = 'http://localhost:3000/api/analytics'; // Replace with your authentication API URL
-
+  private apiUrl = '/api/analytics'; // Replace with your authentication API URL
 
   constructor(private http: HttpClient) {}
 
@@ -20,9 +18,10 @@ export class AnalyticsService {
 
   getSquealAnalytic(id: string): Observable<Analytics> {
     const params = {
-      'id': id + ''
-    }
-    return this.http.get<Analytics>(`${this.apiUrl}/analytic`, { params: params })
+      id: id + '',
+    };
+    return this.http.get<Analytics>(`${this.apiUrl}/analytic`, {
+      params: params,
+    });
   }
-
 }

@@ -9,9 +9,7 @@ import { User } from 'app/interfaces/account.interface';
   providedIn: 'root',
 })
 export class FollowService {
-
-  private apiUrl = 'http://localhost:3000/api/follow'; // Replace with your authentication API URL
-
+  private apiUrl = '/api/follow'; // Replace with your authentication API URL
 
   constructor(private http: HttpClient) {}
 
@@ -25,16 +23,19 @@ export class FollowService {
 
   follow(username: string): Observable<any> {
     const params = {
-      'username': username + '',
-    }
-    return this.http.post<any>(`${this.apiUrl}/${username}/follow`, {params: params});
+      username: username + '',
+    };
+    return this.http.post<any>(`${this.apiUrl}/${username}/follow`, {
+      params: params,
+    });
   }
 
   unfollow(username: string): Observable<any> {
     const params = {
-      'username': username + '',
-    }
-    return this.http.post<any>(`${this.apiUrl}/${username}/unfollow`, {params: params});
+      username: username + '',
+    };
+    return this.http.post<any>(`${this.apiUrl}/${username}/unfollow`, {
+      params: params,
+    });
   }
-
 }

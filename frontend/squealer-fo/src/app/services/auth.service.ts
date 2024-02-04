@@ -7,10 +7,10 @@ import { User } from 'app/interfaces/account.interface';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth'; // Replace with your authentication API URL
-  private authUrl = 'http://localhost:3000/api/users';
+  private apiUrl = '/api/auth'; // Replace with your authentication API URL
+  private authUrl = '/api/users';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   loginWithGoogle(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/google`, {});

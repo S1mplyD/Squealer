@@ -7,13 +7,13 @@ import { User } from 'app/interfaces/account.interface';
   providedIn: 'root',
 })
 export class UsersService {
-  private apiUrl = 'http://localhost:3000/api/users'; // Replace with your authentication API URL
+  private apiUrl = '/api/users'; // Replace with your authentication API URL
 
-  private followApiUrl = 'http://localhost:3000/api/follow';
+  private followApiUrl = '/api/follow';
 
-  private mediaApiUrl = 'http://localhost:3000/api/media';
+  private mediaApiUrl = '/api/media';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   changePassword(oldPassword: string, newPassword: string) {
     const body = {

@@ -164,7 +164,7 @@ export class NewSquealsComponent implements OnInit {
           this.isLoggedIn = false;
         }
       });
-      console.log(this.isLoggedIn);
+    console.log(this.isLoggedIn);
     this.loadSqueals();
     this.getPosition();
   }

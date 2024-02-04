@@ -1,20 +1,18 @@
 // tweet.service.ts
 import { Injectable } from '@angular/core';
-import { Squeal} from 'app/interfaces/squeal.interface';
+import { Squeal } from 'app/interfaces/squeal.interface';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from 'app/interfaces/account.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SquealService {
+  private apiUrl = '/api/squeals/type'; // Replace with your authentication API URL
+  private newApiUrl = '/api/squeals';
 
-  private apiUrl = 'http://localhost:3000/api/squeals/type'; // Replace with your authentication API URL
-  private newApiUrl = 'http://localhost:3000/api/squeals';
-
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   getAllSqueals(): Observable<Squeal[]> {
     return this.http.get<Squeal[]>(`${this.newApiUrl}`);
@@ -22,9 +20,11 @@ export class SquealService {
 
   getAllSquealsRecipients(username: string): Observable<User[]> {
     const params = {
-      'recipient': username + ''
-    }
-    return this.http.get<User[]>(`${this.newApiUrl}/recipients`, {params: params});
+      recipient: username + '',
+    };
+    return this.http.get<User[]>(`${this.newApiUrl}/recipients`, {
+      params: params,
+    });
   }
 
   getAllTextSqueals(): Observable<Squeal[]> {
@@ -53,7 +53,7 @@ export class SquealService {
     return this.http.get<Squeal[]>(`${this.apiUrl}/user/${username}`);
   }
 
-  getAllTimedSqueals(): Observable<Squeal[]>  {
+  getAllTimedSqueals(): Observable<Squeal[]> {
     return this.http.get<Squeal[]>(`${this.apiUrl}/timed`);
   }
 
@@ -63,16 +63,22 @@ export class SquealService {
 
   addUpvote(squealId: string): Observable<string> {
     const params = {
-      'squealId': squealId + ''
-    }
-    return this.http.post<string>(`${this.newApiUrl}/positiveReactions?squealId=${squealId}`, { params: params });
+      squealId: squealId + '',
+    };
+    return this.http.post<string>(
+      `${this.newApiUrl}/positiveReactions?squealId=${squealId}`,
+      { params: params },
+    );
   }
 
   addDownvote(squealId: string): Observable<string> {
     const params = {
-      'squealId': squealId + ''
-    }
-    return this.http.post<string>(`${this.newApiUrl}/negativeReactions?squealId=${squealId}`, { params: params });
+      squealId: squealId + '',
+    };
+    return this.http.post<string>(
+      `${this.newApiUrl}/negativeReactions?squealId=${squealId}`,
+      { params: params },
+    );
   }
 
   addSqueal(squeal: Squeal): Observable<any> {
@@ -80,11 +86,14 @@ export class SquealService {
   }
 
   addResponse(squeal: Squeal, originalId: string): Observable<any> {
-    return this.http.post<any>(`${this.newApiUrl}/response/${originalId}`, squeal);
+    return this.http.post<any>(
+      `${this.newApiUrl}/response/${originalId}`,
+      squeal,
+    );
   }
 
   deleteSqueal(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}`, {params: {'id': id + ''}});
+    return this.http.delete<any>(`${this.apiUrl}`, { params: { id: id + '' } });
   }
 
   getSquealsNoLogin(): Observable<Squeal[]> {
@@ -102,5 +111,4 @@ export class SquealService {
   getSquealsLogin3Best(): Observable<Squeal[]> {
     return this.http.get<Squeal[]>(`${this.newApiUrl}/login3best`);
   }
-
 }

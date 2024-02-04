@@ -7,9 +7,7 @@ import { Channel } from 'app/interfaces/channels.interface';
   providedIn: 'root',
 })
 export class ChannelsService {
-
-  private apiUrl = 'http://localhost:3000/api/channels'; // Replace with your authentication API URL
-
+  private apiUrl = '/api/channels'; // Replace with your authentication API URL
 
   constructor(private http: HttpClient) {}
 
@@ -19,17 +17,17 @@ export class ChannelsService {
 
   createChannel(name: string, type: string): Observable<any> {
     const params = {
-      'name': name + '',
-      'type': type + ''
-    }
-    return this.http.post<any>(this.apiUrl, {params: params});
+      name: name + '',
+      type: type + '',
+    };
+    return this.http.post<any>(this.apiUrl, { params: params });
   }
 
   deleteChannel(name: string): Observable<any> {
     const params = {
-      'name': name + ''
-    }
-    return this.http.delete<any>(this.apiUrl, {params: params});
+      name: name + '',
+    };
+    return this.http.delete<any>(this.apiUrl, { params: params });
   }
 
   getChannel(name: string): Observable<Channel> {
@@ -38,9 +36,9 @@ export class ChannelsService {
 
   getSquealsInAChannel(name: string): Observable<any[]> {
     const params = {
-      'name': name + ''
-    }
-    return this.http.get<any[]>(`${this.apiUrl}/squeals`, {params: params});
+      name: name + '',
+    };
+    return this.http.get<any[]>(`${this.apiUrl}/squeals`, { params: params });
   }
 
   followChannel(name: string): Observable<any> {
@@ -50,7 +48,6 @@ export class ChannelsService {
   unfollowChannel(name: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/channel/${name}`, {});
   }
-
 
   getUserChannels(): Observable<Channel[]> {
     return this.http.get<Channel[]>(`${this.apiUrl}/userchannel`);
@@ -63,5 +60,4 @@ export class ChannelsService {
   getOfficialChannels(): Observable<Channel[]> {
     return this.http.get<Channel[]>(`${this.apiUrl}/official`);
   }
-
 }

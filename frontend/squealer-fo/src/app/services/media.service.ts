@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class MediaService {
-  private apiUrl = 'http://localhost:3000/api/media'; // Replace with your authentication API URL
+  private apiUrl = '/api/media'; // Replace with your authentication API URL
 
   constructor(private http: HttpClient) {}
 
